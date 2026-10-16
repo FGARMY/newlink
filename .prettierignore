@@ -1,0 +1,11 @@
+node_modules
+dist
+.next
+.turbo
+coverage
+package-lock.json
+# legacy static site (to be retired once the new platform launches)
+index.html
+styles.css
+script.js
+images

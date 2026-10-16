@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# tooling
+.turbo/
+coverage/
+
+# env — never commit secrets
+.env
+.env.*
+!.env.example
+
+# os / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# logs
+npm-debug.log*
+*.log
