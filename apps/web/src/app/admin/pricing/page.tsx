@@ -244,9 +244,10 @@ export default function AdminPricingPage() {
     const code = newCouponCode.trim().toUpperCase();
     if (!code) return;
 
-    const valueNum = newCouponType === 'PERCENT'
-      ? Math.round(Number(newCouponVal) * 100) // 10% -> 1000 bps
-      : Math.round(Number(newCouponVal) * 100); // ₹500 -> 50,000 paise
+    const valueNum =
+      newCouponType === 'PERCENT'
+        ? Math.round(Number(newCouponVal) * 100) // 10% -> 1000 bps
+        : Math.round(Number(newCouponVal) * 100); // ₹500 -> 50,000 paise
 
     const newCoup: CouponItem = {
       id: `coup-${Date.now().toString(36)}`,
@@ -294,7 +295,9 @@ export default function AdminPricingPage() {
     if (rentalWithSurge >= minRequired) {
       if (appliedCoupon.type === 'PERCENT') {
         const rawDisc = Math.round((rentalWithSurge * (appliedCoupon.value / 100)) / 100);
-        const maxCap = appliedCoupon.maxDiscountPaise ? appliedCoupon.maxDiscountPaise / 100 : 999999;
+        const maxCap = appliedCoupon.maxDiscountPaise
+          ? appliedCoupon.maxDiscountPaise / 100
+          : 999999;
         simDiscount = Math.min(rawDisc, maxCap);
       } else {
         simDiscount = Math.min(appliedCoupon.value / 100, rentalWithSurge);
@@ -331,7 +334,8 @@ export default function AdminPricingPage() {
               Dynamic Pricing & Promotions
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Automated weekend demand multipliers, seasonal surge calendars, and promo code campaigns.
+              Automated weekend demand multipliers, seasonal surge calendars, and promo code
+              campaigns.
             </p>
           </div>
 
@@ -492,7 +496,8 @@ export default function AdminPricingPage() {
                 <span>Interactive Quote Simulator (PRD Transparent Billing)</span>
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Preview exact price calculation pipeline under current surge multipliers and coupon rules.
+                Preview exact price calculation pipeline under current surge multipliers and coupon
+                rules.
               </p>
             </div>
             <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-400">
@@ -614,7 +619,9 @@ export default function AdminPricingPage() {
               </h3>
 
               <div className="flex justify-between text-xs text-slate-300">
-                <span>Base Rental ({simDays} days @ ₹{simCarRate}/day)</span>
+                <span>
+                  Base Rental ({simDays} days @ ₹{simCarRate}/day)
+                </span>
                 <span className="font-semibold">₹{baseRental.toLocaleString('en-IN')}</span>
               </div>
 
@@ -660,7 +667,8 @@ export default function AdminPricingPage() {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-2">
-                  Includes ₹{taxableValue + gstTax} net rental charge + ₹5,000 refundable security deposit.
+                  Includes ₹{taxableValue + gstTax} net rental charge + ₹5,000 refundable security
+                  deposit.
                 </p>
               </div>
 
@@ -700,9 +708,7 @@ export default function AdminPricingPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1">
-                      Kind
-                    </label>
+                    <label className="text-xs font-semibold text-slate-300 block mb-1">Kind</label>
                     <select
                       value={newRuleKind}
                       onChange={(e: any) => setNewRuleKind(e.target.value)}

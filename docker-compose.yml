@@ -20,6 +20,13 @@ services:
     image: redis:7-alpine
     ports:
       - '6379:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   minio:
     image: minio/minio:latest
@@ -33,6 +40,41 @@ services:
     volumes:
       - miniodata:/data
 
+  # Optional local containerized apps (run via `docker compose --profile app up`)
+  api:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      API_PORT: 4000
+      DATA_DRIVER: memory
+      DATABASE_URL: postgres://newlink:newlink@postgres:5432/newlink
+      REDIS_URL: redis://redis:6379
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      API_BASE_URL: http://api:4000/api/v1
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    depends_on:
+      - api
+
 volumes:
   pgdata:
+  redisdata:
   miniodata:

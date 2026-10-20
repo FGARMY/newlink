@@ -1,9 +1,4 @@
-export const STAFF_ROLES = [
-  'SUPER_ADMIN',
-  'ADMIN',
-  'FLEET_MANAGER',
-  'SUPPORT',
-] as const;
+export const STAFF_ROLES = ['SUPER_ADMIN', 'ADMIN', 'FLEET_MANAGER', 'SUPPORT'] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
 export const PERMISSIONS = [

@@ -23,9 +23,7 @@ export interface ReviewSummary {
   readonly reviews: readonly CustomerReview[];
 }
 
-export function validateCustomerReview(
-  input: Omit<CustomerReview, 'id' | 'createdAt'>,
-): void {
+export function validateCustomerReview(input: Omit<CustomerReview, 'id' | 'createdAt'>): void {
   if (
     input.overallRating < 1 ||
     input.overallRating > 5 ||
@@ -50,9 +48,7 @@ export function validateCustomerReview(
   }
 }
 
-export function calculateReviewSummary(
-  reviews: readonly CustomerReview[],
-): ReviewSummary {
+export function calculateReviewSummary(reviews: readonly CustomerReview[]): ReviewSummary {
   if (reviews.length === 0) {
     return {
       ratingAvg: 5.0,

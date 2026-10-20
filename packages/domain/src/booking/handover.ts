@@ -46,7 +46,10 @@ export function validatePickupHandover(checklist: HandoverChecklist): void {
     throw new DomainError('INVALID_INPUT', 'Fuel level must be between 0% and 100%');
   }
   if (!checklist.verifiedByPasscode) {
-    throw new DomainError('SECURITY_CHECK_FAILED', 'Pickup passcode must be verified before handover');
+    throw new DomainError(
+      'SECURITY_CHECK_FAILED',
+      'Pickup passcode must be verified before handover',
+    );
   }
 }
 
@@ -79,7 +82,8 @@ export function calculateDepositSettlement(
   // Calculate fuel penalty if returned lower than pickup
   let fuelDifferencePaise = 0;
   if (returnInspection.returnFuelLevelPercent < startHandover.fuelLevelPercent) {
-    const fuelShortagePercent = startHandover.fuelLevelPercent - returnInspection.returnFuelLevelPercent;
+    const fuelShortagePercent =
+      startHandover.fuelLevelPercent - returnInspection.returnFuelLevelPercent;
     fuelDifferencePaise = fuelShortagePercent * fuelDiffRatePaisePerPercent;
   }
 

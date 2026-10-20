@@ -205,9 +205,10 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm font-semibold">Loading sign in...</div>}>
+    <Suspense
+      fallback={<div className="p-8 text-center text-sm font-semibold">Loading sign in...</div>}
+    >
       <LoginContent />
     </Suspense>
   );
 }
-

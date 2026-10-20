@@ -38,7 +38,10 @@ export function validateAndComputeDiscount(
     throw new DomainError('COUPON_INVALID', 'Coupon is not active');
   }
 
-  if (ctx.now.getTime() < coupon.validFrom.getTime() || ctx.now.getTime() > coupon.validTo.getTime()) {
+  if (
+    ctx.now.getTime() < coupon.validFrom.getTime() ||
+    ctx.now.getTime() > coupon.validTo.getTime()
+  ) {
     throw new DomainError('COUPON_INVALID', 'Coupon has expired or is not yet valid');
   }
 
@@ -46,11 +49,19 @@ export function validateAndComputeDiscount(
     throw new DomainError('COUPON_INVALID', 'Coupon is not valid in this city');
   }
 
-  if (coupon.categoryIds && coupon.categoryIds.length > 0 && !coupon.categoryIds.includes(ctx.categoryId)) {
+  if (
+    coupon.categoryIds &&
+    coupon.categoryIds.length > 0 &&
+    !coupon.categoryIds.includes(ctx.categoryId)
+  ) {
     throw new DomainError('COUPON_INVALID', 'Coupon is not valid for this vehicle category');
   }
 
-  if (coupon.vehicleIds && coupon.vehicleIds.length > 0 && !coupon.vehicleIds.includes(ctx.vehicleId)) {
+  if (
+    coupon.vehicleIds &&
+    coupon.vehicleIds.length > 0 &&
+    !coupon.vehicleIds.includes(ctx.vehicleId)
+  ) {
     throw new DomainError('COUPON_INVALID', 'Coupon is not valid for this vehicle');
   }
 
@@ -66,7 +77,10 @@ export function validateAndComputeDiscount(
   }
 
   if (coupon.perCustomerLimit !== undefined && ctx.customerPriorUsages >= coupon.perCustomerLimit) {
-    throw new DomainError('COUPON_INVALID', 'You have already used this coupon maximum number of times');
+    throw new DomainError(
+      'COUPON_INVALID',
+      'You have already used this coupon maximum number of times',
+    );
   }
 
   let discountPaise: Paise = 0;

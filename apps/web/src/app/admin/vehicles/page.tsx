@@ -62,7 +62,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 240000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-creta.jpg',
-    features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Fastag Active'],
+    features: [
+      'Ventilated Seats',
+      'Panoramic Sunroof',
+      'Cruise Control',
+      'Wireless CarPlay',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -115,7 +121,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 280000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-carens.jpg',
-    features: ['7-Seater Comfort', 'Rear AC Vents', 'Touchscreen Infotainment', 'High Fuel Mileage', 'Fastag Active'],
+    features: [
+      '7-Seater Comfort',
+      'Rear AC Vents',
+      'Touchscreen Infotainment',
+      'High Fuel Mileage',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -168,7 +180,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 380000,
     securityDepositPaise: 700000,
     primaryImageUrl: '/images/car-xuv700.jpg',
-    features: ['ADAS Level 2', 'Sony 12-Speaker Audio', 'Panoramic Skyroof', 'AWD Drive Modes', 'Fastag Active'],
+    features: [
+      'ADAS Level 2',
+      'Sony 12-Speaker Audio',
+      'Panoramic Skyroof',
+      'AWD Drive Modes',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -221,7 +239,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 160000,
     securityDepositPaise: 300000,
     primaryImageUrl: '/images/car-dzire.jpg',
-    features: ['High Mileage (22 km/l)', 'Compact City Parking', 'Push Button Start', 'Apple CarPlay', 'Fastag Active'],
+    features: [
+      'High Mileage (22 km/l)',
+      'Compact City Parking',
+      'Push Button Start',
+      'Apple CarPlay',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -274,7 +298,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 350000,
     securityDepositPaise: 600000,
     primaryImageUrl: '/images/car-innova.jpg',
-    features: ['Legendary Highway Reliability', 'Captain Seats', 'Spacious Luggage Boot', 'Cruise Control', 'Fastag Active'],
+    features: [
+      'Legendary Highway Reliability',
+      'Captain Seats',
+      'Spacious Luggage Boot',
+      'Cruise Control',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -327,7 +357,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 240000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-creta.jpg',
-    features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Fastag Active'],
+    features: [
+      'Ventilated Seats',
+      'Panoramic Sunroof',
+      'Cruise Control',
+      'Wireless CarPlay',
+      'Fastag Active',
+    ],
     isAvailable: true,
     documents: [
       {
@@ -380,7 +416,13 @@ const INITIAL_FLEET: AdminVehicle[] = [
     dailyRatePaise: 580000,
     securityDepositPaise: 1000000,
     primaryImageUrl: '/images/car-fortuner.jpg',
-    features: ['4x4 Tough Terrain Ability', 'Commanding Road Presence', 'JBL Premium Sound', 'Ventilated Seats', 'Fastag Active'],
+    features: [
+      '4x4 Tough Terrain Ability',
+      'Commanding Road Presence',
+      'JBL Premium Sound',
+      'Ventilated Seats',
+      'Fastag Active',
+    ],
     isAvailable: false,
     documents: [
       {
@@ -607,7 +649,9 @@ export default function AdminVehiclesPage() {
 
     saveFleet(updated);
     setStatusModalVehicle(null);
-    showToast(`✓ Updated status of ${statusModalVehicle.brand} ${statusModalVehicle.model} to ${targetStatus}`);
+    showToast(
+      `✓ Updated status of ${statusModalVehicle.brand} ${statusModalVehicle.model} to ${targetStatus}`,
+    );
   };
 
   // Handle Add / Renew Document
@@ -665,7 +709,8 @@ export default function AdminVehiclesPage() {
               Fleet Management
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Real-time vehicle status, road compliance certificates, and fleet dispatch across Pune & Nashik hubs.
+              Real-time vehicle status, road compliance certificates, and fleet dispatch across Pune
+              & Nashik hubs.
             </p>
           </div>
 
@@ -698,7 +743,8 @@ export default function AdminVehiclesPage() {
               <span className="text-xs text-slate-400">vehicles</span>
             </div>
             <div className="mt-2 text-xs text-slate-400">
-              Pune ({vehicles.filter((v) => v.cityId === 'city-pune').length}) · Nashik ({vehicles.filter((v) => v.cityId === 'city-nashik').length})
+              Pune ({vehicles.filter((v) => v.cityId === 'city-pune').length}) · Nashik (
+              {vehicles.filter((v) => v.cityId === 'city-nashik').length})
             </div>
           </div>
 
@@ -736,7 +782,9 @@ export default function AdminVehiclesPage() {
               <ShieldCheck className="h-4 w-4 text-blue-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl font-black text-blue-400">{complianceStats.legalPercentage}%</span>
+              <span className="text-3xl font-black text-blue-400">
+                {complianceStats.legalPercentage}%
+              </span>
               <span className="text-xs text-blue-300">RC / Ins / PUC</span>
             </div>
             <div className="mt-2 text-xs text-blue-300/70">
@@ -764,7 +812,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedCity('ALL')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedCity === 'ALL' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  selectedCity === 'ALL'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 All Hubs
@@ -772,7 +822,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedCity('pune')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedCity === 'pune' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  selectedCity === 'pune'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Pune
@@ -780,7 +832,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedCity('nashik')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedCity === 'nashik' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  selectedCity === 'nashik'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Nashik
@@ -792,7 +846,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedStatus('ALL')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedStatus === 'ALL' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400 hover:text-white'
+                  selectedStatus === 'ALL'
+                    ? 'bg-slate-700 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 All Status
@@ -800,7 +856,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedStatus('IN_SERVICE')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedStatus === 'IN_SERVICE' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                  selectedStatus === 'IN_SERVICE'
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 In Service
@@ -808,7 +866,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedStatus('MAINTENANCE')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedStatus === 'MAINTENANCE' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                  selectedStatus === 'MAINTENANCE'
+                    ? 'bg-amber-600 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Maintenance
@@ -816,7 +876,9 @@ export default function AdminVehiclesPage() {
               <button
                 onClick={() => setSelectedStatus('INACTIVE')}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  selectedStatus === 'INACTIVE' ? 'bg-red-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                  selectedStatus === 'INACTIVE'
+                    ? 'bg-red-600 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Inactive
@@ -854,7 +916,9 @@ export default function AdminVehiclesPage() {
                         {vehicle.brand} {vehicle.model}
                       </span>
                       {vehicle.variant && (
-                        <span className="text-xs text-slate-400 font-medium">{vehicle.variant}</span>
+                        <span className="text-xs text-slate-400 font-medium">
+                          {vehicle.variant}
+                        </span>
                       )}
                     </div>
 
@@ -1322,7 +1386,9 @@ export default function AdminVehiclesPage() {
 
             {/* Existing Documents List */}
             <div className="mt-4 space-y-2">
-              <span className="text-xs text-slate-400 font-semibold block">Active Certifications</span>
+              <span className="text-xs text-slate-400 font-semibold block">
+                Active Certifications
+              </span>
               {docModalVehicle.documents.map((doc) => {
                 const isExpired = new Date(doc.expiresOn) < new Date();
                 return (
@@ -1356,8 +1422,13 @@ export default function AdminVehiclesPage() {
             </div>
 
             {/* Add / Renew Form */}
-            <form onSubmit={handleAddDocument} className="mt-5 pt-4 border-t border-slate-800 space-y-3">
-              <span className="text-xs text-amber-400 font-bold block">Record New / Renewed Certificate</span>
+            <form
+              onSubmit={handleAddDocument}
+              className="mt-5 pt-4 border-t border-slate-800 space-y-3"
+            >
+              <span className="text-xs text-amber-400 font-bold block">
+                Record New / Renewed Certificate
+              </span>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>

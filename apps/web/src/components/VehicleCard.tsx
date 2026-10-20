@@ -15,9 +15,7 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
   const dailyPriceRupees = Math.round(vehicle.dailyRatePaise / 100);
   const depositRupees = Math.round(vehicle.securityDepositPaise / 100);
 
-  const detailUrl = searchParams
-    ? `/cars/${vehicle.id}?${searchParams}`
-    : `/cars/${vehicle.id}`;
+  const detailUrl = searchParams ? `/cars/${vehicle.id}?${searchParams}` : `/cars/${vehicle.id}`;
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl">
@@ -55,9 +53,7 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
             <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-800 transition-colors">
               {vehicle.model}
               {vehicle.variant && (
-                <span className="ml-1.5 text-xs font-medium text-slate-600">
-                  {vehicle.variant}
-                </span>
+                <span className="ml-1.5 text-xs font-medium text-slate-600">{vehicle.variant}</span>
               )}
             </h3>
           </div>
@@ -73,11 +69,15 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
         <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-slate-50 p-2.5 text-center text-xs text-slate-700 border border-slate-100">
           <div className="flex flex-col items-center justify-center gap-1">
             <Gauge className="h-3.5 w-3.5 text-slate-600" />
-            <span className="font-semibold capitalize text-[11px]">{vehicle.transmission.toLowerCase()}</span>
+            <span className="font-semibold capitalize text-[11px]">
+              {vehicle.transmission.toLowerCase()}
+            </span>
           </div>
           <div className="flex flex-col items-center justify-center gap-1 border-x border-slate-200/60">
             <Fuel className="h-3.5 w-3.5 text-slate-600" />
-            <span className="font-semibold capitalize text-[11px]">{vehicle.fuel.toLowerCase()}</span>
+            <span className="font-semibold capitalize text-[11px]">
+              {vehicle.fuel.toLowerCase()}
+            </span>
           </div>
           <div className="flex flex-col items-center justify-center gap-1">
             <Users className="h-3.5 w-3.5 text-slate-600" />
@@ -88,7 +88,9 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
         {/* Pricing & CTA */}
         <div className="mt-5 flex items-end justify-between border-t border-slate-100 pt-4">
           <div>
-            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-600">Starting from</div>
+            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-600">
+              Starting from
+            </div>
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-900">
                 ₹{dailyPriceRupees.toLocaleString('en-IN')}

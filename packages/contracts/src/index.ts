@@ -150,7 +150,7 @@ export const SearchVehiclesQuerySchema = z.object({
   city: z.string(),
   location: z.string().optional(),
   start: z.string(), // ISO-8601 or YYYY-MM-DDTHH:mm
-  end: z.string(),   // ISO-8601 or YYYY-MM-DDTHH:mm
+  end: z.string(), // ISO-8601 or YYYY-MM-DDTHH:mm
   category: z.string().optional(),
   transmission: TransmissionSchema.optional(),
   fuel: FuelTypeSchema.optional(),
@@ -158,7 +158,9 @@ export const SearchVehiclesQuerySchema = z.object({
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   brand: z.string().optional(),
-  sort: z.enum(['RECOMMENDED', 'PRICE_ASC', 'PRICE_DESC', 'RATING', 'POPULARITY']).default('RECOMMENDED'),
+  sort: z
+    .enum(['RECOMMENDED', 'PRICE_ASC', 'PRICE_DESC', 'RATING', 'POPULARITY'])
+    .default('RECOMMENDED'),
 });
 export type SearchVehiclesQuery = z.infer<typeof SearchVehiclesQuerySchema>;
 
@@ -309,11 +311,7 @@ export const VehicleDocumentSchema = z.object({
 });
 export type VehicleDocument = z.infer<typeof VehicleDocumentSchema>;
 
-export const VehicleOperationalStatusSchema = z.enum([
-  'IN_SERVICE',
-  'MAINTENANCE',
-  'INACTIVE',
-]);
+export const VehicleOperationalStatusSchema = z.enum(['IN_SERVICE', 'MAINTENANCE', 'INACTIVE']);
 export type VehicleOperationalStatus = z.infer<typeof VehicleOperationalStatusSchema>;
 
 export const AdminVehicleSchema = VehicleCardSchema.extend({
@@ -461,9 +459,9 @@ export const PriceAdjustmentRuleSchema = z.object({
   name: z.string(),
   kind: z.enum(['SEASON', 'HOLIDAY', 'PROMO']),
   startDate: z.string(), // YYYY-MM-DD
-  endDate: z.string(),   // YYYY-MM-DD
+  endDate: z.string(), // YYYY-MM-DD
   mode: z.enum(['MULTIPLIER', 'OVERRIDE_DAILY']),
-  value: z.number(),     // Basis points (e.g. 11500 = 1.15x) or paise
+  value: z.number(), // Basis points (e.g. 11500 = 1.15x) or paise
   priority: z.number().default(1),
   cityId: z.string().optional(),
   categoryId: z.string().optional(),

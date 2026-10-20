@@ -46,7 +46,10 @@ export function validateDisputeClaim(
   }
 
   if (!customerNotes || customerNotes.trim().length < 10) {
-    throw new DomainError('INVALID_INPUT', 'Please provide detailed explanation (at least 10 characters)');
+    throw new DomainError(
+      'INVALID_INPUT',
+      'Please provide detailed explanation (at least 10 characters)',
+    );
   }
 }
 

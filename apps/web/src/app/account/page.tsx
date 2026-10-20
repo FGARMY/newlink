@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -49,7 +49,9 @@ export default function AccountPage() {
 
   // Active Trip & Booking Lifecycle State
   const [bookingRef, setBookingRef] = useState('NL-PN-Q2KCA6');
-  const [bookingStatus, setBookingStatus] = useState<'CONFIRMED' | 'ACTIVE' | 'COMPLETED'>('CONFIRMED');
+  const [bookingStatus, setBookingStatus] = useState<'CONFIRMED' | 'ACTIVE' | 'COMPLETED'>(
+    'CONFIRMED',
+  );
   const [passcode, setPasscode] = useState('4829');
   const [carName, setCarName] = useState('Hyundai Creta SX (O) Turbo');
   const [carLocation, setCarLocation] = useState('Pune Airport (Lohegaon)');
@@ -113,7 +115,9 @@ export default function AccountPage() {
     e.preventDefault();
     setDisputeSubmitted(true);
     setIsDisputeModalOpen(false);
-    alert('✓ Dispute claim submitted to operations desk. Our team will review your counter-evidence within 24 hours.');
+    alert(
+      '✓ Dispute claim submitted to operations desk. Our team will review your counter-evidence within 24 hours.',
+    );
   };
 
   // Load from localStorage if present
@@ -160,7 +164,9 @@ export default function AccountPage() {
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="max-w-md w-full rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-lg">
             <User className="mx-auto h-12 w-12 text-slate-300" />
-            <h2 className="mt-4 text-xl font-bold text-slate-900">Sign in to view your dashboard</h2>
+            <h2 className="mt-4 text-xl font-bold text-slate-900">
+              Sign in to view your dashboard
+            </h2>
             <p className="mt-1 text-xs text-slate-500">
               Access your upcoming bookings, upload KYC documents, and download invoices.
             </p>
@@ -232,24 +238,25 @@ export default function AccountPage() {
   };
 
   // Live Return Settlement calculation
-  const settlementPreview = useMemo(() => {
-    const totalKm = Math.max(0, returnOdometer - startOdometer);
-    const fuelShortagePercent = Math.max(0, startFuel - returnFuel);
-    const fuelDeduction = fuelShortagePercent * 25; // ₹25 per 1% fuel shortage
-    const tollsDeduction = Number(fastagTolls) || 0;
-    const finesDeduction = Number(damageFines) || 0;
-    const totalDeductions = Math.min(depositRupees, fuelDeduction + tollsDeduction + finesDeduction);
-    const refundAmount = Math.max(0, depositRupees - totalDeductions);
+  const totalKm = Math.max(0, returnOdometer - startOdometer);
+  const fuelShortagePercent = Math.max(0, startFuel - returnFuel);
+  const fuelDeduction = fuelShortagePercent * 25; // ₹25 per 1% fuel shortage
+  const tollsDeduction = Number(fastagTolls) || 0;
+  const finesDeduction = Number(damageFines) || 0;
+  const totalDeductions = Math.min(
+    depositRupees,
+    fuelDeduction + tollsDeduction + finesDeduction,
+  );
+  const refundAmount = Math.max(0, depositRupees - totalDeductions);
 
-    return {
-      totalKm,
-      tollsDeduction,
-      fuelDeduction,
-      finesDeduction,
-      totalDeductions,
-      refundAmount,
-    };
-  }, [returnOdometer, startOdometer, startFuel, returnFuel, fastagTolls, damageFines, depositRupees]);
+  const settlementPreview = {
+    totalKm,
+    tollsDeduction,
+    fuelDeduction,
+    finesDeduction,
+    totalDeductions,
+    refundAmount,
+  };
 
   // Submit Return (Complete Trip)
   const handleConfirmReturn = (e: React.FormEvent) => {
@@ -329,10 +336,13 @@ export default function AccountPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
-                  {bookingStatus === 'COMPLETED' ? 'Completed Rental Summary' : 'Current Rental & Handover'}
+                  {bookingStatus === 'COMPLETED'
+                    ? 'Completed Rental Summary'
+                    : 'Current Rental & Handover'}
                 </h2>
                 <div className="text-xs text-slate-500 font-medium">
-                  Reference: <span className="font-mono font-bold text-slate-900">{bookingRef}</span>
+                  Reference:{' '}
+                  <span className="font-mono font-bold text-slate-900">{bookingRef}</span>
                 </div>
               </div>
 
@@ -371,7 +381,9 @@ export default function AccountPage() {
                         )}
                       </div>
 
-                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1.5">{carName}</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1.5">
+                        {carName}
+                      </h3>
                       <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-600 font-medium">
                         <div className="flex items-center gap-1.5">
                           <MapPin className="h-3.5 w-3.5 text-amber-600" />
@@ -388,16 +400,26 @@ export default function AccountPage() {
                   {/* Right: Lifecycle Actions & Handover Passcode */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 border-t lg:border-t-0 border-slate-100 pt-4 lg:pt-0">
                     <div className="text-right sm:mr-2">
-                      <div className="text-[10px] text-slate-400 font-bold uppercase">Rental Paid</div>
-                      <div className="text-base font-black text-slate-900">₹{totalPaidRupees.toLocaleString('en-IN')}</div>
-                      <div className="text-[10px] text-emerald-600 font-semibold">Incl. ₹{depositRupees.toLocaleString('en-IN')} Deposit</div>
+                      <div className="text-[10px] text-slate-400 font-bold uppercase">
+                        Rental Paid
+                      </div>
+                      <div className="text-base font-black text-slate-900">
+                        ₹{totalPaidRupees.toLocaleString('en-IN')}
+                      </div>
+                      <div className="text-[10px] text-emerald-600 font-semibold">
+                        Incl. ₹{depositRupees.toLocaleString('en-IN')} Deposit
+                      </div>
                     </div>
 
                     {bookingStatus === 'CONFIRMED' && (
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between sm:justify-start gap-2 rounded-xl bg-slate-50 px-3 py-1.5 border border-slate-200">
-                          <span className="text-[11px] font-medium text-slate-500">Pickup Passcode:</span>
-                          <span className="font-mono text-sm font-black text-slate-900">{passcode}</span>
+                          <span className="text-[11px] font-medium text-slate-500">
+                            Pickup Passcode:
+                          </span>
+                          <span className="font-mono text-sm font-black text-slate-900">
+                            {passcode}
+                          </span>
                         </div>
                         <button
                           id="start-trip-btn"
@@ -437,7 +459,8 @@ export default function AccountPage() {
                             <span>Security Deposit Refunded</span>
                           </div>
                           <div className="text-[11px] text-emerald-700">
-                            ₹{(settlementResult?.refundAmount ?? 4625).toLocaleString('en-IN')} released to original UPI account.
+                            ₹{(settlementResult?.refundAmount ?? 4625).toLocaleString('en-IN')}{' '}
+                            released to original UPI account.
                           </div>
                         </div>
 
@@ -505,7 +528,9 @@ export default function AccountPage() {
                     </div>
 
                     <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80">
-                      <span className="text-slate-400 block font-semibold">Security Deposit Held</span>
+                      <span className="text-slate-400 block font-semibold">
+                        Security Deposit Held
+                      </span>
                       <span className="font-bold text-slate-900 text-sm mt-0.5">
                         ₹{depositRupees.toLocaleString('en-IN')}
                       </span>
@@ -522,8 +547,12 @@ export default function AccountPage() {
                 className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group"
               >
                 <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">Browse Cars</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Explore available cars in Pune & Nashik</div>
+                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
+                    Browse Cars
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Explore available cars in Pune & Nashik
+                  </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
               </Link>
@@ -533,8 +562,12 @@ export default function AccountPage() {
                 className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">Manage KYC</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Upload or update Driving License</div>
+                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
+                    Manage KYC
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Upload or update Driving License
+                  </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
               </div>
@@ -544,8 +577,12 @@ export default function AccountPage() {
                 className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group"
               >
                 <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">Fleet Operations</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Admin fleet command & vehicle status</div>
+                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
+                    Fleet Operations
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Admin fleet command & vehicle status
+                  </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
               </Link>
@@ -566,8 +603,8 @@ export default function AccountPage() {
                   Driving License Verification
                 </h2>
                 <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                  As per Maharashtra transport regulations for self-drive rentals, a valid Indian Driving License is
-                  mandatory before vehicle handover.
+                  As per Maharashtra transport regulations for self-drive rentals, a valid Indian
+                  Driving License is mandatory before vehicle handover.
                 </p>
 
                 {uploadSuccess ? (
@@ -577,13 +614,16 @@ export default function AccountPage() {
                       <span>Documents Submitted Successfully!</span>
                     </div>
                     <p className="mt-1 text-[11px] text-emerald-700">
-                      Our fleet verification agent will verify your license before vehicle pickup. You're all set!
+                      Our fleet verification agent will verify your license before vehicle pickup.
+                      You're all set!
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={handleUploadKyc} className="mt-6 space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700">Driving License Number</label>
+                      <label className="text-xs font-bold text-slate-700">
+                        Driving License Number
+                      </label>
                       <input
                         type="text"
                         required
@@ -595,7 +635,9 @@ export default function AccountPage() {
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700">License Expiry Date</label>
+                      <label className="text-xs font-bold text-slate-700">
+                        License Expiry Date
+                      </label>
                       <input
                         type="date"
                         required
@@ -676,7 +718,9 @@ export default function AccountPage() {
               {/* Starting Metrics */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Starting Odometer (km)</label>
+                  <label className="font-bold text-slate-700 block mb-1">
+                    Starting Odometer (km)
+                  </label>
                   <input
                     type="number"
                     required
@@ -711,7 +755,9 @@ export default function AccountPage() {
                     onChange={(e) => setHandoverCheckedFastag(e.target.checked)}
                     className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
                   />
-                  <span className="text-slate-800 font-medium">Fastag windshield RFID tag is active</span>
+                  <span className="text-slate-800 font-medium">
+                    Fastag windshield RFID tag is active
+                  </span>
                 </label>
 
                 <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
@@ -721,7 +767,9 @@ export default function AccountPage() {
                     onChange={(e) => setHandoverCheckedClean(e.target.checked)}
                     className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
                   />
-                  <span className="text-slate-800 font-medium">Vehicle is clean with 0 existing scratches</span>
+                  <span className="text-slate-800 font-medium">
+                    Vehicle is clean with 0 existing scratches
+                  </span>
                 </label>
 
                 <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
@@ -731,7 +779,9 @@ export default function AccountPage() {
                     onChange={(e) => setHandoverCheckedSpare(e.target.checked)}
                     className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
                   />
-                  <span className="text-slate-800 font-medium">Spare tire and tool kit verified in boot</span>
+                  <span className="text-slate-800 font-medium">
+                    Spare tire and tool kit verified in boot
+                  </span>
                 </label>
               </div>
 
@@ -810,7 +860,9 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Fastag Toll Charges Incurred (₹)</label>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Fastag Toll Charges Incurred (₹)
+                </label>
                 <input
                   type="number"
                   min={0}
@@ -828,26 +880,34 @@ export default function AccountPage() {
 
                 <div className="flex justify-between text-slate-600">
                   <span>Original Security Deposit:</span>
-                  <span className="font-bold text-slate-900">₹{depositRupees.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-slate-900">
+                    ₹{depositRupees.toLocaleString('en-IN')}
+                  </span>
                 </div>
 
                 {settlementPreview.tollsDeduction > 0 && (
                   <div className="flex justify-between text-slate-600">
                     <span>Fastag Electronic Tolls:</span>
-                    <span className="font-semibold text-red-600">-₹{settlementPreview.tollsDeduction.toLocaleString('en-IN')}</span>
+                    <span className="font-semibold text-red-600">
+                      -₹{settlementPreview.tollsDeduction.toLocaleString('en-IN')}
+                    </span>
                   </div>
                 )}
 
                 {settlementPreview.fuelDeduction > 0 && (
                   <div className="flex justify-between text-slate-600">
                     <span>Fuel Adjustment Shortage:</span>
-                    <span className="font-semibold text-red-600">-₹{settlementPreview.fuelDeduction.toLocaleString('en-IN')}</span>
+                    <span className="font-semibold text-red-600">
+                      -₹{settlementPreview.fuelDeduction.toLocaleString('en-IN')}
+                    </span>
                   </div>
                 )}
 
                 <div className="flex justify-between border-t border-slate-200 pt-2 text-sm font-extrabold text-slate-900">
                   <span>Net Refund to Bank / UPI:</span>
-                  <span className="text-emerald-700">₹{settlementPreview.refundAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-emerald-700">
+                    ₹{settlementPreview.refundAmount.toLocaleString('en-IN')}
+                  </span>
                 </div>
               </div>
 
@@ -894,7 +954,8 @@ export default function AccountPage() {
 
             <form onSubmit={handleSubmitReview} className="mt-5 space-y-4 text-xs">
               <p className="text-slate-600">
-                How was your experience renting <strong>{carName}</strong>? Your feedback ensures transparent standards for our Pune & Nashik fleet.
+                How was your experience renting <strong>{carName}</strong>? Your feedback ensures
+                transparent standards for our Pune & Nashik fleet.
               </p>
 
               {/* Star Category Ratings */}
@@ -911,9 +972,7 @@ export default function AccountPage() {
                       >
                         <Star
                           className={`h-5 w-5 ${
-                            s <= reviewRating
-                              ? 'text-amber-500 fill-amber-500'
-                              : 'text-slate-300'
+                            s <= reviewRating ? 'text-amber-500 fill-amber-500' : 'text-slate-300'
                           }`}
                         />
                       </button>
@@ -944,7 +1003,9 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Mechanical Condition</label>
+                  <label className="font-bold text-slate-700 block mb-1">
+                    Mechanical Condition
+                  </label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
@@ -966,7 +1027,9 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Handover & Passcode Ease</label>
+                  <label className="font-bold text-slate-700 block mb-1">
+                    Handover & Passcode Ease
+                  </label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
@@ -977,9 +1040,7 @@ export default function AccountPage() {
                       >
                         <Star
                           className={`h-4 w-4 ${
-                            s <= handoverRating
-                              ? 'text-amber-500 fill-amber-500'
-                              : 'text-slate-300'
+                            s <= handoverRating ? 'text-amber-500 fill-amber-500' : 'text-slate-300'
                           }`}
                         />
                       </button>
@@ -1042,7 +1103,8 @@ export default function AccountPage() {
 
             <form onSubmit={handleSubmitDispute} className="mt-5 space-y-4 text-xs">
               <p className="text-slate-600">
-                Believe you were incorrectly charged for Fastag tolls or fuel shortage? Submit your counter-evidence for our operations desk.
+                Believe you were incorrectly charged for Fastag tolls or fuel shortage? Submit your
+                counter-evidence for our operations desk.
               </p>
 
               <div>
@@ -1060,7 +1122,9 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Claimed Refund Amount (₹)</label>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Claimed Refund Amount (₹)
+                </label>
                 <input
                   type="number"
                   required
@@ -1073,7 +1137,9 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Detailed Explanation & Toll/Fuel Details</label>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Detailed Explanation & Toll/Fuel Details
+                </label>
                 <textarea
                   required
                   rows={3}

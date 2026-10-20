@@ -15,14 +15,10 @@ import {
   makeInterval,
   calculateFleetOccupancy,
   calculateRevPAC,
-  aggregateCityMetrics,
-  type RatePlan,
-  type TaxRule,
 } from '@newlink/domain';
 import {
   QuoteRequestSchema,
   CreateHoldRequestSchema,
-  SearchVehiclesQuerySchema,
   TripStartHandoverSchema,
   TripEndInspectionSchema,
   CreatePriceAdjustmentSchema,
@@ -31,7 +27,10 @@ import {
   CreateDisputeSchema,
   ResolveDisputeSchema,
 } from '@newlink/contracts';
-import { MemoryFleetRepository, MemoryBookingRepository } from './repositories/memory.repository.js';
+import {
+  MemoryFleetRepository,
+  MemoryBookingRepository,
+} from './repositories/memory.repository.js';
 
 @Controller('api/v1')
 export class ApiController {
@@ -55,17 +54,17 @@ export class ApiController {
   async getLocationsByCitySlug(@Param('slug') slug: string) {
     const city = await this.fleetRepo.getCityBySlug(slug);
     if (!city) {
-      throw new HttpException({ error: { code: 'NOT_FOUND', message: 'City not found' } }, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { error: { code: 'NOT_FOUND', message: 'City not found' } },
+        HttpStatus.NOT_FOUND,
+      );
     }
     const locations = await this.fleetRepo.getLocations(city.id);
     return { data: locations };
   }
 
   @Get('vehicles')
-  async getVehicles(
-    @Query('city') city?: string,
-    @Query('location') location?: string,
-  ) {
+  async getVehicles(@Query('city') city?: string, @Query('location') location?: string) {
     let cityId: string | undefined;
     if (city) {
       const c = await this.fleetRepo.getCityBySlug(city);
@@ -79,7 +78,10 @@ export class ApiController {
   async getVehicleById(@Param('id') id: string) {
     const vehicle = await this.fleetRepo.getVehicleById(id);
     if (!vehicle) {
-      throw new HttpException({ error: { code: 'NOT_FOUND', message: 'Vehicle not found' } }, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { error: { code: 'NOT_FOUND', message: 'Vehicle not found' } },
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { data: vehicle };
   }
@@ -89,7 +91,13 @@ export class ApiController {
     const parse = QuoteRequestSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid quote request', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid quote request',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -97,12 +105,18 @@ export class ApiController {
 
     const vehicle = await this.fleetRepo.getVehicleById(req.vehicleId);
     if (!vehicle) {
-      throw new HttpException({ error: { code: 'NOT_FOUND', message: 'Vehicle not found' } }, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { error: { code: 'NOT_FOUND', message: 'Vehicle not found' } },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const ratePlan = await this.fleetRepo.getRatePlan(vehicle.id);
     if (!ratePlan) {
-      throw new HttpException({ error: { code: 'PRICING_UNAVAILABLE', message: 'Rate plan missing' } }, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        { error: { code: 'PRICING_UNAVAILABLE', message: 'Rate plan missing' } },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
     const taxRule = await this.fleetRepo.getTaxRule();
@@ -143,7 +157,13 @@ export class ApiController {
     const parse = CreateHoldRequestSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid booking hold request', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid booking hold request',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -200,14 +220,17 @@ export class ApiController {
   }
 
   @Post('bookings/:reference/handover')
-  async startTripHandover(
-    @Param('reference') reference: string,
-    @Body() body: unknown,
-  ) {
+  async startTripHandover(@Param('reference') reference: string, @Body() body: unknown) {
     const parse = TripStartHandoverSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid handover data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid handover data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -237,14 +260,17 @@ export class ApiController {
   }
 
   @Post('bookings/:reference/return')
-  async completeTripReturn(
-    @Param('reference') reference: string,
-    @Body() body: unknown,
-  ) {
+  async completeTripReturn(@Param('reference') reference: string, @Body() body: unknown) {
     const parse = TripEndInspectionSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid return inspection data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid return inspection data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -283,11 +309,15 @@ export class ApiController {
     const cities = await this.fleetRepo.getCities();
 
     const totalFleet = vehicles.length;
-    const maintenanceVehicles = vehicles.filter((v) => v.operationalStatus === 'MAINTENANCE').length;
-    
+    const maintenanceVehicles = vehicles.filter(
+      (v) => v.operationalStatus === 'MAINTENANCE',
+    ).length;
+
     // Active rentals count from bookings that are either CONFIRMED or ACTIVE
-    const activeRentals = bookings.filter((b) => b.status === 'ACTIVE' || b.status === 'CONFIRMED').length;
-    
+    const activeRentals = bookings.filter(
+      (b) => b.status === 'ACTIVE' || b.status === 'CONFIRMED',
+    ).length;
+
     const occupancy = calculateFleetOccupancy({
       totalVehicles: totalFleet,
       rentedVehicles: activeRentals,
@@ -295,7 +325,9 @@ export class ApiController {
     });
 
     // Total revenue from all confirmed, active, or completed bookings
-    const eligibleBookings = bookings.filter((b) => ['CONFIRMED', 'ACTIVE', 'COMPLETED'].includes(b.status));
+    const eligibleBookings = bookings.filter((b) =>
+      ['CONFIRMED', 'ACTIVE', 'COMPLETED'].includes(b.status),
+    );
     const totalRevenuePaise = eligibleBookings.reduce((sum, b) => sum + b.amountPayablePaise, 0);
 
     // Baseline revenue if early in demo
@@ -305,7 +337,7 @@ export class ApiController {
 
     const depositsHeldPaise = bookings
       .filter((b) => ['CONFIRMED', 'ACTIVE'].includes(b.status))
-      .reduce((sum, b) => sum + 500000, 0);
+      .reduce((sum) => sum + 500000, 0);
 
     const depositsRefundedPaise = bookings
       .filter((b) => b.status === 'COMPLETED' && b.depositSettlement)
@@ -322,8 +354,11 @@ export class ApiController {
         cityBookings.reduce((sum, b) => sum + b.amountPayablePaise, 0),
         c.code === 'PN' ? 32000000 : 16500000, // Reasonable baseline
       );
-      const cityMaintenance = cityVehicles.filter((v) => v.operationalStatus === 'MAINTENANCE').length;
-      const cityActive = cityBookings.filter((b) => ['CONFIRMED', 'ACTIVE'].includes(b.status)).length || 1;
+      const cityMaintenance = cityVehicles.filter(
+        (v) => v.operationalStatus === 'MAINTENANCE',
+      ).length;
+      const cityActive =
+        cityBookings.filter((b) => ['CONFIRMED', 'ACTIVE'].includes(b.status)).length || 1;
 
       const cityOccupancy = calculateFleetOccupancy({
         totalVehicles: cityVehicles.length,
@@ -338,7 +373,10 @@ export class ApiController {
         activeRentals: cityActive,
         revenuePaise: cityRevenue,
         occupancyRatePercent: cityOccupancy.occupancyRatePercent,
-        revPacPaise: calculateRevPAC(cityRevenue, Math.max(1, cityVehicles.length - cityMaintenance)),
+        revPacPaise: calculateRevPAC(
+          cityRevenue,
+          Math.max(1, cityVehicles.length - cityMaintenance),
+        ),
       };
     });
 
@@ -369,35 +407,38 @@ export class ApiController {
         revPacPaise,
         totalBookingsCount: Math.max(bookings.length, 14),
         cityBreakdown,
-        recentBookings: recentBookings.length > 0 ? recentBookings : [
-          {
-            reference: 'NL-PN-7K3Q9M',
-            vehicleModel: 'Hyundai Creta Turbo',
-            cityName: 'Pune',
-            customerName: 'Aditya Kulkarni',
-            status: 'ACTIVE',
-            amountPayablePaise: 450000,
-            createdAt: new Date().toISOString(),
-          },
-          {
-            reference: 'NL-NS-4M8P2W',
-            vehicleModel: 'Mahindra Scorpio-N',
-            cityName: 'Nashik',
-            customerName: 'Rohit Deshmukh',
-            status: 'CONFIRMED',
-            amountPayablePaise: 380000,
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-          },
-          {
-            reference: 'NL-PN-9R2D5X',
-            vehicleModel: 'Kia Carens Prestige',
-            cityName: 'Pune',
-            customerName: 'Neha Shinde',
-            status: 'COMPLETED',
-            amountPayablePaise: 520000,
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-          },
-        ],
+        recentBookings:
+          recentBookings.length > 0
+            ? recentBookings
+            : [
+                {
+                  reference: 'NL-PN-7K3Q9M',
+                  vehicleModel: 'Hyundai Creta Turbo',
+                  cityName: 'Pune',
+                  customerName: 'Aditya Kulkarni',
+                  status: 'ACTIVE',
+                  amountPayablePaise: 450000,
+                  createdAt: new Date().toISOString(),
+                },
+                {
+                  reference: 'NL-NS-4M8P2W',
+                  vehicleModel: 'Mahindra Scorpio-N',
+                  cityName: 'Nashik',
+                  customerName: 'Rohit Deshmukh',
+                  status: 'CONFIRMED',
+                  amountPayablePaise: 380000,
+                  createdAt: new Date(Date.now() - 3600000).toISOString(),
+                },
+                {
+                  reference: 'NL-PN-9R2D5X',
+                  vehicleModel: 'Kia Carens Prestige',
+                  cityName: 'Pune',
+                  customerName: 'Neha Shinde',
+                  status: 'COMPLETED',
+                  amountPayablePaise: 520000,
+                  createdAt: new Date(Date.now() - 86400000).toISOString(),
+                },
+              ],
       },
     };
   }
@@ -417,7 +458,13 @@ export class ApiController {
     const parse = CreatePriceAdjustmentSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid price adjustment data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid price adjustment data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -446,7 +493,13 @@ export class ApiController {
     const parse = ValidateCouponRequestSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid coupon validation request', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid coupon validation request',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -465,14 +518,17 @@ export class ApiController {
   }
 
   @Post('bookings/:reference/review')
-  async submitBookingReview(
-    @Param('reference') reference: string,
-    @Body() body: unknown,
-  ) {
+  async submitBookingReview(@Param('reference') reference: string, @Body() body: unknown) {
     const parse = CreateReviewSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid review data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid review data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -487,7 +543,12 @@ export class ApiController {
 
     if (booking.status !== 'COMPLETED') {
       throw new HttpException(
-        { error: { code: 'INVALID_STATE_TRANSITION', message: 'Reviews can only be submitted for completed trips' } },
+        {
+          error: {
+            code: 'INVALID_STATE_TRANSITION',
+            message: 'Reviews can only be submitted for completed trips',
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -518,14 +579,17 @@ export class ApiController {
   }
 
   @Post('bookings/:reference/dispute')
-  async createBookingDispute(
-    @Param('reference') reference: string,
-    @Body() body: unknown,
-  ) {
+  async createBookingDispute(@Param('reference') reference: string, @Body() body: unknown) {
     const parse = CreateDisputeSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid dispute claim data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid dispute claim data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -552,14 +616,17 @@ export class ApiController {
   }
 
   @Post('admin/disputes/:id/resolve')
-  async resolveDispute(
-    @Param('id') id: string,
-    @Body() body: unknown,
-  ) {
+  async resolveDispute(@Param('id') id: string, @Body() body: unknown) {
     const parse = ResolveDisputeSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid dispute resolution data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid dispute resolution data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -1,7 +1,7 @@
 import { DomainError } from '../errors.js';
 import { type Paise, applyBps, assertPaise, sumPaise } from '../money.js';
 import type { Interval } from '../time/interval.js';
-import { durationMinutes, makeInterval } from '../time/interval.js';
+import { durationMinutes } from '../time/interval.js';
 import { getLocalParts, toLocalIsoDate } from '../time/zoned.js';
 
 /* ------------------------------------------------------------------------------------------ */
@@ -29,7 +29,7 @@ export interface PriceAdjustment {
   readonly name: string;
   readonly kind: 'SEASON' | 'HOLIDAY' | 'PROMO';
   readonly startDate: string; // YYYY-MM-DD
-  readonly endDate: string;   // YYYY-MM-DD
+  readonly endDate: string; // YYYY-MM-DD
   readonly mode: 'MULTIPLIER' | 'OVERRIDE_DAILY';
   /** If MULTIPLIER, basis points (e.g. 11500 = 1.15x / +15%). If OVERRIDE_DAILY, paise amount. */
   readonly value: number;

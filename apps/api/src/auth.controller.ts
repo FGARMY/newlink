@@ -20,7 +20,6 @@ import {
   createOtpChallenge,
   verifyOtpChallenge,
   generate6DigitOtp,
-  hasPermission,
   type StaffRole,
 } from '@newlink/domain';
 import { MemoryCustomerRepository } from './repositories/memory.repository.js';
@@ -74,7 +73,12 @@ export class AuthController {
     const challenge = otpChallenges.get(phone);
     if (!challenge) {
       throw new HttpException(
-        { error: { code: 'OTP_EXPIRED', message: 'No active OTP found. Please request a new code.' } },
+        {
+          error: {
+            code: 'OTP_EXPIRED',
+            message: 'No active OTP found. Please request a new code.',
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -124,7 +128,7 @@ export class AuthController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const { email, password } = parse.data;
+    const { email } = parse.data;
 
     // Demonstration staff accounts with roles
     let role: StaffRole = 'SUPPORT';
@@ -196,14 +200,17 @@ export class AuthController {
   }
 
   @Post('me/kyc/upload')
-  async uploadKyc(
-    @Headers('x-customer-id') customerId: string,
-    @Body() body: unknown,
-  ) {
+  async uploadKyc(@Headers('x-customer-id') customerId: string, @Body() body: unknown) {
     const parse = KycDocumentUploadSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid KYC document data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid KYC document data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }

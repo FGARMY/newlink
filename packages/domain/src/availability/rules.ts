@@ -99,7 +99,9 @@ export interface WindowViolation {
 function isWithinHours(at: Date, hours: readonly OpeningHours[], timeZone: string): boolean {
   const weekday = getLocalParts(at, timeZone).weekday;
   const minutes = localMinutesOfDay(at, timeZone);
-  return hours.some((h) => h.dayOfWeek === weekday && minutes >= h.opensAt && minutes <= h.closesAt);
+  return hours.some(
+    (h) => h.dayOfWeek === weekday && minutes >= h.opensAt && minutes <= h.closesAt,
+  );
 }
 
 /**
@@ -160,7 +162,10 @@ export function validateBookingWindow(
 
   const hit = blackouts.find((b) => overlaps(b, rental));
   if (hit) {
-    violations.push({ code: 'BLACKOUT', message: `Unavailable during this period: ${hit.reason}.` });
+    violations.push({
+      code: 'BLACKOUT',
+      message: `Unavailable during this period: ${hit.reason}.`,
+    });
   }
 
   return violations;

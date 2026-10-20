@@ -1,5 +1,3 @@
-import { DomainError } from '../errors.js';
-
 export interface OtpChallenge {
   readonly phone: string;
   readonly codeHash: string;

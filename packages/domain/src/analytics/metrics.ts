@@ -36,9 +36,8 @@ export function calculateFleetOccupancy(input: FleetOccupancyInput): FleetOccupa
   const available = Math.max(0, totalVehicles - rentedVehicles - maintenanceVehicles);
   const inService = totalVehicles - maintenanceVehicles;
 
-  const occupancyRatePercent = inService > 0
-    ? Math.round((rentedVehicles / inService) * 1000) / 10
-    : 0;
+  const occupancyRatePercent =
+    inService > 0 ? Math.round((rentedVehicles / inService) * 1000) / 10 : 0;
 
   const serviceabilityPercent = Math.round((inService / totalVehicles) * 1000) / 10;
 

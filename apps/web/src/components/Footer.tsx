@@ -66,15 +66,22 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-4 text-xs leading-relaxed text-slate-400 max-w-sm">
-              Premium self-drive car rental platform built for seamless journeys across Pune, Nashik,
-              and beyond. Book in under 2 minutes with guaranteed availability and transparent pricing.
+              Premium self-drive car rental platform built for seamless journeys across Pune,
+              Nashik, and beyond. Book in under 2 minutes with guaranteed availability and
+              transparent pricing.
             </p>
             <div className="mt-6 flex flex-col gap-2 text-xs">
-              <a href="tel:+919876543210" className="flex items-center gap-2 hover:text-white transition-colors">
+              <a
+                href="tel:+919876543210"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
                 <Phone className="h-3.5 w-3.5 text-amber-500" />
                 <span>+91 98765 43210 (24x7 Support)</span>
               </a>
-              <a href="mailto:support@newlinkcars.com" className="flex items-center gap-2 hover:text-white transition-colors">
+              <a
+                href="mailto:support@newlinkcars.com"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
                 <Mail className="h-3.5 w-3.5 text-amber-500" />
                 <span>support@newlinkcars.com</span>
               </a>
@@ -85,11 +92,46 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Pune Fleet</h4>
             <ul className="mt-4 space-y-2 text-xs">
-              <li><Link href="/cars?city=pune&category=SUV" className="hover:text-white transition-colors">SUV Rentals in Pune</Link></li>
-              <li><Link href="/cars?city=pune&category=SEDAN" className="hover:text-white transition-colors">Sedans in Pune</Link></li>
-              <li><Link href="/cars?city=pune&category=PREMIUM" className="hover:text-white transition-colors">Luxury & Premium</Link></li>
-              <li><Link href="/cars?city=pune&location=loc-pn-airport" className="hover:text-white transition-colors">Pune Airport Pickups</Link></li>
-              <li><Link href="/cars?city=pune&location=loc-pn-baner" className="hover:text-white transition-colors">Baner High Street</Link></li>
+              <li>
+                <Link
+                  href="/cars?city=pune&category=SUV"
+                  className="hover:text-white transition-colors"
+                >
+                  SUV Rentals in Pune
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=pune&category=SEDAN"
+                  className="hover:text-white transition-colors"
+                >
+                  Sedans in Pune
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=pune&category=PREMIUM"
+                  className="hover:text-white transition-colors"
+                >
+                  Luxury & Premium
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=pune&location=loc-pn-airport"
+                  className="hover:text-white transition-colors"
+                >
+                  Pune Airport Pickups
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=pune&location=loc-pn-baner"
+                  className="hover:text-white transition-colors"
+                >
+                  Baner High Street
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -97,11 +139,43 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Nashik Fleet</h4>
             <ul className="mt-4 space-y-2 text-xs">
-              <li><Link href="/cars?city=nashik&category=SUV" className="hover:text-white transition-colors">SUV Rentals in Nashik</Link></li>
-              <li><Link href="/cars?city=nashik&category=LUXURY" className="hover:text-white transition-colors">Toyota Fortuner Hire</Link></li>
-              <li><Link href="/cars?city=nashik&location=loc-ns-citycentre" className="hover:text-white transition-colors">City Centre Mall</Link></li>
-              <li><Link href="/cars?city=nashik&location=loc-ns-mumbainaka" className="hover:text-white transition-colors">Mumbai Naka Hub</Link></li>
-              <li><Link href="/cars?city=nashik" className="hover:text-white transition-colors">All Nashik Cars</Link></li>
+              <li>
+                <Link
+                  href="/cars?city=nashik&category=SUV"
+                  className="hover:text-white transition-colors"
+                >
+                  SUV Rentals in Nashik
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=nashik&category=LUXURY"
+                  className="hover:text-white transition-colors"
+                >
+                  Toyota Fortuner Hire
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=nashik&location=loc-ns-citycentre"
+                  className="hover:text-white transition-colors"
+                >
+                  City Centre Mall
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cars?city=nashik&location=loc-ns-mumbainaka"
+                  className="hover:text-white transition-colors"
+                >
+                  Mumbai Naka Hub
+                </Link>
+              </li>
+              <li>
+                <Link href="/cars?city=nashik" className="hover:text-white transition-colors">
+                  All Nashik Cars
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -109,18 +183,41 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Policies</h4>
             <ul className="mt-4 space-y-2 text-xs">
-              <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
-              <li><Link href="/faq" className="hover:text-white transition-colors">Frequently Asked Questions</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/cancellation-policy" className="hover:text-white transition-colors">Cancellation & Refunds</Link></li>
+              <li>
+                <Link href="/how-it-works" className="hover:text-white transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-white transition-colors">
+                  Frequently Asked Questions
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/cancellation-policy" className="hover:text-white transition-colors">
+                  Cancellation & Refunds
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom bar */}
         <div className="mt-12 border-t border-slate-900 pt-6 text-center text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} Newlink Mobility Technologies Pvt. Ltd. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Newlink Mobility Technologies Pvt. Ltd. All rights
+            reserved.
+          </p>
         </div>
       </div>
     </footer>

@@ -64,11 +64,11 @@ export function canTransitionBooking(from: BookingStatus, to: BookingStatus): bo
 
 export function assertBookingTransition(from: BookingStatus, to: BookingStatus): void {
   if (!canTransitionBooking(from, to)) {
-    throw new DomainError(
-      'INVALID_STATE_TRANSITION',
-      `Booking cannot move from ${from} to ${to}`,
-      { from, to, allowed: BOOKING_TRANSITIONS[from] },
-    );
+    throw new DomainError('INVALID_STATE_TRANSITION', `Booking cannot move from ${from} to ${to}`, {
+      from,
+      to,
+      allowed: BOOKING_TRANSITIONS[from],
+    });
   }
 }
 

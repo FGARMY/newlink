@@ -24,10 +24,7 @@ export interface PaymentVerificationRequest {
 /**
  * Creates a normalized Payment Gateway order (compatible with Razorpay / Cashfree formats).
  */
-export function createPaymentOrder(
-  bookingReference: string,
-  amountPaise: number,
-): PaymentOrder {
+export function createPaymentOrder(bookingReference: string, amountPaise: number): PaymentOrder {
   if (amountPaise <= 0) {
     throw new DomainError('INVALID_INPUT', 'Payment order amount must be greater than zero');
   }
@@ -51,9 +48,7 @@ export function createPaymentOrder(
  * In production, computes HMAC-SHA256(orderId + "|" + paymentId, keySecret).
  * For demo/sandbox integration, verifies non-empty identifiers and valid status.
  */
-export function verifyPaymentIntegrity(
-  request: PaymentVerificationRequest,
-): boolean {
+export function verifyPaymentIntegrity(request: PaymentVerificationRequest): boolean {
   if (!request.orderId || !request.paymentId) {
     return false;
   }

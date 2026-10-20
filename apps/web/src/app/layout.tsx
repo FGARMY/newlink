@@ -8,11 +8,7 @@ export const metadata: Metadata = {
     'Rent verified cars across Pune and Nashik with zero hidden charges, transparent pricing, and instant booking confirmation.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans bg-[#FAFAF8] text-slate-900">

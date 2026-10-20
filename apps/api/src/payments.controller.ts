@@ -1,19 +1,6 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-  Inject,
-} from '@nestjs/common';
-import {
-  CreatePaymentOrderSchema,
-  VerifyPaymentSchema,
-} from '@newlink/contracts';
-import {
-  createPaymentOrder,
-  verifyPaymentIntegrity,
-} from '@newlink/domain';
+import { Controller, Post, Body, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { CreatePaymentOrderSchema, VerifyPaymentSchema } from '@newlink/contracts';
+import { createPaymentOrder, verifyPaymentIntegrity } from '@newlink/domain';
 import { MemoryBookingRepository } from './repositories/memory.repository.js';
 
 @Controller('api/v1/payments')
@@ -25,7 +12,13 @@ export class PaymentsController {
     const parse = CreatePaymentOrderSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid payment order request', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid payment order request',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -59,7 +52,13 @@ export class PaymentsController {
     const parse = VerifyPaymentSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid payment verification payload', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid payment verification payload',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }

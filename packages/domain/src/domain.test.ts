@@ -2,13 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   assertBookingTransition,
   canTransitionBooking,
-  assertPaymentTransition,
-  canTransitionPayment,
   generateBookingReference,
   isBookingReference,
   makeInterval,
   overlaps,
-  extendEnd,
   calculateQuote,
   type RatePlan,
   type TaxRule,
@@ -102,10 +99,10 @@ describe('Pricing Engine', () => {
     scope: 'MODEL',
     scopeId: 'm-creta',
     cityId: 'c-pune',
-    hourlyRate: 15000,        // ₹150 / hr
+    hourlyRate: 15000, // ₹150 / hr
     weekdayDailyRate: 200000, // ₹2,000 / day
     weekendDailyRate: 250000, // ₹2,500 / day
-    securityDeposit: 500000,  // ₹5,000
+    securityDeposit: 500000, // ₹5,000
     minHours: 8,
   };
 
@@ -299,7 +296,7 @@ describe('Digital Handover & Security Deposit Settlement', () => {
     const returnInspection = {
       returnOdometerKm: 14650,
       returnFuelLevelPercent: 80, // 20% shortage -> 20 * 2500 = 50,000 paise (₹500)
-      fastagTollPaise: 35000,     // ₹350 in tolls
+      fastagTollPaise: 35000, // ₹350 in tolls
       damageDeductionPaise: 50000, // ₹500 cleaning/scratch charge
       returnedAt: new Date('2026-10-11T18:00:00Z'),
     };

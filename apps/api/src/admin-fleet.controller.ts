@@ -37,7 +37,13 @@ export class AdminFleetController {
     const parse = CreateCitySchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid city data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid city data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -50,7 +56,13 @@ export class AdminFleetController {
     const parse = UpdateCitySchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid city updates', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid city updates',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -69,7 +81,13 @@ export class AdminFleetController {
     const parse = CreateLocationSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid location data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid location data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -82,7 +100,13 @@ export class AdminFleetController {
     const parse = UpdateLocationSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid location updates', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid location updates',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -95,10 +119,7 @@ export class AdminFleetController {
   /* ---------------------------------------------------------------------------------------- */
 
   @Get('vehicles')
-  async getAllVehicles(
-    @Query('cityId') cityId?: string,
-    @Query('locationId') locationId?: string,
-  ) {
+  async getAllVehicles(@Query('cityId') cityId?: string, @Query('locationId') locationId?: string) {
     const vehicles = await this.fleetRepo.getAdminVehicles(cityId, locationId);
     return { data: vehicles };
   }
@@ -120,7 +141,13 @@ export class AdminFleetController {
     const parse = CreateVehicleSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid vehicle data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid vehicle data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -133,7 +160,13 @@ export class AdminFleetController {
     const parse = UpdateVehicleSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid vehicle updates', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid vehicle updates',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -146,11 +179,21 @@ export class AdminFleetController {
     const parse = UpdateVehicleStatusSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid status data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid status data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
-    const updated = await this.fleetRepo.updateVehicleStatus(id, parse.data.operationalStatus, parse.data.reason);
+    const updated = await this.fleetRepo.updateVehicleStatus(
+      id,
+      parse.data.operationalStatus,
+      parse.data.reason,
+    );
     return { data: updated };
   }
 
@@ -159,7 +202,13 @@ export class AdminFleetController {
     const parse = AddVehicleDocumentSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
-        { error: { code: 'VALIDATION_FAILED', message: 'Invalid document data', details: parse.error.issues } },
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid document data',
+            details: parse.error.issues,
+          },
+        },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -167,4 +216,3 @@ export class AdminFleetController {
     return { data: created };
   }
 }
-

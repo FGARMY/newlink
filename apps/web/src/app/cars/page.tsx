@@ -62,7 +62,12 @@ const ALL_CARS: VehicleCardType[] = [
     dailyRatePaise: 280000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-carens.jpg',
-    features: ['7-Seater Comfort', 'Rear AC Vents', 'Touchscreen Infotainment', 'High Fuel Mileage'],
+    features: [
+      '7-Seater Comfort',
+      'Rear AC Vents',
+      'Touchscreen Infotainment',
+      'High Fuel Mileage',
+    ],
     isAvailable: true,
   },
   {
@@ -108,7 +113,12 @@ const ALL_CARS: VehicleCardType[] = [
     dailyRatePaise: 160000,
     securityDepositPaise: 300000,
     primaryImageUrl: '/images/car-dzire.jpg',
-    features: ['High Mileage (22 km/l)', 'Compact City Parking', 'Push Button Start', 'Apple CarPlay'],
+    features: [
+      'High Mileage (22 km/l)',
+      'Compact City Parking',
+      'Push Button Start',
+      'Apple CarPlay',
+    ],
     isAvailable: true,
   },
   {
@@ -131,7 +141,12 @@ const ALL_CARS: VehicleCardType[] = [
     dailyRatePaise: 350000,
     securityDepositPaise: 600000,
     primaryImageUrl: '/images/car-innova.jpg',
-    features: ['Legendary Highway Reliability', 'Captain Seats', 'Spacious Boot Space', 'Cruise Control'],
+    features: [
+      'Legendary Highway Reliability',
+      'Captain Seats',
+      'Spacious Boot Space',
+      'Cruise Control',
+    ],
     isAvailable: true,
   },
   {
@@ -177,7 +192,12 @@ const ALL_CARS: VehicleCardType[] = [
     dailyRatePaise: 580000,
     securityDepositPaise: 1000000,
     primaryImageUrl: '/images/car-fortuner.jpg',
-    features: ['4x4 Tough Terrain Ability', 'Commanding Road Presence', 'JBL Premium Sound', 'Ventilated Seats'],
+    features: [
+      '4x4 Tough Terrain Ability',
+      'Commanding Road Presence',
+      'JBL Premium Sound',
+      'Ventilated Seats',
+    ],
     isAvailable: true,
   },
 ];
@@ -204,7 +224,8 @@ function CarsSearchContent() {
   const filteredCars = useMemo(() => {
     return ALL_CARS.filter((car) => {
       // City Match
-      const matchesCity = city === 'nashik' ? car.cityId === 'city-nashik' : car.cityId === 'city-pune';
+      const matchesCity =
+        city === 'nashik' ? car.cityId === 'city-nashik' : car.cityId === 'city-pune';
       if (!matchesCity) return false;
 
       // Location Match (if specified)
@@ -237,7 +258,16 @@ function CarsSearchContent() {
       if (sortBy === 'RATING') return b.ratingAvg - a.ratingAvg;
       return b.ratingCount - a.ratingCount; // RECOMMENDED
     });
-  }, [city, location, selectedCategory, selectedTransmission, selectedFuel, selectedSeats, maxPrice, sortBy]);
+  }, [
+    city,
+    location,
+    selectedCategory,
+    selectedTransmission,
+    selectedFuel,
+    selectedSeats,
+    maxPrice,
+    sortBy,
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF8] text-slate-900 font-sans">
@@ -343,7 +373,10 @@ function CarsSearchContent() {
                   { id: 'PREMIUM', label: 'Premium' },
                   { id: 'LUXURY', label: 'Luxury 4x4' },
                 ].map((item) => (
-                  <label key={item.id} className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer hover:text-slate-900">
+                  <label
+                    key={item.id}
+                    className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer hover:text-slate-900"
+                  >
                     <input
                       type="radio"
                       name="category"
@@ -462,11 +495,7 @@ function CarsSearchContent() {
           {filteredCars.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
               {filteredCars.map((car) => (
-                <VehicleCard
-                  key={car.id}
-                  vehicle={car}
-                  searchParams={searchParams.toString()}
-                />
+                <VehicleCard key={car.id} vehicle={car} searchParams={searchParams.toString()} />
               ))}
             </div>
           ) : (
@@ -502,7 +531,9 @@ function CarsSearchContent() {
 
 export default function CarsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm font-semibold">Loading fleet...</div>}>
+    <Suspense
+      fallback={<div className="p-8 text-center text-sm font-semibold">Loading fleet...</div>}
+    >
       <CarsSearchContent />
     </Suspense>
   );

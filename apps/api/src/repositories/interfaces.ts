@@ -14,8 +14,6 @@ import type {
   ValidateCouponRequest,
   CouponValidationResult,
   VehicleReviewsSummary,
-  ReviewContract,
-  DisputeRecord,
 } from '@newlink/contracts';
 import type {
   RatePlan,
@@ -114,7 +112,11 @@ export interface IFleetRepository {
   getAdminVehicleById(id: string): Promise<AdminVehicle | null>;
   createVehicle(vehicle: CreateVehicle): Promise<AdminVehicle>;
   updateVehicle(id: string, updates: UpdateVehicle): Promise<AdminVehicle>;
-  updateVehicleStatus(id: string, status: VehicleOperationalStatus, reason?: string): Promise<AdminVehicle>;
+  updateVehicleStatus(
+    id: string,
+    status: VehicleOperationalStatus,
+    reason?: string,
+  ): Promise<AdminVehicle>;
   addVehicleDocument(vehicleId: string, doc: AddVehicleDocument): Promise<VehicleDocument>;
   getRatePlan(vehicleId: string): Promise<RatePlan | null>;
   getTaxRule(): Promise<TaxRule>;
@@ -128,7 +130,9 @@ export interface IFleetRepository {
   getVehicleReviews(vehicleId: string): Promise<VehicleReviewsSummary>;
   addVehicleReview(review: Omit<CustomerReview, 'id' | 'createdAt'>): Promise<CustomerReview>;
   getDisputes(): Promise<DepositDispute[]>;
-  createDispute(dispute: Omit<DepositDispute, 'id' | 'createdAt' | 'status'>): Promise<DepositDispute>;
+  createDispute(
+    dispute: Omit<DepositDispute, 'id' | 'createdAt' | 'status'>,
+  ): Promise<DepositDispute>;
   resolveDispute(
     id: string,
     action: 'APPROVE' | 'REJECT',
@@ -158,7 +162,11 @@ export interface IBookingRepository {
   getBookingById(id: string): Promise<BookingRecord | null>;
   getAllBookings(): Promise<BookingRecord[]>;
   updateBookingStatus(id: string, status: BookingStatus): Promise<BookingRecord>;
-  confirmBookingPayment(reference: string, paymentId: string, orderId: string): Promise<BookingRecord>;
+  confirmBookingPayment(
+    reference: string,
+    paymentId: string,
+    orderId: string,
+  ): Promise<BookingRecord>;
   startTripHandover(reference: string, handover: HandoverChecklist): Promise<BookingRecord>;
   completeTripReturn(
     reference: string,

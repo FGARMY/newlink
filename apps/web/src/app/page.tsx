@@ -90,7 +90,12 @@ const FEATURED_VEHICLES: VehicleCardType[] = [
     dailyRatePaise: 280000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-carens.jpg',
-    features: ['7-Seater Comfort', 'Rear AC Vents', 'Touchscreen Infotainment', 'High Fuel Mileage'],
+    features: [
+      '7-Seater Comfort',
+      'Rear AC Vents',
+      'Touchscreen Infotainment',
+      'High Fuel Mileage',
+    ],
     isAvailable: true,
   },
   {
@@ -177,14 +182,18 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const filteredVehicles = FEATURED_VEHICLES.filter((v) => {
-    const matchesCity = selectedCity === 'pune' ? v.cityId === 'city-pune' : v.cityId === 'city-nashik';
+    const matchesCity =
+      selectedCity === 'pune' ? v.cityId === 'city-pune' : v.cityId === 'city-nashik';
     const matchesCategory = selectedCategory === 'all' || v.category === selectedCategory;
     return matchesCity && matchesCategory;
   });
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF8] text-slate-900 font-sans selection:bg-amber-100 selection:text-amber-900">
-      <Navbar selectedCity={selectedCity} onCityChange={(c) => setSelectedCity(c as 'pune' | 'nashik')} />
+      <Navbar
+        selectedCity={selectedCity}
+        onCityChange={(c) => setSelectedCity(c as 'pune' | 'nashik')}
+      />
 
       {/* ===== HERO SECTION ===== */}
       <section className="relative overflow-hidden bg-slate-950 py-16 sm:py-24 lg:py-28 text-white">
@@ -287,7 +296,9 @@ export default function HomePage() {
         ) : (
           <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
             <Car className="mx-auto h-12 w-12 text-slate-400" />
-            <h3 className="mt-3 text-base font-bold text-slate-900">No cars found in this category</h3>
+            <h3 className="mt-3 text-base font-bold text-slate-900">
+              No cars found in this category
+            </h3>
             <p className="mt-1 text-xs text-slate-500">
               Try switching category or check our full fleet in Pune & Nashik.
             </p>
@@ -363,7 +374,8 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 text-sm font-bold text-slate-900">Drive with Freedom</h3>
               <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
-                Collect keys at the hub with our checklist or get it delivered right to your doorstep.
+                Collect keys at the hub with our checklist or get it delivered right to your
+                doorstep.
               </p>
             </div>
           </div>
@@ -381,8 +393,8 @@ export default function HomePage() {
               Built for people who love the drive.
             </h2>
             <p className="mt-4 text-sm text-slate-600 leading-relaxed">
-              We started in Pune and Nashik with a clear mission: eliminate the uncertainty, surprise
-              penalties, and worn-out vehicles common in traditional car rentals.
+              We started in Pune and Nashik with a clear mission: eliminate the uncertainty,
+              surprise penalties, and worn-out vehicles common in traditional car rentals.
             </p>
 
             <div className="mt-8 space-y-4">
@@ -403,9 +415,12 @@ export default function HomePage() {
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Server-Side Double-Booking Shield</h4>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Server-Side Double-Booking Shield
+                  </h4>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Our atomic reservation engine ensures your chosen car is exclusively locked for you.
+                    Our atomic reservation engine ensures your chosen car is exclusively locked for
+                    you.
                   </p>
                 </div>
               </div>
@@ -415,7 +430,9 @@ export default function HomePage() {
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Swift Security Deposit Refund</h4>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Swift Security Deposit Refund
+                  </h4>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Automated bank refunds initiated within 48 hours of vehicle return inspection.
                   </p>
@@ -433,9 +450,13 @@ export default function HomePage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-6">
               <div className="text-white">
-                <div className="text-xs font-semibold text-amber-400">Road Trips From Pune & Nashik</div>
+                <div className="text-xs font-semibold text-amber-400">
+                  Road Trips From Pune & Nashik
+                </div>
                 <div className="text-lg font-bold">Lonavala, Mahabaleshwar, Trimbakeshwar, Goa</div>
-                <div className="text-xs text-slate-300 mt-1">Unlimited memories, zero odometer anxiety.</div>
+                <div className="text-xs text-slate-300 mt-1">
+                  Unlimited memories, zero odometer anxiety.
+                </div>
               </div>
             </div>
           </div>
@@ -446,7 +467,9 @@ export default function HomePage() {
       <section className="bg-slate-100 py-16 sm:py-20 border-t border-slate-200/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-700">Convenient Hubs</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
+              Convenient Hubs
+            </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
               Popular Pickup Locations
             </h2>
@@ -465,7 +488,9 @@ export default function HomePage() {
               <p className="text-xs text-slate-500 mt-1">
                 Parking Bay 4. Ideal for inbound flights and immediate city exit.
               </p>
-              <div className="mt-3 text-[11px] font-semibold text-emerald-800">Operating: 24 Hours</div>
+              <div className="mt-3 text-[11px] font-semibold text-emerald-800">
+                Operating: 24 Hours
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
@@ -477,7 +502,9 @@ export default function HomePage() {
               <p className="text-xs text-slate-500 mt-1">
                 Near expressway bypass for quick escapes to Mumbai or Goa.
               </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-700">Operating: 6 AM - 11 PM</div>
+              <div className="mt-3 text-[11px] font-semibold text-slate-700">
+                Operating: 6 AM - 11 PM
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
@@ -489,7 +516,9 @@ export default function HomePage() {
               <p className="text-xs text-slate-500 mt-1">
                 Central access point for vineyards and city business trips.
               </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-700">Operating: 7 AM - 10 PM</div>
+              <div className="mt-3 text-[11px] font-semibold text-slate-700">
+                Operating: 7 AM - 10 PM
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
@@ -501,7 +530,9 @@ export default function HomePage() {
               <p className="text-xs text-slate-500 mt-1">
                 Direct highway junction for Shirdi, Igatpuri, and Mumbai transit.
               </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-700">Operating: 6 AM - 11 PM</div>
+              <div className="mt-3 text-[11px] font-semibold text-slate-700">
+                Operating: 6 AM - 11 PM
+              </div>
             </div>
           </div>
         </div>

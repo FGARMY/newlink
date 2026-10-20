@@ -181,7 +181,8 @@ export default function AdminAnalyticsPage() {
               Platform Analytics
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Cross-hub operational performance, revenue yield (RevPAC), occupancy rates, and real-time fleet activity.
+              Cross-hub operational performance, revenue yield (RevPAC), occupancy rates, and
+              real-time fleet activity.
             </p>
           </div>
 
@@ -330,7 +331,9 @@ export default function AdminAnalyticsPage() {
                     <div>
                       <h3 className="text-lg font-bold text-white">{city.cityName} Hub</h3>
                       <p className="text-xs text-slate-400">
-                        {city.cityName === 'Pune' ? 'Airport & Baner Fleet' : 'Mumbai Naka & City Hub'}
+                        {city.cityName === 'Pune'
+                          ? 'Airport & Baner Fleet'
+                          : 'Mumbai Naka & City Hub'}
                       </p>
                     </div>
                   </div>
@@ -370,9 +373,7 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">
-                    Fleet Utilization Bar
-                  </span>
+                  <span className="text-slate-400">Fleet Utilization Bar</span>
                   <div className="w-1/2 bg-slate-700/60 h-2 rounded-full overflow-hidden">
                     <div
                       className="bg-amber-400 h-full rounded-full"
@@ -433,18 +434,10 @@ export default function AdminAnalyticsPage() {
               <tbody className="divide-y divide-slate-800/60">
                 {filteredBookings.map((b) => (
                   <tr key={b.reference} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="py-4 px-4 font-mono font-bold text-amber-400">
-                      {b.reference}
-                    </td>
-                    <td className="py-4 px-4 font-medium text-white">
-                      {b.customerName}
-                    </td>
-                    <td className="py-4 px-4 text-slate-300">
-                      {b.vehicleModel}
-                    </td>
-                    <td className="py-4 px-4 text-slate-400">
-                      {b.cityName}
-                    </td>
+                    <td className="py-4 px-4 font-mono font-bold text-amber-400">{b.reference}</td>
+                    <td className="py-4 px-4 font-medium text-white">{b.customerName}</td>
+                    <td className="py-4 px-4 text-slate-300">{b.vehicleModel}</td>
+                    <td className="py-4 px-4 text-slate-400">{b.cityName}</td>
                     <td className="py-4 px-4">
                       {b.status === 'ACTIVE' && (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
@@ -466,9 +459,7 @@ export default function AdminAnalyticsPage() {
                     <td className="py-4 px-4 text-right font-bold text-white">
                       ₹{(b.amountPaise / 100).toLocaleString('en-IN')}
                     </td>
-                    <td className="py-4 px-4 text-right text-xs text-slate-400">
-                      {b.createdAt}
-                    </td>
+                    <td className="py-4 px-4 text-right text-xs text-slate-400">{b.createdAt}</td>
                   </tr>
                 ))}
               </tbody>
@@ -491,7 +482,8 @@ export default function AdminAnalyticsPage() {
                 Dynamic Pricing & Promotions Center
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Configure weekend surge multipliers, festive calendar overrides, and discount coupons.
+                Configure weekend surge multipliers, festive calendar overrides, and discount
+                coupons.
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
@@ -510,7 +502,8 @@ export default function AdminAnalyticsPage() {
                 Vehicle Roster & Compliance Vault
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Maintain vehicle odometers, commercial RC/Insurance/PUC verification, and maintenance locks.
+                Maintain vehicle odometers, commercial RC/Insurance/PUC verification, and
+                maintenance locks.
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />

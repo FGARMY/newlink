@@ -52,7 +52,14 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 240000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-creta.jpg',
-    features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Bose Sound', 'Air Purifier'],
+    features: [
+      'Ventilated Seats',
+      'Panoramic Sunroof',
+      'Cruise Control',
+      'Wireless CarPlay',
+      'Bose Sound',
+      'Air Purifier',
+    ],
     isAvailable: true,
   },
   'veh-xuv700-pn': {
@@ -75,7 +82,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 380000,
     securityDepositPaise: 700000,
     primaryImageUrl: '/images/car-xuv700.jpg',
-    features: ['ADAS Level 2', 'Sony 12-Speaker Audio', 'Panoramic Skyroof', 'AWD Drive Modes', 'Memory Seats'],
+    features: [
+      'ADAS Level 2',
+      'Sony 12-Speaker Audio',
+      'Panoramic Skyroof',
+      'AWD Drive Modes',
+      'Memory Seats',
+    ],
     isAvailable: true,
   },
   'veh-carens-pn': {
@@ -98,7 +111,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 280000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-carens.jpg',
-    features: ['7-Seater Comfort', 'Rear AC Vents', 'Touchscreen Infotainment', 'High Fuel Mileage', 'Type-C Fast Charging'],
+    features: [
+      '7-Seater Comfort',
+      'Rear AC Vents',
+      'Touchscreen Infotainment',
+      'High Fuel Mileage',
+      'Type-C Fast Charging',
+    ],
     isAvailable: true,
   },
   'veh-innova-pn': {
@@ -121,7 +140,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 350000,
     securityDepositPaise: 600000,
     primaryImageUrl: '/images/car-innova.jpg',
-    features: ['Captain Seats', 'Spacious Boot Space', 'Cruise Control', 'Legendary Reliability', 'Rear Climate Control'],
+    features: [
+      'Captain Seats',
+      'Spacious Boot Space',
+      'Cruise Control',
+      'Legendary Reliability',
+      'Rear Climate Control',
+    ],
     isAvailable: true,
   },
   'veh-dzire-pn': {
@@ -144,7 +169,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 160000,
     securityDepositPaise: 300000,
     primaryImageUrl: '/images/car-dzire.jpg',
-    features: ['22 km/l Mileage', 'Apple CarPlay', 'Push Button Start', 'Keyless Entry', 'Rear Parking Camera'],
+    features: [
+      '22 km/l Mileage',
+      'Apple CarPlay',
+      'Push Button Start',
+      'Keyless Entry',
+      'Rear Parking Camera',
+    ],
     isAvailable: true,
   },
   'veh-creta-ns': {
@@ -167,7 +198,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 240000,
     securityDepositPaise: 500000,
     primaryImageUrl: '/images/car-creta.jpg',
-    features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Bose Sound'],
+    features: [
+      'Ventilated Seats',
+      'Panoramic Sunroof',
+      'Cruise Control',
+      'Wireless CarPlay',
+      'Bose Sound',
+    ],
     isAvailable: true,
   },
   'veh-fortuner-ns': {
@@ -190,7 +227,13 @@ const ALL_CARS: Record<string, VehicleCardType> = {
     dailyRatePaise: 580000,
     securityDepositPaise: 1000000,
     primaryImageUrl: '/images/car-fortuner.jpg',
-    features: ['4x4 Tough Terrain Ability', 'Commanding Road Presence', 'JBL Sound', 'Ventilated Seats', 'Diff Locks'],
+    features: [
+      '4x4 Tough Terrain Ability',
+      'Commanding Road Presence',
+      'JBL Sound',
+      'Ventilated Seats',
+      'Diff Locks',
+    ],
     isAvailable: true,
   },
 };
@@ -355,7 +398,9 @@ export default function VehicleDetailsPage() {
           <span>/</span>
           <span className="capitalize">{vehicle.cityName}</span>
           <span>/</span>
-          <span className="text-slate-900 font-bold">{vehicle.brand} {vehicle.model}</span>
+          <span className="text-slate-900 font-bold">
+            {vehicle.brand} {vehicle.model}
+          </span>
         </div>
       </div>
 
@@ -401,8 +446,12 @@ export default function VehicleDetailsPage() {
                 <div className="flex items-center gap-2.5 rounded-xl bg-slate-50 p-3 border border-slate-100">
                   <Gauge className="h-4 w-4 text-amber-600" />
                   <div>
-                    <div className="text-[10px] uppercase text-slate-400 font-bold">Transmission</div>
-                    <div className="text-xs font-bold text-slate-800 capitalize">{vehicle.transmission.toLowerCase()}</div>
+                    <div className="text-[10px] uppercase text-slate-400 font-bold">
+                      Transmission
+                    </div>
+                    <div className="text-xs font-bold text-slate-800 capitalize">
+                      {vehicle.transmission.toLowerCase()}
+                    </div>
                   </div>
                 </div>
 
@@ -410,7 +459,9 @@ export default function VehicleDetailsPage() {
                   <Fuel className="h-4 w-4 text-amber-600" />
                   <div>
                     <div className="text-[10px] uppercase text-slate-400 font-bold">Fuel Type</div>
-                    <div className="text-xs font-bold text-slate-800 capitalize">{vehicle.fuel.toLowerCase()}</div>
+                    <div className="text-xs font-bold text-slate-800 capitalize">
+                      {vehicle.fuel.toLowerCase()}
+                    </div>
                   </div>
                 </div>
 
@@ -439,7 +490,10 @@ export default function VehicleDetailsPage() {
               </h3>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {vehicle.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-xs font-medium text-slate-700">
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 text-xs font-medium text-slate-700"
+                  >
                     <Check className="h-4 w-4 text-emerald-600 shrink-0" />
                     <span>{feature}</span>
                   </div>
@@ -456,7 +510,8 @@ export default function VehicleDetailsPage() {
               <div className="mt-3">
                 <div className="text-base font-bold text-slate-900">{vehicle.locationName}</div>
                 <div className="text-xs text-slate-500 mt-1">
-                  Designated Newlink parking zone. Our ground staff will conduct a quick 3-minute photo & odometer handover.
+                  Designated Newlink parking zone. Our ground staff will conduct a quick 3-minute
+                  photo & odometer handover.
                 </div>
               </div>
             </div>
@@ -488,7 +543,9 @@ export default function VehicleDetailsPage() {
                       <Star key={s} className="h-4 w-4 text-amber-500 fill-amber-500" />
                     ))}
                   </div>
-                  <span className="text-[11px] text-slate-500 mt-1">Based on 128 completed trips</span>
+                  <span className="text-[11px] text-slate-500 mt-1">
+                    Based on 128 completed trips
+                  </span>
                 </div>
 
                 <div className="sm:col-span-8 space-y-2 text-xs">
@@ -530,7 +587,9 @@ export default function VehicleDetailsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-900">Aditya Kulkarni</span>
-                      <span className="text-[10px] text-slate-400 ml-2">Pune Airport Pickup • Oct 2026</span>
+                      <span className="text-[10px] text-slate-400 ml-2">
+                        Pune Airport Pickup • Oct 2026
+                      </span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       {[1, 2, 3, 4, 5].map((s) => (
@@ -539,7 +598,8 @@ export default function VehicleDetailsPage() {
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    "Immaculate condition! Picked up from Pune Airport in 2 minutes using the digital passcode. Panoramic sunroof was a hit on our Lavasa weekend drive."
+                    "Immaculate condition! Picked up from Pune Airport in 2 minutes using the
+                    digital passcode. Panoramic sunroof was a hit on our Lavasa weekend drive."
                   </p>
                 </div>
 
@@ -547,7 +607,9 @@ export default function VehicleDetailsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-900">Sneha Kadam</span>
-                      <span className="text-[10px] text-slate-400 ml-2">Mumbai Renter • Sep 2026</span>
+                      <span className="text-[10px] text-slate-400 ml-2">
+                        Mumbai Renter • Sep 2026
+                      </span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       {[1, 2, 3, 4, 5].map((s) => (
@@ -556,7 +618,8 @@ export default function VehicleDetailsPage() {
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    "Super smooth automatic transmission. Full tank handed over, Fastag worked effortlessly on the Mumbai-Pune Expressway."
+                    "Super smooth automatic transmission. Full tank handed over, Fastag worked
+                    effortlessly on the Mumbai-Pune Expressway."
                   </p>
                 </div>
 
@@ -564,7 +627,9 @@ export default function VehicleDetailsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-900">Rohan Deshpande</span>
-                      <span className="text-[10px] text-slate-400 ml-2">Pune Baner Hub • Sep 2026</span>
+                      <span className="text-[10px] text-slate-400 ml-2">
+                        Pune Baner Hub • Sep 2026
+                      </span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       {[1, 2, 3, 4].map((s) => (
@@ -574,7 +639,8 @@ export default function VehicleDetailsPage() {
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    "Very well maintained Creta Turbo. Great driving dynamics and instant security deposit settlement upon return."
+                    "Very well maintained Creta Turbo. Great driving dynamics and instant security
+                    deposit settlement upon return."
                   </p>
                 </div>
               </div>
@@ -586,7 +652,9 @@ export default function VehicleDetailsPage() {
             <div className="sticky top-24 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xl">
               <div className="flex items-baseline justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">Rental Rate</span>
+                  <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+                    Rental Rate
+                  </span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-extrabold text-slate-900">
                       ₹{dailyRateRupees.toLocaleString('en-IN')}
@@ -661,7 +729,9 @@ export default function VehicleDetailsPage() {
                       <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
                       Promo <strong>{couponCode}</strong> applied!
                     </span>
-                    <span className="font-bold text-emerald-700">-₹{appliedDiscountAmount.toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-emerald-700">
+                      -₹{appliedDiscountAmount.toLocaleString('en-IN')}
+                    </span>
                   </div>
                 )}
 
@@ -696,8 +766,12 @@ export default function VehicleDetailsPage() {
               {/* Transparent Pricing Breakdown (PRD §21) */}
               <div className="mt-5 space-y-2.5 rounded-2xl bg-slate-50 p-4 border border-slate-100 text-xs text-slate-700">
                 <div className="flex justify-between">
-                  <span>Base Rental ({days} days @ ₹{dailyRateRupees.toLocaleString('en-IN')})</span>
-                  <span className="font-semibold text-slate-900">₹{baseRental.toLocaleString('en-IN')}</span>
+                  <span>
+                    Base Rental ({days} days @ ₹{dailyRateRupees.toLocaleString('en-IN')})
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    ₹{baseRental.toLocaleString('en-IN')}
+                  </span>
                 </div>
 
                 {appliedDiscountAmount > 0 && (
@@ -709,7 +783,9 @@ export default function VehicleDetailsPage() {
 
                 <div className="flex justify-between">
                   <span>Taxes (GST 18%)</span>
-                  <span className="font-semibold text-slate-900">₹{gst.toLocaleString('en-IN')}</span>
+                  <span className="font-semibold text-slate-900">
+                    ₹{gst.toLocaleString('en-IN')}
+                  </span>
                 </div>
 
                 <div className="flex justify-between border-t border-slate-200/80 pt-2 text-slate-900 font-bold">
@@ -722,14 +798,18 @@ export default function VehicleDetailsPage() {
                     <Shield className="h-3 w-3 text-emerald-700" />
                     Refundable Security Deposit
                   </span>
-                  <span className="font-semibold text-slate-900">₹{deposit.toLocaleString('en-IN')}</span>
+                  <span className="font-semibold text-slate-900">
+                    ₹{deposit.toLocaleString('en-IN')}
+                  </span>
                 </div>
               </div>
 
               {/* Total Payable */}
               <div className="mt-5 flex items-baseline justify-between">
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Payable Now</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Total Payable Now
+                  </div>
                   <div className="text-2xl font-extrabold text-slate-900">
                     ₹{totalPayable.toLocaleString('en-IN')}
                   </div>
@@ -771,9 +851,7 @@ export default function VehicleDetailsPage() {
                   <Sparkles className="h-3 w-3" />
                   Payment Verified • Booking Confirmed
                 </div>
-                <h3 className="mt-2 text-2xl font-black text-slate-900">
-                  You're Ready to Roll!
-                </h3>
+                <h3 className="mt-2 text-2xl font-black text-slate-900">You're Ready to Roll!</h3>
 
                 <div className="mt-4 rounded-2xl bg-slate-50 p-4 border border-slate-200 text-left space-y-3">
                   <div className="flex items-center justify-between">
@@ -795,17 +873,22 @@ export default function VehicleDetailsPage() {
 
                   <div className="flex items-center justify-between border-t border-slate-200/80 pt-2.5 text-xs">
                     <span className="text-slate-500">Pick-up Location</span>
-                    <span className="font-bold text-slate-800">{vehicle.cityName} ({vehicle.locationName})</span>
+                    <span className="font-bold text-slate-800">
+                      {vehicle.cityName} ({vehicle.locationName})
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between border-t border-slate-200/80 pt-2.5 text-xs">
                     <span className="text-slate-500">Amount Paid (Incl. Deposit)</span>
-                    <span className="font-bold text-emerald-700">₹{totalPayable.toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-emerald-700">
+                      ₹{totalPayable.toLocaleString('en-IN')}
+                    </span>
                   </div>
                 </div>
 
                 <p className="mt-4 text-xs text-slate-500 leading-relaxed">
-                  Show your 4-digit pickup passcode to the Newlink fleet executive at Parking Bay. Your vehicle will be unlocked after digital handover inspection.
+                  Show your 4-digit pickup passcode to the Newlink fleet executive at Parking Bay.
+                  Your vehicle will be unlocked after digital handover inspection.
                 </p>
 
                 <div className="mt-6 flex flex-col gap-2.5">
@@ -841,7 +924,9 @@ export default function VehicleDetailsPage() {
                       <ShieldCheck className="h-3.5 w-3.5" />
                       256-Bit SSL Secured Checkout
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 mt-0.5">Select Payment Method</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mt-0.5">
+                      Select Payment Method
+                    </h3>
                   </div>
                   <button
                     onClick={() => setBookingModalOpen(false)}
@@ -854,12 +939,18 @@ export default function VehicleDetailsPage() {
                 {/* Amount Ribbon */}
                 <div className="mt-4 rounded-2xl bg-slate-900 p-4 text-white flex items-center justify-between shadow-xs">
                   <div>
-                    <span className="text-[11px] text-slate-400 uppercase font-semibold block">Total Amount Payable</span>
-                    <span className="text-xl font-extrabold text-white">₹{totalPayable.toLocaleString('en-IN')}</span>
+                    <span className="text-[11px] text-slate-400 uppercase font-semibold block">
+                      Total Amount Payable
+                    </span>
+                    <span className="text-xl font-extrabold text-white">
+                      ₹{totalPayable.toLocaleString('en-IN')}
+                    </span>
                   </div>
                   <div className="text-right text-[11px] text-slate-300">
                     <span>Deposit: ₹{deposit.toLocaleString('en-IN')} (Refundable)</span>
-                    <span className="block text-emerald-400 font-semibold">100% Secure Gateway</span>
+                    <span className="block text-emerald-400 font-semibold">
+                      100% Secure Gateway
+                    </span>
                   </div>
                 </div>
 
@@ -911,7 +1002,9 @@ export default function VehicleDetailsPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
                         <span>Pay via UPI App or VPA ID</span>
-                        <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">Zero Fee</span>
+                        <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
+                          Zero Fee
+                        </span>
                       </div>
                       <div>
                         <input
@@ -932,7 +1025,9 @@ export default function VehicleDetailsPage() {
                   {paymentMethod === 'CARD' && (
                     <div className="space-y-3 text-xs">
                       <div>
-                        <label className="text-slate-600 font-semibold block mb-1">Card Number</label>
+                        <label className="text-slate-600 font-semibold block mb-1">
+                          Card Number
+                        </label>
                         <input
                           type="text"
                           defaultValue="4532 8821 9901 8812"
@@ -941,7 +1036,9 @@ export default function VehicleDetailsPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-slate-600 font-semibold block mb-1">Valid Thru</label>
+                          <label className="text-slate-600 font-semibold block mb-1">
+                            Valid Thru
+                          </label>
                           <input
                             type="text"
                             defaultValue="08/29"
@@ -964,10 +1061,18 @@ export default function VehicleDetailsPage() {
                     <div className="space-y-2 text-xs">
                       <span className="text-slate-600 font-semibold block">Select Your Bank</span>
                       <div className="grid grid-cols-2 gap-2 font-semibold text-slate-800">
-                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">HDFC Bank</div>
-                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">ICICI Bank</div>
-                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">SBI</div>
-                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">Axis Bank</div>
+                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">
+                          HDFC Bank
+                        </div>
+                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">
+                          ICICI Bank
+                        </div>
+                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">
+                          SBI
+                        </div>
+                        <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center hover:border-amber-600 cursor-pointer">
+                          Axis Bank
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1010,7 +1115,9 @@ export default function VehicleDetailsPage() {
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">Complete Your Reservation</h3>
-                    <p className="text-xs text-slate-500">10-Minute Lock for {vehicle.brand} {vehicle.model}</p>
+                    <p className="text-xs text-slate-500">
+                      10-Minute Lock for {vehicle.brand} {vehicle.model}
+                    </p>
                   </div>
                   <button
                     onClick={() => setBookingModalOpen(false)}
@@ -1022,7 +1129,9 @@ export default function VehicleDetailsPage() {
 
                 <form onSubmit={handleProceedToPayment} className="mt-5 space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-700">Full Name (as per Driving License)</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Full Name (as per Driving License)
+                    </label>
                     <input
                       type="text"
                       required
@@ -1034,7 +1143,9 @@ export default function VehicleDetailsPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-700">Mobile Number (for OTP & Trip Updates)</label>
+                    <label className="text-xs font-bold text-slate-700">
+                      Mobile Number (for OTP & Trip Updates)
+                    </label>
                     <input
                       type="tel"
                       required
@@ -1048,7 +1159,8 @@ export default function VehicleDetailsPage() {
                   <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80 flex items-start gap-2">
                     <FileCheck className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
                     <span>
-                      Driving License photo will be verified before vehicle handover at {vehicle.locationName}.
+                      Driving License photo will be verified before vehicle handover at{' '}
+                      {vehicle.locationName}.
                     </span>
                   </div>
 

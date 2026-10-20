@@ -93,7 +93,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       lat: 18.5793,
       lng: 73.9089,
       contactPhone: '+91 98765 43210',
-      pickupInstructions: 'Our representative meets you at Parking Bay 4 with the keys and checklist.',
+      pickupInstructions:
+        'Our representative meets you at Parking Bay 4 with the keys and checklist.',
       status: 'ACTIVE',
       isFeatured: true,
       hours: [{ dayOfWeek: 0, opensAt: 0, closesAt: 1440 }], // 24x7
@@ -203,10 +204,16 @@ export class MemoryFleetRepository implements IFleetRepository {
       ratingAvg: 4.92,
       ratingCount: 128,
       startingPricePaise: 18000, // ₹180/hr
-      dailyRatePaise: 240000,    // ₹2,400/day
+      dailyRatePaise: 240000, // ₹2,400/day
       securityDepositPaise: 500000, // ₹5,000
       primaryImageUrl: '/images/car-creta.jpg',
-      features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Fastag Active'],
+      features: [
+        'Ventilated Seats',
+        'Panoramic Sunroof',
+        'Cruise Control',
+        'Wireless CarPlay',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -259,7 +266,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 280000,
       securityDepositPaise: 500000,
       primaryImageUrl: '/images/car-carens.jpg',
-      features: ['7-Seater Comfort', 'Rear AC Vents', 'Touchscreen Infotainment', 'High Fuel Mileage', 'Fastag Active'],
+      features: [
+        '7-Seater Comfort',
+        'Rear AC Vents',
+        'Touchscreen Infotainment',
+        'High Fuel Mileage',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -312,7 +325,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 380000,
       securityDepositPaise: 700000,
       primaryImageUrl: '/images/car-xuv700.jpg',
-      features: ['ADAS Level 2', 'Sony 12-Speaker Audio', 'Panoramic Skyroof', 'AWD Drive Modes', 'Fastag Active'],
+      features: [
+        'ADAS Level 2',
+        'Sony 12-Speaker Audio',
+        'Panoramic Skyroof',
+        'AWD Drive Modes',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -365,7 +384,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 160000,
       securityDepositPaise: 300000,
       primaryImageUrl: '/images/car-dzire.jpg',
-      features: ['High Mileage (22 km/l)', 'Compact City Parking', 'Push Button Start', 'Apple CarPlay', 'Fastag Active'],
+      features: [
+        'High Mileage (22 km/l)',
+        'Compact City Parking',
+        'Push Button Start',
+        'Apple CarPlay',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -418,7 +443,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 350000,
       securityDepositPaise: 600000,
       primaryImageUrl: '/images/car-innova.jpg',
-      features: ['Legendary Highway Reliability', 'Captain Seats', 'Spacious Luggage Boot', 'Cruise Control', 'Fastag Active'],
+      features: [
+        'Legendary Highway Reliability',
+        'Captain Seats',
+        'Spacious Luggage Boot',
+        'Cruise Control',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -471,7 +502,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 240000,
       securityDepositPaise: 500000,
       primaryImageUrl: '/images/car-creta.jpg',
-      features: ['Ventilated Seats', 'Panoramic Sunroof', 'Cruise Control', 'Wireless CarPlay', 'Fastag Active'],
+      features: [
+        'Ventilated Seats',
+        'Panoramic Sunroof',
+        'Cruise Control',
+        'Wireless CarPlay',
+        'Fastag Active',
+      ],
       isAvailable: true,
       documents: [
         {
@@ -524,7 +561,13 @@ export class MemoryFleetRepository implements IFleetRepository {
       dailyRatePaise: 580000,
       securityDepositPaise: 1000000,
       primaryImageUrl: '/images/car-fortuner.jpg',
-      features: ['4x4 Tough Terrain Ability', 'Commanding Road Presence', 'JBL Premium Sound', 'Ventilated Seats', 'Fastag Active'],
+      features: [
+        '4x4 Tough Terrain Ability',
+        'Commanding Road Presence',
+        'JBL Premium Sound',
+        'Ventilated Seats',
+        'Fastag Active',
+      ],
       isAvailable: false,
       documents: [
         {
@@ -844,7 +887,9 @@ export class MemoryFleetRepository implements IFleetRepository {
     if (idx === -1) throw new DomainError('INVALID_INPUT', 'Vehicle not found');
     const existing = this.vehicles[idx]!;
     const city = updates.cityId ? this.cities.find((c) => c.id === updates.cityId) : null;
-    const location = updates.locationId ? this.locations.find((l) => l.id === updates.locationId) : null;
+    const location = updates.locationId
+      ? this.locations.find((l) => l.id === updates.locationId)
+      : null;
 
     const updated: AdminVehicle = {
       ...existing,
@@ -875,7 +920,11 @@ export class MemoryFleetRepository implements IFleetRepository {
     return updated;
   }
 
-  async updateVehicleStatus(id: string, status: VehicleOperationalStatus, _reason?: string): Promise<AdminVehicle> {
+  async updateVehicleStatus(
+    id: string,
+    status: VehicleOperationalStatus,
+    _reason?: string,
+  ): Promise<AdminVehicle> {
     const idx = this.vehicles.findIndex((v) => v.id === id);
     if (idx === -1) throw new DomainError('INVALID_INPUT', 'Vehicle not found');
     const existing = this.vehicles[idx]!;
@@ -1023,7 +1072,9 @@ export class MemoryFleetRepository implements IFleetRepository {
     return [...this.coupons];
   }
 
-  async createCoupon(data: Omit<CouponRuleContract, 'id' | 'usedCount'>): Promise<CouponRuleContract> {
+  async createCoupon(
+    data: Omit<CouponRuleContract, 'id' | 'usedCount'>,
+  ): Promise<CouponRuleContract> {
     const newCoupon: CouponRuleContract = {
       id: `coup-${Date.now().toString(36)}`,
       ...data,
@@ -1089,12 +1140,13 @@ export class MemoryFleetRepository implements IFleetRepository {
         newTotalPaise,
         message: `Applied ${cleanCode}! You saved ₹${discountPaise / 100}.`,
       };
-    } catch (err: any) {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Coupon not applicable for this booking.';
       return {
         isValid: false,
         code: cleanCode,
         discountPaise: 0,
-        message: err.message || 'Coupon not applicable for this booking.',
+        message: msg,
       };
     }
   }
@@ -1110,7 +1162,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       cleanlinessRating: 5,
       conditionRating: 5,
       handoverRating: 5,
-      comment: 'Immaculate condition! Picked up from Pune Airport in 2 minutes using the digital passcode. Panoramic sunroof was a hit on our Lavasa drive.',
+      comment:
+        'Immaculate condition! Picked up from Pune Airport in 2 minutes using the digital passcode. Panoramic sunroof was a hit on our Lavasa drive.',
       createdAt: new Date('2026-10-02T14:30:00Z'),
     },
     {
@@ -1123,7 +1176,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       cleanlinessRating: 5,
       conditionRating: 4,
       handoverRating: 5,
-      comment: 'Super smooth automatic transmission. Full tank handed over, Fastag worked effortlessly on the Mumbai-Pune Expressway.',
+      comment:
+        'Super smooth automatic transmission. Full tank handed over, Fastag worked effortlessly on the Mumbai-Pune Expressway.',
       createdAt: new Date('2026-09-28T18:15:00Z'),
     },
     {
@@ -1136,7 +1190,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       cleanlinessRating: 4,
       conditionRating: 5,
       handoverRating: 4,
-      comment: 'Very well maintained Creta Turbo. Great driving dynamics and instant security deposit settlement upon return.',
+      comment:
+        'Very well maintained Creta Turbo. Great driving dynamics and instant security deposit settlement upon return.',
       createdAt: new Date('2026-09-15T11:00:00Z'),
     },
     {
@@ -1149,7 +1204,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       cleanlinessRating: 5,
       conditionRating: 5,
       handoverRating: 5,
-      comment: 'Perfect 7-seater for our family trip to Mahabaleshwar. Extremely comfortable second row and great fuel mileage.',
+      comment:
+        'Perfect 7-seater for our family trip to Mahabaleshwar. Extremely comfortable second row and great fuel mileage.',
       createdAt: new Date('2026-10-05T16:20:00Z'),
     },
     {
@@ -1162,7 +1218,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       cleanlinessRating: 5,
       conditionRating: 5,
       handoverRating: 5,
-      comment: 'True road presence! Handled the Trimbakeshwar ghats with total ease. 4x4 capability gave solid confidence.',
+      comment:
+        'True road presence! Handled the Trimbakeshwar ghats with total ease. 4x4 capability gave solid confidence.',
       createdAt: new Date('2026-10-04T12:00:00Z'),
     },
   ];
@@ -1176,7 +1233,8 @@ export class MemoryFleetRepository implements IFleetRepository {
       customerPhone: '+91 98220 11994',
       reason: 'FASTAG_MISMATCH',
       claimedRefundPaise: 35000 as Paise, // ₹350
-      customerNotes: 'Khed Shivapur toll plaza scanner double-debited Fastag due to barrier delay. Attached toll SMS screenshot.',
+      customerNotes:
+        'Khed Shivapur toll plaza scanner double-debited Fastag due to barrier delay. Attached toll SMS screenshot.',
       status: 'OPEN',
       createdAt: new Date('2026-10-08T19:30:00Z'),
     },
@@ -1223,7 +1281,9 @@ export class MemoryFleetRepository implements IFleetRepository {
     return [...this.disputes].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async createDispute(data: Omit<DepositDispute, 'id' | 'createdAt' | 'status'>): Promise<DepositDispute> {
+  async createDispute(
+    data: Omit<DepositDispute, 'id' | 'createdAt' | 'status'>,
+  ): Promise<DepositDispute> {
     validateDisputeClaim(data.claimedRefundPaise, 500000 as Paise, data.customerNotes);
     const newDisp: DepositDispute = {
       id: `disp-${Date.now().toString(36)}`,
@@ -1398,7 +1458,11 @@ export class MemoryBookingRepository implements IBookingRepository {
     return booking;
   }
 
-  async confirmBookingPayment(reference: string, paymentId: string, orderId: string): Promise<BookingRecord> {
+  async confirmBookingPayment(
+    reference: string,
+    paymentId: string,
+    orderId: string,
+  ): Promise<BookingRecord> {
     const booking = await this.getBookingByReference(reference);
     if (!booking) throw new DomainError('INVALID_INPUT', 'Booking reference not found');
 
@@ -1453,11 +1517,18 @@ export class MemoryBookingRepository implements IBookingRepository {
     const booking = await this.getBookingByReference(reference);
     if (!booking) throw new DomainError('INVALID_INPUT', 'Booking reference not found');
     if (!booking.handover) {
-      throw new DomainError('INVALID_INPUT', 'Cannot complete return for a trip without start handover');
+      throw new DomainError(
+        'INVALID_INPUT',
+        'Cannot complete return for a trip without start handover',
+      );
     }
 
     assertBookingTransition(booking.status, 'COMPLETED');
-    const settlement = calculateDepositSettlement(originalDepositPaise, booking.handover, inspection);
+    const settlement = calculateDepositSettlement(
+      originalDepositPaise,
+      booking.handover,
+      inspection,
+    );
 
     booking.status = 'COMPLETED';
     booking.returnInspection = inspection;
@@ -1537,4 +1608,3 @@ export class MemoryCustomerRepository implements ICustomerRepository {
     return this.kycDocuments.get(customerId) || [];
   }
 }
-

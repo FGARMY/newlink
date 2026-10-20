@@ -29,7 +29,12 @@ interface DisputeItem {
   vehicleModel: string;
   customerName: string;
   customerPhone: string;
-  reason: 'FASTAG_MISMATCH' | 'PRE_EXISTING_SCRATCH' | 'FUEL_READING_INCORRECT' | 'CLEANING_FEE_CONTESTED' | 'OTHER';
+  reason:
+    | 'FASTAG_MISMATCH'
+    | 'PRE_EXISTING_SCRATCH'
+    | 'FUEL_READING_INCORRECT'
+    | 'CLEANING_FEE_CONTESTED'
+    | 'OTHER';
   claimedRefundPaise: number;
   customerNotes: string;
   status: 'OPEN' | 'UNDER_REVIEW' | 'REFUND_APPROVED' | 'REJECTED';
@@ -59,7 +64,8 @@ export default function AdminDisputesPage() {
       customerPhone: '+91 98220 11994',
       reason: 'FASTAG_MISMATCH',
       claimedRefundPaise: 35000, // ₹350
-      customerNotes: 'Khed Shivapur toll plaza scanner double-debited Fastag due to barrier delay. Attached toll SMS screenshot.',
+      customerNotes:
+        'Khed Shivapur toll plaza scanner double-debited Fastag due to barrier delay. Attached toll SMS screenshot.',
       status: 'OPEN',
       createdAt: 'Yesterday, 07:30 PM',
     },
@@ -72,10 +78,12 @@ export default function AdminDisputesPage() {
       customerPhone: '+91 97654 32109',
       reason: 'FUEL_READING_INCORRECT',
       claimedRefundPaise: 50000, // ₹500
-      customerNotes: 'I refueled at Mumbai Naka HPCL bunk 2km before return. Gauge was at 95%, inspection marked 85%.',
+      customerNotes:
+        'I refueled at Mumbai Naka HPCL bunk 2km before return. Gauge was at 95%, inspection marked 85%.',
       status: 'REFUND_APPROVED',
       approvedRefundPaise: 50000,
-      resolutionNotes: 'Fuel receipt verified with timestamp. Secondary refund of ₹500 credited via UPI.',
+      resolutionNotes:
+        'Fuel receipt verified with timestamp. Secondary refund of ₹500 credited via UPI.',
       createdAt: '3 days ago',
       resolvedAt: '2 days ago',
     },
@@ -91,7 +99,8 @@ export default function AdminDisputesPage() {
       customerNotes: 'Bumper scratch was already present during pickup at Pune Airport station.',
       status: 'REJECTED',
       approvedRefundPaise: 0,
-      resolutionNotes: 'Starting handover high-res photos inspected; rear bumper was pristine at dispatch time.',
+      resolutionNotes:
+        'Starting handover high-res photos inspected; rear bumper was pristine at dispatch time.',
       createdAt: '5 days ago',
       resolvedAt: '4 days ago',
     },
@@ -124,7 +133,8 @@ export default function AdminDisputesPage() {
       if (d.id === selectedDispute.id) {
         return {
           ...d,
-          status: resolveAction === 'APPROVE' ? ('REFUND_APPROVED' as const) : ('REJECTED' as const),
+          status:
+            resolveAction === 'APPROVE' ? ('REFUND_APPROVED' as const) : ('REJECTED' as const),
           approvedRefundPaise: approvedPaise,
           resolutionNotes: finalNotes,
           resolvedAt: 'Just now',
@@ -171,7 +181,8 @@ export default function AdminDisputesPage() {
               Deposit Disputes & Deductions
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Customer claims on Fastag toll mismatches, fuel readings, and damage assessments with full audit trail.
+              Customer claims on Fastag toll mismatches, fuel readings, and damage assessments with
+              full audit trail.
             </p>
           </div>
         </div>
@@ -207,7 +218,9 @@ export default function AdminDisputesPage() {
                   .reduce((sum, d) => sum + (d.approvedRefundPaise ?? 0), 0) / 100
               ).toLocaleString('en-IN')}
             </div>
-            <span className="text-xs text-emerald-400/80 mt-1 block">Settled back to customers</span>
+            <span className="text-xs text-emerald-400/80 mt-1 block">
+              Settled back to customers
+            </span>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5 backdrop-blur-xs">
@@ -226,7 +239,8 @@ export default function AdminDisputesPage() {
                 <span>Claims Queue & Counter-Evidence</span>
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Review customer explanations, check toll transaction logs, and issue adjusted refunds.
+                Review customer explanations, check toll transaction logs, and issue adjusted
+                refunds.
               </p>
             </div>
 
@@ -250,16 +264,17 @@ export default function AdminDisputesPage() {
 
           <div className="divide-y divide-slate-800/80 mt-2">
             {filtered.map((disp) => (
-              <div key={disp.id} className="py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+              <div
+                key={disp.id}
+                className="py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5"
+              >
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <span className="font-mono font-bold text-amber-400 text-sm">
                       {disp.bookingReference}
                     </span>
                     <span className="text-slate-400 text-xs">•</span>
-                    <span className="font-semibold text-white text-sm">
-                      {disp.vehicleModel}
-                    </span>
+                    <span className="font-semibold text-white text-sm">{disp.vehicleModel}</span>
                     <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs text-slate-300 font-medium">
                       {disp.reason.replace(/_/g, ' ')}
                     </span>
@@ -293,7 +308,9 @@ export default function AdminDisputesPage() {
                   </div>
 
                   <div className="rounded-xl bg-slate-900/80 border border-slate-800/80 p-3 text-xs text-slate-300">
-                    <span className="font-bold text-amber-400 block mb-1">Customer Claim Notes:</span>
+                    <span className="font-bold text-amber-400 block mb-1">
+                      Customer Claim Notes:
+                    </span>
                     "{disp.customerNotes}"
                   </div>
 
@@ -395,7 +412,8 @@ export default function AdminDisputesPage() {
                       className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white focus:outline-hidden focus:border-amber-500"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
-                      Max claim allowed: ₹{(selectedDispute.claimedRefundPaise / 100).toLocaleString('en-IN')}
+                      Max claim allowed: ₹
+                      {(selectedDispute.claimedRefundPaise / 100).toLocaleString('en-IN')}
                     </p>
                   </div>
                 )}

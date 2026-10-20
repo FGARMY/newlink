@@ -12,23 +12,26 @@ describe('Concurrency Protection: Double-Booking Prevention', () => {
     const end = new Date('2026-11-03T10:00:00Z');
 
     const totalConcurrentRequests = 100;
-    const requests: ReservationRequest[] = Array.from({ length: totalConcurrentRequests }, (_, i) => ({
-      vehicleId,
-      start,
-      end,
-      bufferMinutes: 120, // 2-hr turnaround buffer
-      holdDurationMinutes: 10,
-      customerId: `cust-${i}`,
-      customerPhone: `+9198000000${String(i).padStart(2, '0')}`,
-      customerName: `Customer ${i}`,
-      pickupLocationId: 'loc-pn-airport',
-      returnLocationId: 'loc-pn-airport',
-      amountPayablePaise: 913000,
-      ratePlanId: 'rp-creta-pn',
-      idempotencyKey: `idem-unique-${i}`,
-      brandPrefix: 'NL',
-      cityCode: 'PN',
-    }));
+    const requests: ReservationRequest[] = Array.from(
+      { length: totalConcurrentRequests },
+      (_, i) => ({
+        vehicleId,
+        start,
+        end,
+        bufferMinutes: 120, // 2-hr turnaround buffer
+        holdDurationMinutes: 10,
+        customerId: `cust-${i}`,
+        customerPhone: `+9198000000${String(i).padStart(2, '0')}`,
+        customerName: `Customer ${i}`,
+        pickupLocationId: 'loc-pn-airport',
+        returnLocationId: 'loc-pn-airport',
+        amountPayablePaise: 913000,
+        ratePlanId: 'rp-creta-pn',
+        idempotencyKey: `idem-unique-${i}`,
+        brandPrefix: 'NL',
+        cityCode: 'PN',
+      }),
+    );
 
     // Fire all 100 requests simultaneously via Promise.allSettled
     const results = await Promise.allSettled(
@@ -153,4 +156,3 @@ describe('Concurrency Protection: Double-Booking Prevention', () => {
     expect(settlement.refundAmountPaise).toBe(462500); // ₹4,625 refunded
   });
 });
-
