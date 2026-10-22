@@ -199,9 +199,9 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
       {/* ===== FLOATING SEARCH CARD (4-Field Card + Search Button) ===== */}
       <div className="relative z-10 rounded-3xl bg-white dark:bg-card border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-2xl backdrop-blur-md transition-colors">
         <form onSubmit={handleSearch}>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-0 md:divide-x divide-slate-200 dark:divide-white/10 items-center">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-0 md:divide-x divide-slate-200 dark:divide-white/10 w-full">
             {/* Field 1: City */}
-            <div className="md:col-span-2 px-3 py-1 flex flex-col justify-center">
+            <div className="md:w-[15%] px-3 sm:px-4 py-1 flex flex-col justify-center shrink-0">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <Building className="h-3.5 w-3.5 text-slate-400" />
                 City
@@ -227,7 +227,7 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
             </div>
 
             {/* Field 2: Location */}
-            <div className="md:col-span-3 px-3 py-1 flex flex-col justify-center">
+            <div className="md:w-[27%] px-3 sm:px-4 py-1 flex flex-col justify-center min-w-0">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 Location
@@ -249,13 +249,13 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
             </div>
 
             {/* Field 3: Trip Start */}
-            <div className="md:col-span-2.5 px-3 py-1 flex flex-col justify-center">
+            <div className="md:w-[22%] px-3 sm:px-4 py-1 flex flex-col justify-center min-w-0">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
                 Trip Start
               </span>
               <div className="relative mt-1">
-                <label className="block font-bold text-xs sm:text-sm text-slate-900 dark:text-white cursor-pointer truncate">
+                <label className="block font-bold text-xs sm:text-sm text-slate-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis">
                   {formatDisplayDateTime(pickupDate, pickupTime)}
                   <input
                     type="datetime-local"
@@ -274,13 +274,13 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
             </div>
 
             {/* Field 4: Trip End */}
-            <div className="md:col-span-2.5 px-3 py-1 flex flex-col justify-center">
+            <div className="md:w-[22%] px-3 sm:px-4 py-1 flex flex-col justify-center min-w-0">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
                 Trip End
               </span>
               <div className="relative mt-1">
-                <label className="block font-bold text-xs sm:text-sm text-slate-900 dark:text-white cursor-pointer truncate">
+                <label className="block font-bold text-xs sm:text-sm text-slate-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis">
                   {formatDisplayDateTime(returnDate, returnTime)}
                   <input
                     type="datetime-local"
@@ -298,13 +298,13 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
               </div>
             </div>
 
-            {/* Column 5: Search Cars Button (Zoomcar style rounded green pill) */}
-            <div className="md:col-span-2 px-2 py-1 flex items-center justify-end">
+            {/* Column 5: Search Cars Button */}
+            <div className="md:w-[14%] px-2 py-1 flex items-center justify-end shrink-0">
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-5 text-sm shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-98"
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-3 sm:px-4 text-xs sm:text-sm shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-98 whitespace-nowrap"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-4 w-4 shrink-0" />
                 <span>Search Cars</span>
               </button>
             </div>
