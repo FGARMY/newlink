@@ -9,8 +9,9 @@
 
 @theme {
   /* ---- Typography ---- */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* ---- Primary colours ---- */
   --color-onyx: #000000; /* Onyx Black — premium, bold, luxury */
@@ -116,7 +117,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: 'DM Sans', var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -142,9 +143,13 @@ html.light body {
 
 h1,
 h2,
-h3 {
-  font-family: var(--font-display);
-  letter-spacing: -0.01em;
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: 'Manrope', var(--font-display), sans-serif;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
