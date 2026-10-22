@@ -276,14 +276,14 @@ export default function HomePage() {
                 alt={slide.title}
                 fill
                 priority={idx === 0}
-                className="object-cover object-center"
+                className="object-cover object-center opacity-40 dark:opacity-30"
               />
             </div>
           ))}
 
-          {/* Theme-aware contrast overlay: crisp, vivid, zero blur to keep 16:9 scenic photos razor-sharp */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/40 to-slate-50 dark:from-black/75 dark:via-black/50 dark:to-canvas" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-slate-50/50 dark:to-black/60 pointer-events-none" />
+          {/* Theme-aware contrast overlay: high-contrast scrim ensuring 100% crystal-clear readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/80 to-slate-50 dark:from-black/95 dark:via-black/85 dark:to-black" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(255,255,255,0.7),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(0,0,0,0.85),transparent_70%)] pointer-events-none" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -313,29 +313,33 @@ export default function HomePage() {
 
           {/* Main Title & Subtitle Matching Reference Image */}
           <div className="mx-auto max-w-4xl text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 dark:text-white leading-[1.15]">
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 dark:text-white leading-[1.15] drop-shadow-xs dark:drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               Self-Drive Car Rental in Pune &amp; Nashik &mdash;{' '}
-              <span className="text-blue-600 dark:text-primary-gradient">Book by Hour or Day</span>
+              <span className="text-blue-600 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-sky-300 dark:to-blue-500 font-black">
+                Book by Hour or Day
+              </span>
             </h1>
 
-            {/* Trust Badges Bar */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-slate-900 dark:text-white">Pune &amp; Nashik Hubs</span>
-              </span>
-              <span className="text-slate-300 dark:text-white/20">&bull;</span>
-              <span className="flex items-center gap-1.5">
-                <span className="font-bold text-slate-900 dark:text-white">100% Sanitized Fleet</span>
-              </span>
-              <span className="text-slate-300 dark:text-white/20">&bull;</span>
-              <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold">
-                Doorstep Delivery &amp; Hub Pickup
-              </span>
+            {/* Trust Badges Bar in High-Contrast Frosted Badge */}
+            <div className="mt-4 flex justify-center">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 rounded-2xl border border-slate-300/80 dark:border-white/10 bg-white/95 dark:bg-card/90 px-4 py-2 text-xs sm:text-sm font-semibold shadow-md backdrop-blur-md text-slate-800 dark:text-slate-100">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-bold text-slate-900 dark:text-white">Pune &amp; Nashik Hubs</span>
+                </span>
+                <span className="text-slate-300 dark:text-white/20">&bull;</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="font-bold text-slate-900 dark:text-white">100% Sanitized Fleet</span>
+                </span>
+                <span className="text-slate-300 dark:text-white/20">&bull;</span>
+                <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold">
+                  Doorstep Delivery &amp; Hub Pickup
+                </span>
+              </div>
             </div>
 
             {/* Subtitle */}
-            <p className="mt-3 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="mt-3 text-xs sm:text-sm text-slate-700 dark:text-slate-200 max-w-2xl mx-auto font-medium drop-shadow-xs dark:drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               Choose your car, choose your dates, pick up or get it delivered, and drive without a driver.
             </p>
           </div>
