@@ -1,21 +1,14 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   X,
   KeyRound,
-  TrendingUp,
   ShieldCheck,
   CheckCircle2,
   Sparkles,
-  Car,
   FileCheck2,
-  Building,
-  CreditCard,
   Lock,
-  ArrowRight,
-  ChevronRight,
-  ShieldAlert,
 } from 'lucide-react';
 
 interface BecomeHostModalProps {
@@ -23,20 +16,9 @@ interface BecomeHostModalProps {
   onClose: () => void;
 }
 
-const CAR_EARNING_PRESETS = [
-  { id: 'creta', name: 'Hyundai Creta', category: 'SUV', dailyHostShare: 2400 },
-  { id: 'thar', name: 'Mahindra Thar 4x4', category: 'LUXURY', dailyHostShare: 2800 },
-  { id: 'innova', name: 'Toyota Innova Crysta', category: 'PREMIUM', dailyHostShare: 3200 },
-  { id: 'swift', name: 'Maruti Suzuki Swift', category: 'HATCHBACK', dailyHostShare: 1400 },
-  { id: 'xuv700', name: 'Mahindra XUV700', category: 'PREMIUM', dailyHostShare: 3000 },
-];
-
 export function BecomeHostModal({ isOpen, onClose }: BecomeHostModalProps) {
-  const [selectedCarId, setSelectedCarId] = useState('creta');
-  const [sharingDays, setSharingDays] = useState(18); // Default 18 days/month
-
-  // Registration step
-  const [regStep, setRegStep] = useState<'CALCULATOR' | 'RC_VERIFY' | 'BANK_DETAILS' | 'CONFIRMED'>('CALCULATOR');
+  // Registration step (Direct Onboarding without calculator)
+  const [regStep, setRegStep] = useState<'RC_VERIFY' | 'BANK_DETAILS' | 'CONFIRMED'>('RC_VERIFY');
 
   // Form states
   const [vehicleNumber, setVehicleNumber] = useState('MH 12 AB 8899');
@@ -51,10 +33,6 @@ export function BecomeHostModal({ isOpen, onClose }: BecomeHostModalProps) {
   const [upiId, setUpiId] = useState('sanjay@okhdfcbank');
 
   if (!isOpen) return null;
-
-  const currentPreset = CAR_EARNING_PRESETS.find((c) => c.id === selectedCarId) || CAR_EARNING_PRESETS[0];
-  const monthlyEarnings = currentPreset.dailyHostShare * sharingDays;
-  const annualEarnings = monthlyEarnings * 12;
 
   const handleVerifyDigiLockerRc = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,13 +58,13 @@ export function BecomeHostModal({ isOpen, onClose }: BecomeHostModalProps) {
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                Speion Host Partner Network
+                Speion Host Partner Onboarding
                 <span className="rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold">
                   Pune &amp; Nashik
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
-                Monetize your idle car with ₹10 Lakh insurance &amp; verified guests
+                List your vehicle with ₹10 Lakh host insurance &amp; verified guest KYC
               </p>
             </div>
           </div>
@@ -101,141 +79,41 @@ export function BecomeHostModal({ isOpen, onClose }: BecomeHostModalProps) {
 
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* STEP 1: CALCULATOR */}
-          {regStep === 'CALCULATOR' && (
-            <div className="space-y-6">
-              {/* Earnings Calculator Card */}
-              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-card to-card p-6 shadow-xl">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                    <TrendingUp className="h-4 w-4" />
-                    Host Earnings Estimator
-                  </span>
-                  <span className="text-xs text-slate-400">Weekly Direct Bank Payouts</span>
-                </div>
-
-                <div className="mt-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/5 pb-4">
-                  <div>
-                    <span className="text-xs text-slate-400">Estimated Monthly Income</span>
-                    <div className="text-3xl sm:text-4xl font-extrabold text-white mt-0.5">
-                      ₹{monthlyEarnings.toLocaleString('en-IN')}
-                      <span className="text-xs font-normal text-slate-400 ml-1.5">/month</span>
-                    </div>
-                  </div>
-
-                  <div className="sm:text-right">
-                    <span className="text-xs text-slate-400">Annual Earning Potential</span>
-                    <div className="text-lg font-bold text-emerald-400">
-                      ₹{annualEarnings.toLocaleString('en-IN')}/year
-                    </div>
-                  </div>
-                </div>
-
-                {/* Car Selector */}
-                <div className="mt-5">
-                  <label className="text-xs font-bold text-slate-300 block mb-2">
-                    Select Your Car Model
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {CAR_EARNING_PRESETS.map((car) => (
-                      <button
-                        key={car.id}
-                        type="button"
-                        onClick={() => setSelectedCarId(car.id)}
-                        className={`rounded-xl p-2.5 text-xs text-left transition-all border cursor-pointer ${
-                          selectedCarId === car.id
-                            ? 'border-emerald-500 bg-emerald-500/15 text-white font-bold shadow-xs'
-                            : 'border-white/5 bg-surface/50 text-slate-300 hover:border-white/15'
-                        }`}
-                      >
-                        <div className="truncate">{car.name}</div>
-                        <div className="text-[10px] text-slate-400 font-normal mt-0.5">
-                          ~₹{car.dailyHostShare}/day share
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Days/Month Slider */}
-                <div className="mt-5">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-200">
-                    <span>How many days per month will you share?</span>
-                    <span className="text-emerald-400 font-extrabold text-sm">{sharingDays} Days</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="25"
-                    step="1"
-                    value={sharingDays}
-                    onChange={(e) => setSharingDays(Number(e.target.value))}
-                    className="mt-2 w-full accent-emerald-500 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-                    <span>10 Days (Weekend side-income)</span>
-                    <span>18 Days (Recommended)</span>
-                    <span>25 Days (Full Fleet Hosting)</span>
-                  </div>
-                </div>
+          {/* Trust Safeguards Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-2xl border border-white/5 bg-surface/40 p-3.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-400 mb-1.5" />
+              <div className="font-bold text-white text-[11px]">₹10 Lakh Insurance Cover</div>
+              <div className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                Comprehensive damage &amp; third-party policy coverage.
               </div>
-
-              {/* Three Trust Safeguards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="rounded-2xl border border-white/5 bg-surface/40 p-4">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400 mb-2" />
-                  <div className="font-bold text-white">₹10 Lakh Host Cover</div>
-                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                    Accidental damage, total loss, and third-party liabilities covered by insurer.
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/5 bg-surface/40 p-4">
-                  <Lock className="h-5 w-5 text-blue-400 mb-2" />
-                  <div className="font-bold text-white">Free GPS Security Device</div>
-                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                    Complimentary tamper-proof OBD-II GPS tracking &amp; speed monitoring installed.
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/5 bg-surface/40 p-4">
-                  <FileCheck2 className="h-5 w-5 text-teal-400 mb-2" />
-                  <div className="font-bold text-white">DigiLocker KYC Guests</div>
-                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                    Only guests with verified Driving License &amp; Aadhaar can unlock your vehicle.
-                  </div>
-                </div>
-              </div>
-
-              {/* Start Onboarding CTA */}
-              <button
-                type="button"
-                onClick={() => setRegStep('RC_VERIFY')}
-                className="w-full rounded-2xl bg-emerald-600 hover:bg-emerald-500 py-3.5 text-xs font-bold text-white shadow-lg shadow-emerald-950/50 transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Proceed to 2-Step Host Registration</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
             </div>
-          )}
 
-          {/* STEP 2: DIGILOCKER RC VERIFICATION */}
+            <div className="rounded-2xl border border-white/5 bg-surface/40 p-3.5">
+              <Lock className="h-4 w-4 text-blue-400 mb-1.5" />
+              <div className="font-bold text-white text-[11px]">Free GPS Security Device</div>
+              <div className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                Tamper-proof OBD-II tracking &amp; speed monitoring installed.
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/5 bg-surface/40 p-3.5">
+              <FileCheck2 className="h-4 w-4 text-teal-400 mb-1.5" />
+              <div className="font-bold text-white text-[11px]">DigiLocker KYC Guests</div>
+              <div className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                Only verified drivers with verified DL can rent your car.
+              </div>
+            </div>
+          </div>
+
+          {/* STEP 1: DIGILOCKER RC VERIFICATION */}
           {regStep === 'RC_VERIFY' && (
             <form onSubmit={handleVerifyDigiLockerRc} className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">
-                    Step 1 of 2
-                  </span>
-                  <h4 className="text-base font-bold text-white">Vehicle RC Verification</h4>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setRegStep('CALCULATOR')}
-                  className="text-xs text-slate-400 hover:text-white"
-                >
-                  ← Back to Calculator
-                </button>
+              <div className="pb-3 border-b border-white/5">
+                <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">
+                  Step 1 of 2
+                </span>
+                <h4 className="text-base font-bold text-white">Vehicle RC Verification</h4>
               </div>
 
               <div>
@@ -445,9 +323,9 @@ export function BecomeHostModal({ isOpen, onClose }: BecomeHostModalProps) {
                   <span className="font-mono font-bold text-white">{vehicleNumber}</span>
                 </div>
                 <div className="flex justify-between border-t border-white/5 pt-2">
-                  <span className="text-slate-400">Expected Monthly Share</span>
+                  <span className="text-slate-400">Payout Schedule</span>
                   <span className="font-bold text-emerald-400">
-                    ₹{monthlyEarnings.toLocaleString('en-IN')}/month
+                    Weekly Direct Deposit (Every Monday)
                   </span>
                 </div>
               </div>
