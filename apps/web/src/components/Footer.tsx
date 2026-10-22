@@ -1,16 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { Phone, Mail, MapPin, ShieldCheck, Clock, Award } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-950 text-slate-400">
+    <footer className="border-t border-white/10 bg-onyx text-slate-400">
       {/* Trust Badges Bar */}
-      <div className="border-b border-slate-900 bg-slate-900/50 py-8">
+      <div className="border-b border-white/5 bg-midnight py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
@@ -20,7 +21,7 @@ export function Footer() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20">
                 <Clock className="h-5 w-5" />
               </div>
               <div>
@@ -30,7 +31,7 @@ export function Footer() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20">
                 <Award className="h-5 w-5" />
               </div>
               <div>
@@ -40,7 +41,7 @@ export function Footer() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
@@ -57,14 +58,9 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand Info */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-slate-950 font-bold text-sm">
-                NL
-              </div>
-              <span className="text-lg font-bold text-white tracking-tight">
-                New<span className="text-amber-500">link</span>
-              </span>
-            </div>
+            <Link href="/" aria-label="Speion Cars home" className="inline-block">
+              <BrandLogo width={190} forceWhite={true} className="h-auto" />
+            </Link>
             <p className="mt-4 text-xs leading-relaxed text-slate-400 max-w-sm">
               Premium self-drive car rental platform built for seamless journeys across Pune,
               Nashik, and beyond. Book in under 2 minutes with guaranteed availability and
@@ -75,15 +71,15 @@ export function Footer() {
                 href="tel:+919876543210"
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
-                <Phone className="h-3.5 w-3.5 text-amber-500" />
+                <Phone className="h-3.5 w-3.5 text-blue-400" />
                 <span>+91 98765 43210 (24x7 Support)</span>
               </a>
               <a
-                href="mailto:support@newlinkcars.com"
+                href="mailto:support@speioncars.com"
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
-                <Mail className="h-3.5 w-3.5 text-amber-500" />
-                <span>support@newlinkcars.com</span>
+                <Mail className="h-3.5 w-3.5 text-blue-400" />
+                <span>support@speioncars.com</span>
               </a>
             </div>
           </div>
@@ -213,11 +209,9 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 border-t border-slate-900 pt-6 text-center text-xs text-slate-400">
-          <p>
-            © {new Date().getFullYear()} Newlink Mobility Technologies Pvt. Ltd. All rights
-            reserved.
-          </p>
+        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-6 text-xs text-slate-400 sm:flex-row">
+          <p>© {new Date().getFullYear()} Speion Cars. All rights reserved.</p>
+          <p className="uppercase tracking-[0.35em] text-slate-500">Drive Your Way</p>
         </div>
       </div>
     </footer>

@@ -1,109 +1,398 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Phone, ShieldCheck, MapPin, Car } from 'lucide-react';
+import {
+  Car,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  HelpCircle,
+  KeyRound,
+  ShieldCheck,
+  TrendingUp,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { BrandLockup } from './BrandLogo';
 
 interface NavbarProps {
   selectedCity?: string;
   onCityChange?: (city: string) => void;
 }
 
-export function Navbar({ selectedCity = 'pune', onCityChange }: NavbarProps) {
+export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
   const { customer } = useAuth();
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white font-bold tracking-tight shadow-sm transition-transform group-hover:scale-105">
-              NL
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tight text-slate-900 leading-none">
-                New<span className="text-amber-600">link</span>
-              </span>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400 mt-1">
-                Self-Drive Rentals
-              </span>
-            </div>
-          </Link>
+  const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [howToBookOpen, setHowToBookOpen] = useState(false);
+  const [becomeHostOpen, setBecomeHostOpen] = useState(false);
 
-          {/* City Selector Pill */}
-          <div className="hidden sm:flex items-center rounded-full bg-slate-100 p-1 border border-slate-200 text-xs font-semibold">
+  // Host form states
+  const [hostName, setHostName] = useState('');
+  const [hostPhone, setHostPhone] = useState('');
+  const [hostCar, setHostCar] = useState('');
+  const [hostCity, setHostCity] = useState(selectedCity || 'Pune');
+  const [hostSubmitted, setHostSubmitted] = useState(false);
+
+  const handleHostSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hostPhone.trim()) return;
+    setHostSubmitted(true);
+  };
+
+  return (
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-canvas/95 backdrop-blur-xl transition-colors duration-200">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Left: Hamburger & Brand */}
+          <div className="flex items-center gap-3 sm:gap-6">
             <button
-              onClick={() => onCityChange?.('pune')}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 transition-all ${
-                selectedCity === 'pune'
-                  ? 'bg-white text-slate-900 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              aria-label="Open menu"
             >
-              <MapPin className="h-3.5 w-3.5 text-amber-600" />
-              Pune
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
+
+            <Link href="/" className="group flex items-center" aria-label="Speion Cars home">
+              <BrandLockup />
+            </Link>
+          </div>
+
+          {/* Center Nav Links */}
+          <div className="hidden lg:flex items-center gap-7 text-[13px] font-semibold text-slate-700 dark:text-slate-300">
             <button
-              onClick={() => onCityChange?.('nashik')}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 transition-all ${
-                selectedCity === 'nashik'
-                  ? 'bg-white text-slate-900 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              onClick={() => setHowToBookOpen(true)}
+              className="hover:text-blue-600 dark:hover:text-white transition-colors cursor-pointer flex items-center gap-1"
             >
-              <MapPin className="h-3.5 w-3.5 text-amber-600" />
-              Nashik
+              How to book?
             </button>
+
+            <Link
+              href="/cars"
+              className="hover:text-blue-600 dark:hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <Car className="h-3.5 w-3.5 text-slate-400" />
+              Browse Fleet
+            </Link>
+
+            <button
+              onClick={() => {
+                setHostSubmitted(false);
+                setBecomeHostOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              <KeyRound className="h-3.5 w-3.5 text-emerald-500" />
+              Become a Host
+            </button>
+          </div>
+
+          {/* Right Controls: Theme Toggle & Sign In */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-white/15 bg-white dark:bg-surface text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              aria-label="Toggle light/dark theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-amber-400 animate-spin-slow" />
+              ) : (
+                <Moon className="h-4 w-4 text-slate-700" />
+              )}
+            </button>
+
+            {/* Login / Account Button */}
+            {customer ? (
+              <Link
+                href="/account"
+                className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-surface px-4 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+              >
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-gradient text-[10px] font-bold text-white">
+                  {customer.name ? customer.name[0]?.toUpperCase() : 'U'}
+                </div>
+                <span>{customer.name || customer.phone}</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-full bg-emerald-600 dark:bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer hover:shadow-md"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Right Nav */}
-        <div className="flex items-center gap-3 sm:gap-6">
-          <a
-            href="tel:+919876543210"
-            className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <Phone className="h-3.5 w-3.5 text-amber-600" />
-            +91 98765 43210
-          </a>
-
-          <Link
-            href="/cars"
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-          >
-            <Car className="h-3.5 w-3.5 text-slate-500" />
-            Browse Fleet
-          </Link>
-
-          <Link
-            href="/admin"
-            className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60 hover:bg-amber-100 transition-colors"
-          >
-            <ShieldCheck className="h-3.5 w-3.5 text-amber-600" />
-            Admin Hub
-          </Link>
-
-          {customer ? (
-            <Link
-              href="/account"
-              className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-200 transition-all border border-slate-200"
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-slate-200 dark:border-white/10 bg-white dark:bg-canvas p-4 space-y-3">
+            <button
+              onClick={() => {
+                setHowToBookOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">
-                {customer.name ? customer.name[0]?.toUpperCase() : 'U'}
+              How to book?
+            </button>
+            <Link
+              href="/cars"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+            >
+              Browse Fleet
+            </Link>
+            <button
+              onClick={() => {
+                setHostSubmitted(false);
+                setBecomeHostOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-2 w-full text-left py-2 text-sm font-bold text-emerald-600 dark:text-emerald-400"
+            >
+              <KeyRound className="h-4 w-4" />
+              Become a Host
+            </button>
+            <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
+              <span className="text-xs text-slate-500">Theme</span>
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-surface text-slate-800 dark:text-white"
+              >
+                {theme === 'dark' ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5" />}
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* How to Book Modal */}
+      {howToBookOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-card p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white animate-fade-up">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-lg font-bold">How to Book with Speion Cars</h3>
               </div>
-              <span>{customer.name || customer.phone}</span>
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-amber-600 transition-all"
-            >
-              Sign In
-            </Link>
-          )}
+              <button
+                onClick={() => setHowToBookOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-4 text-xs sm:text-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                  1
+                </div>
+                <div>
+                  <h4 className="font-bold">Select Dates & Pickup Hub</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                    Choose Pune or Nashik and enter your start and return schedule.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                  2
+                </div>
+                <div>
+                  <h4 className="font-bold">Pick Your Exact Car</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                    Browse real photos, verified fuel and transmission specs, and live rates.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                  3
+                </div>
+                <div>
+                  <h4 className="font-bold">Quick KYC & Instant Confirmation</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                    Upload your driving license. Your selected vehicle is locked atomically.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                  4
+                </div>
+                <div>
+                  <h4 className="font-bold">Drive Your Way</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                    Collect keys at the designated parking bay with a 3-minute photo checklist.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 text-center">
+              <button
+                onClick={() => setHowToBookOpen(false)}
+                className="w-full rounded-xl bg-blue-600 hover:bg-blue-500 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
+              >
+                Got It, Let&apos;s Book
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      )}
+
+      {/* Become a Host Modal */}
+      {becomeHostOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-card p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white animate-fade-up max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <KeyRound className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">Become a Speion Host</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Earn up to ₹45,000/month by sharing your car
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setBecomeHostOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {hostSubmitted ? (
+              <div className="py-8 text-center space-y-3">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                  <CheckCircle2 className="h-8 w-8" />
+                </div>
+                <h4 className="text-lg font-bold">Interest Received!</h4>
+                <p className="text-xs text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
+                  Thank you, <strong>{hostName || 'Host'}</strong>! Our Speion fleet onboarding specialist will call you at <strong>{hostPhone}</strong> within 24 hours to review your car&apos;s earning potential and schedule inspection.
+                </p>
+                <button
+                  onClick={() => setBecomeHostOpen(false)}
+                  className="mt-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-6 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <div className="mt-5 space-y-5">
+                {/* Value Props */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
+                    <TrendingUp className="h-4 w-4 text-emerald-500 mb-1" />
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">High Earnings</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Earn up to ₹45k/mo with weekly bank payouts</div>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
+                    <ShieldCheck className="h-4 w-4 text-blue-500 mb-1" />
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">₹50L Insurance</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Complete accidental & theft coverage on trip</div>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
+                    <CheckCircle2 className="h-4 w-4 text-teal-500 mb-1" />
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">Verified Drivers</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Aadhaar + driving license authenticated guests</div>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
+                    <Sparkles className="h-4 w-4 text-amber-500 mb-1" />
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">Full Flexibility</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Block personal dates anytime via host portal</div>
+                  </div>
+                </div>
+
+                {/* Inquiry Form */}
+                <form onSubmit={handleHostSubmit} className="space-y-3 pt-2">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Your Full Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Ramesh Patil"
+                      value={hostName}
+                      onChange={(e) => setHostName(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="e.g. 9876543210"
+                        value={hostPhone}
+                        onChange={(e) => setHostPhone(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Car City
+                      </label>
+                      <select
+                        value={hostCity}
+                        onChange={(e) => setHostCity(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="Pune">Pune</option>
+                        <option value="Nashik">Nashik</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Car Make &amp; Model
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Hyundai Creta, Maruti Swift, Mahindra Thar"
+                      value={hostCar}
+                      onChange={(e) => setHostCar(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full mt-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer shadow-md shadow-emerald-500/20"
+                  >
+                    Register as a Host
+                  </button>
+                  <p className="text-[10px] text-center text-slate-400">
+                    Zero upfront listing fee · Free GPS &amp; safety device installation
+                  </p>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

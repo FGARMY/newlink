@@ -108,7 +108,7 @@ export default function AccountPage() {
     e.preventDefault();
     setReviewSubmitted(true);
     setIsReviewModalOpen(false);
-    alert('✓ Thank you for reviewing your trip! Your feedback helps the Newlink community.');
+    alert('✓ Thank you for reviewing your trip! Your feedback helps the Speion Cars community.');
   };
 
   const handleSubmitDispute = (e: React.FormEvent) => {
@@ -159,20 +159,20 @@ export default function AccountPage() {
   // If customer is not logged in, prompt or redirect
   if (!customer) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#FAFAF8] text-slate-900 font-sans">
+      <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
         <Navbar />
         <main className="flex flex-1 items-center justify-center p-6">
-          <div className="max-w-md w-full rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-lg">
+          <div className="max-w-md w-full rounded-3xl border border-white/10 bg-card p-8 text-center shadow-lg">
             <User className="mx-auto h-12 w-12 text-slate-300" />
-            <h2 className="mt-4 text-xl font-bold text-slate-900">
+            <h2 className="mt-4 text-xl font-bold text-white">
               Sign in to view your dashboard
             </h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-400">
               Access your upcoming bookings, upload KYC documents, and download invoices.
             </p>
             <Link
               href="/login?next=/account"
-              className="mt-6 inline-block w-full rounded-xl bg-slate-900 py-3 text-xs font-bold text-white hover:bg-amber-600 transition-colors"
+              className="mt-6 inline-block w-full rounded-xl bg-blue-600 py-3 text-xs font-bold text-white hover:bg-blue-500 transition-colors"
             >
               Sign In via Mobile OTP
             </Link>
@@ -198,28 +198,28 @@ export default function AccountPage() {
     switch (customer.kycStatus) {
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300">
             <CheckCircle2 className="h-3.5 w-3.5" />
             KYC Verified
           </span>
         );
       case 'PENDING_REVIEW':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-300">
             <Clock className="h-3.5 w-3.5" />
             Under Verification
           </span>
         );
       case 'REJECTED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-3 py-1 text-xs font-bold text-red-300">
             <AlertCircle className="h-3.5 w-3.5" />
             Verification Failed
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-surface px-3 py-1 text-xs font-bold text-slate-200">
             Not Submitted
           </span>
         );
@@ -267,22 +267,22 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAF8] text-slate-900 font-sans">
+    <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
       <Navbar />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+        <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white shadow-xs">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-gradient text-lg font-bold text-white shadow-lg shadow-blue-600/25">
                 {customer.name ? customer.name[0]?.toUpperCase() : 'U'}
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">
                   {customer.name || 'Valued Customer'}
                 </h1>
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500 font-medium">
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
                   <span>{customer.phone}</span>
                   {customer.email && <span>• {customer.email}</span>}
                 </div>
@@ -296,7 +296,7 @@ export default function AccountPage() {
                   logout();
                   router.push('/');
                 }}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-card px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-surface/50 hover:text-red-400 transition-colors cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span>Logout</span>
@@ -305,13 +305,13 @@ export default function AccountPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="mt-8 flex gap-2 border-b border-slate-100 pb-1">
+          <div className="mt-8 flex gap-2 border-b border-white/5 pb-1">
             <button
               onClick={() => setActiveTab('OVERVIEW')}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'OVERVIEW'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               Overview & Active Rentals
@@ -320,8 +320,8 @@ export default function AccountPage() {
               onClick={() => setActiveTab('KYC')}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'KYC'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               KYC Documents
@@ -335,62 +335,62 @@ export default function AccountPage() {
             {/* Active / Upcoming Rental Console */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">
                   {bookingStatus === 'COMPLETED'
                     ? 'Completed Rental Summary'
                     : 'Current Rental & Handover'}
                 </h2>
-                <div className="text-xs text-slate-500 font-medium">
+                <div className="text-xs text-slate-400 font-medium">
                   Reference:{' '}
-                  <span className="font-mono font-bold text-slate-900">{bookingRef}</span>
+                  <span className="font-mono font-bold text-white">{bookingRef}</span>
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+              <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   {/* Left: Car & Hub Information */}
                   <div className="flex items-start gap-4">
                     <img
                       src={carImage}
                       alt={carName}
-                      className="h-20 w-28 rounded-2xl object-cover bg-slate-100 border border-slate-200 shrink-0"
+                      className="h-20 w-28 rounded-2xl object-cover bg-surface border border-white/10 shrink-0"
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                        <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/30">
                           {bookingRef}
                         </span>
 
                         {bookingStatus === 'CONFIRMED' && (
-                          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                          <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
                             CONFIRMED (READY FOR PICKUP)
                           </span>
                         )}
 
                         {bookingStatus === 'ACTIVE' && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/15 px-2.5 py-0.5 text-[10px] font-bold text-blue-300">
                             <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
                             TRIP IN PROGRESS
                           </span>
                         )}
 
                         {bookingStatus === 'COMPLETED' && (
-                          <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                          <span className="rounded-full bg-surface border border-white/10 px-2.5 py-0.5 text-[10px] font-bold text-slate-200">
                             COMPLETED & SETTLED
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1.5">
+                      <h3 className="text-lg sm:text-xl font-bold text-white mt-1.5">
                         {carName}
                       </h3>
-                      <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-600 font-medium">
+                      <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-300 font-medium">
                         <div className="flex items-center gap-1.5">
-                          <MapPin className="h-3.5 w-3.5 text-amber-600" />
+                          <MapPin className="h-3.5 w-3.5 text-blue-400" />
                           <span>{carLocation}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                          <Calendar className="h-3.5 w-3.5 text-slate-400" />
                           <span>Fastag Active • Unlimited Kilometers</span>
                         </div>
                       </div>
@@ -398,33 +398,33 @@ export default function AccountPage() {
                   </div>
 
                   {/* Right: Lifecycle Actions & Handover Passcode */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 border-t lg:border-t-0 border-slate-100 pt-4 lg:pt-0">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 border-t lg:border-t-0 border-white/5 pt-4 lg:pt-0">
                     <div className="text-right sm:mr-2">
                       <div className="text-[10px] text-slate-400 font-bold uppercase">
                         Rental Paid
                       </div>
-                      <div className="text-base font-black text-slate-900">
+                      <div className="text-base font-black text-white">
                         ₹{totalPaidRupees.toLocaleString('en-IN')}
                       </div>
-                      <div className="text-[10px] text-emerald-600 font-semibold">
+                      <div className="text-[10px] text-emerald-400 font-semibold">
                         Incl. ₹{depositRupees.toLocaleString('en-IN')} Deposit
                       </div>
                     </div>
 
                     {bookingStatus === 'CONFIRMED' && (
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between sm:justify-start gap-2 rounded-xl bg-slate-50 px-3 py-1.5 border border-slate-200">
-                          <span className="text-[11px] font-medium text-slate-500">
+                        <div className="flex items-center justify-between sm:justify-start gap-2 rounded-xl bg-surface/50 px-3 py-1.5 border border-white/10">
+                          <span className="text-[11px] font-medium text-slate-400">
                             Pickup Passcode:
                           </span>
-                          <span className="font-mono text-sm font-black text-slate-900">
+                          <span className="font-mono text-sm font-black text-white">
                             {passcode}
                           </span>
                         </div>
                         <button
                           id="start-trip-btn"
                           onClick={() => setIsHandoverModalOpen(true)}
-                          className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-amber-600 transition-all cursor-pointer shadow-xs"
+                          className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition-all cursor-pointer shadow-xs"
                         >
                           <KeyRound className="h-3.5 w-3.5" />
                           <span>Start Handover & Inspection</span>
@@ -444,7 +444,7 @@ export default function AccountPage() {
                         </button>
                         <a
                           href="tel:+919876543210"
-                          className="text-center text-[11px] font-bold text-slate-500 hover:text-slate-900"
+                          className="text-center text-[11px] font-bold text-slate-400 hover:text-white"
                         >
                           24/7 Roadside Assist (+91 98765 43210)
                         </a>
@@ -453,12 +453,12 @@ export default function AccountPage() {
 
                     {bookingStatus === 'COMPLETED' && (
                       <div className="space-y-3">
-                        <div className="rounded-2xl bg-emerald-50 p-3.5 border border-emerald-200 text-xs text-emerald-900 space-y-1">
+                        <div className="rounded-2xl bg-emerald-500/10 p-3.5 border border-emerald-500/30 text-xs text-emerald-200 space-y-1">
                           <div className="flex items-center gap-1 font-bold">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                             <span>Security Deposit Refunded</span>
                           </div>
-                          <div className="text-[11px] text-emerald-700">
+                          <div className="text-[11px] text-emerald-400">
                             ₹{(settlementResult?.refundAmount ?? 4625).toLocaleString('en-IN')}{' '}
                             released to original UPI account.
                           </div>
@@ -466,14 +466,14 @@ export default function AccountPage() {
 
                         {/* Review Button / Badge */}
                         {reviewSubmitted ? (
-                          <div className="flex items-center gap-1.5 rounded-xl bg-amber-50 border border-amber-200/80 px-3 py-2 text-xs font-bold text-amber-900">
-                            <Star className="h-4 w-4 text-amber-600 fill-amber-500" />
+                          <div className="flex items-center gap-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 px-3 py-2 text-xs font-bold text-blue-200">
+                            <Star className="h-4 w-4 text-amber-400 fill-amber-500" />
                             <span>Review Submitted ({reviewRating}★)</span>
                           </div>
                         ) : (
                           <button
                             onClick={() => setIsReviewModalOpen(true)}
-                            className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-amber-600 transition-colors shadow-xs cursor-pointer"
+                            className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 transition-colors shadow-xs cursor-pointer"
                           >
                             <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
                             <span>Rate & Review Trip</span>
@@ -482,16 +482,16 @@ export default function AccountPage() {
 
                         {/* Dispute / Claim Button / Badge */}
                         {disputeSubmitted ? (
-                          <div className="flex items-center gap-1.5 rounded-xl bg-blue-50 border border-blue-200/80 px-3 py-2 text-xs font-bold text-blue-900">
-                            <Clock className="h-4 w-4 text-blue-600" />
+                          <div className="flex items-center gap-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 px-3 py-2 text-xs font-bold text-blue-200">
+                            <Clock className="h-4 w-4 text-blue-400" />
                             <span>Dispute Under Review (Claim: ₹{disputeClaimAmount})</span>
                           </div>
                         ) : (
                           <button
                             onClick={() => setIsDisputeModalOpen(true)}
-                            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-card px-4 py-2 text-xs font-bold text-slate-200 hover:bg-surface/50 transition-colors cursor-pointer"
                           >
-                            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+                            <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
                             <span>Contest Deduction / Dispute Tolls</span>
                           </button>
                         )}
@@ -502,36 +502,36 @@ export default function AccountPage() {
 
                 {/* Active Trip Telemetry Strip (When ACTIVE) */}
                 {bookingStatus === 'ACTIVE' && (
-                  <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80">
+                  <div className="mt-6 pt-5 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                    <div className="rounded-xl bg-surface/50 p-3 border border-white/10">
                       <span className="text-slate-400 block font-semibold">Starting Odometer</span>
-                      <span className="font-bold text-slate-900 text-sm mt-0.5 flex items-center gap-1">
+                      <span className="font-bold text-white text-sm mt-0.5 flex items-center gap-1">
                         <Gauge className="h-3.5 w-3.5 text-slate-400" />
                         {startOdometer.toLocaleString('en-IN')} km
                       </span>
                     </div>
 
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80">
+                    <div className="rounded-xl bg-surface/50 p-3 border border-white/10">
                       <span className="text-slate-400 block font-semibold">Starting Fuel</span>
-                      <span className="font-bold text-slate-900 text-sm mt-0.5 flex items-center gap-1">
-                        <Fuel className="h-3.5 w-3.5 text-amber-500" />
+                      <span className="font-bold text-white text-sm mt-0.5 flex items-center gap-1">
+                        <Fuel className="h-3.5 w-3.5 text-blue-500" />
                         {startFuel}% Full
                       </span>
                     </div>
 
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80">
+                    <div className="rounded-xl bg-surface/50 p-3 border border-white/10">
                       <span className="text-slate-400 block font-semibold">Fastag Tag Status</span>
-                      <span className="font-bold text-emerald-700 text-sm mt-0.5 flex items-center gap-1">
-                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      <span className="font-bold text-emerald-400 text-sm mt-0.5 flex items-center gap-1">
+                        <Check className="h-3.5 w-3.5 text-emerald-400" />
                         Active & Linked
                       </span>
                     </div>
 
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80">
+                    <div className="rounded-xl bg-surface/50 p-3 border border-white/10">
                       <span className="text-slate-400 block font-semibold">
                         Security Deposit Held
                       </span>
-                      <span className="font-bold text-slate-900 text-sm mt-0.5">
+                      <span className="font-bold text-white text-sm mt-0.5">
                         ₹{depositRupees.toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -544,48 +544,33 @@ export default function AccountPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Link
                 href="/cars"
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group"
+                className="rounded-2xl border border-white/10 bg-card p-5 shadow-xs hover:border-white/15 transition-all flex items-center justify-between group"
               >
                 <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
+                  <div className="text-xs font-bold text-white group-hover:text-blue-400">
                     Browse Cars
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
+                  <div className="text-[11px] text-slate-400 mt-0.5">
                     Explore available cars in Pune & Nashik
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
+                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-white" />
               </Link>
 
               <div
                 onClick={() => setActiveTab('KYC')}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group cursor-pointer"
+                className="rounded-2xl border border-white/10 bg-card p-5 shadow-xs hover:border-white/15 transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
+                  <div className="text-xs font-bold text-white group-hover:text-blue-400">
                     Manage KYC
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
+                  <div className="text-[11px] text-slate-400 mt-0.5">
                     Upload or update Driving License
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
+                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-white" />
               </div>
-
-              <Link
-                href="/admin/vehicles"
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex items-center justify-between group"
-              >
-                <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-amber-700">
-                    Fleet Operations
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    Admin fleet command & vehicle status
-                  </div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900" />
-              </Link>
             </div>
           </div>
         )}
@@ -593,27 +578,27 @@ export default function AccountPage() {
         {/* Tab 2: KYC Documents */}
         {activeTab === 'KYC' && (
           <div className="mt-8 space-y-6">
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+            <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
               <div className="max-w-2xl">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-700">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-400">
                   <ShieldCheck className="h-4 w-4" />
                   <span>Mandatory Verification</span>
                 </div>
-                <h2 className="mt-1 text-xl font-bold text-slate-900">
+                <h2 className="mt-1 text-xl font-bold text-white">
                   Driving License Verification
                 </h2>
-                <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+                <p className="mt-1 text-xs text-slate-400 leading-relaxed">
                   As per Maharashtra transport regulations for self-drive rentals, a valid Indian
                   Driving License is mandatory before vehicle handover.
                 </p>
 
                 {uploadSuccess ? (
-                  <div className="mt-6 rounded-2xl bg-emerald-50 p-4 border border-emerald-200 text-emerald-800 text-xs">
+                  <div className="mt-6 rounded-2xl bg-emerald-500/10 p-4 border border-emerald-500/30 text-emerald-300 text-xs">
                     <div className="flex items-center gap-2 font-bold">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                      <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                       <span>Documents Submitted Successfully!</span>
                     </div>
-                    <p className="mt-1 text-[11px] text-emerald-700">
+                    <p className="mt-1 text-[11px] text-emerald-400">
                       Our fleet verification agent will verify your license before vehicle pickup.
                       You're all set!
                     </p>
@@ -621,7 +606,7 @@ export default function AccountPage() {
                 ) : (
                   <form onSubmit={handleUploadKyc} className="mt-6 space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700">
+                      <label className="text-xs font-bold text-slate-200">
                         Driving License Number
                       </label>
                       <input
@@ -630,12 +615,12 @@ export default function AccountPage() {
                         value={dlNumber}
                         onChange={(e) => setDlNumber(e.target.value)}
                         placeholder="e.g. MH-12-2018-004821"
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-mono font-medium text-slate-900 focus:border-amber-600 focus:outline-none"
+                        className="mt-1 w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-xs font-mono font-medium text-white focus:border-blue-600 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700">
+                      <label className="text-xs font-bold text-slate-200">
                         License Expiry Date
                       </label>
                       <input
@@ -643,18 +628,18 @@ export default function AccountPage() {
                         required
                         value={expiryDate}
                         onChange={(e) => setExpiryDate(e.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-amber-600 focus:outline-none"
+                        className="mt-1 w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-xs font-medium text-white focus:border-blue-600 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                      <label className="text-xs font-bold text-slate-200 block mb-1">
                         Upload License Front & Back Photo
                       </label>
-                      <div className="flex items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:border-amber-500 transition-colors cursor-pointer bg-slate-50">
+                      <div className="flex items-center justify-center rounded-2xl border-2 border-dashed border-white/10 p-6 text-center hover:border-blue-500 transition-colors cursor-pointer bg-surface/50">
                         <div>
                           <Upload className="mx-auto h-8 w-8 text-slate-400" />
-                          <span className="mt-2 block text-xs font-bold text-slate-700">
+                          <span className="mt-2 block text-xs font-bold text-slate-200">
                             Click to upload or drag and drop
                           </span>
                           <span className="text-[10px] text-slate-400">PNG, JPG up to 5MB</span>
@@ -665,7 +650,7 @@ export default function AccountPage() {
                     <button
                       type="submit"
                       disabled={isUploading}
-                      className="rounded-xl bg-slate-900 px-6 py-3 text-xs font-bold text-white shadow-xs hover:bg-amber-600 transition-colors cursor-pointer disabled:opacity-50"
+                      className="rounded-xl bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-xs hover:bg-blue-500 transition-colors cursor-pointer disabled:opacity-50"
                     >
                       {isUploading ? 'Submitting Documents...' : 'Submit for Verification'}
                     </button>
@@ -682,15 +667,15 @@ export default function AccountPage() {
       {/* ========================================================================= */}
       {isHandoverModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 sm:p-8 shadow-2xl border border-white/5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-white/5">
               <div className="flex items-center gap-2">
-                <KeyRound className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-bold text-slate-900">Vehicle Handover Inspection</h3>
+                <KeyRound className="h-5 w-5 text-blue-400" />
+                <h3 className="text-lg font-bold text-white">Vehicle Handover Inspection</h3>
               </div>
               <button
                 onClick={() => setIsHandoverModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -698,8 +683,8 @@ export default function AccountPage() {
 
             <form onSubmit={handleConfirmHandover} className="mt-5 space-y-4 text-xs">
               {/* Passcode Verification */}
-              <div className="rounded-2xl bg-amber-50 p-4 border border-amber-200">
-                <label className="text-xs font-bold text-amber-950 block mb-1">
+              <div className="rounded-2xl bg-amber-500/10 p-4 border border-amber-500/30">
+                <label className="text-xs font-bold text-amber-100 block mb-1">
                   Enter 4-Digit Pickup Passcode
                 </label>
                 <input
@@ -708,9 +693,9 @@ export default function AccountPage() {
                   maxLength={4}
                   value={enteredPasscode}
                   onChange={(e) => setEnteredPasscode(e.target.value)}
-                  className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-center font-mono text-lg font-black tracking-widest text-slate-900 focus:border-amber-600 focus:outline-none"
+                  className="w-full rounded-xl border border-amber-500/40 bg-card px-3 py-2 text-center font-mono text-lg font-black tracking-widest text-white focus:border-amber-600 focus:outline-none"
                 />
-                <span className="text-[11px] text-amber-800 block mt-1.5">
+                <span className="text-[11px] text-amber-300 block mt-1.5">
                   Confirm the passcode matches the code provided on your booking confirmation.
                 </span>
               </div>
@@ -718,7 +703,7 @@ export default function AccountPage() {
               {/* Starting Metrics */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">
+                  <label className="font-bold text-slate-200 block mb-1">
                     Starting Odometer (km)
                   </label>
                   <input
@@ -726,12 +711,12 @@ export default function AccountPage() {
                     required
                     value={startOdometer}
                     onChange={(e) => setStartOdometer(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Fuel Level (%)</label>
+                  <label className="font-bold text-slate-200 block mb-1">Fuel Level (%)</label>
                   <input
                     type="number"
                     required
@@ -739,64 +724,64 @@ export default function AccountPage() {
                     max={100}
                     value={startFuel}
                     onChange={(e) => setStartFuel(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Physical Condition Checklist */}
               <div className="space-y-2 pt-2">
-                <span className="font-bold text-slate-800 block">Pre-Handover Checklist</span>
+                <span className="font-bold text-slate-100 block">Pre-Handover Checklist</span>
 
-                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
+                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-white/10 bg-surface/50 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={handoverCheckedFastag}
                     onChange={(e) => setHandoverCheckedFastag(e.target.checked)}
-                    className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
+                    className="h-4 w-4 rounded text-blue-400 focus:ring-blue-500"
                   />
-                  <span className="text-slate-800 font-medium">
+                  <span className="text-slate-100 font-medium">
                     Fastag windshield RFID tag is active
                   </span>
                 </label>
 
-                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
+                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-white/10 bg-surface/50 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={handoverCheckedClean}
                     onChange={(e) => setHandoverCheckedClean(e.target.checked)}
-                    className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
+                    className="h-4 w-4 rounded text-blue-400 focus:ring-blue-500"
                   />
-                  <span className="text-slate-800 font-medium">
+                  <span className="text-slate-100 font-medium">
                     Vehicle is clean with 0 existing scratches
                   </span>
                 </label>
 
-                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
+                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-white/10 bg-surface/50 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={handoverCheckedSpare}
                     onChange={(e) => setHandoverCheckedSpare(e.target.checked)}
-                    className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
+                    className="h-4 w-4 rounded text-blue-400 focus:ring-blue-500"
                   />
-                  <span className="text-slate-800 font-medium">
+                  <span className="text-slate-100 font-medium">
                     Spare tire and tool kit verified in boot
                   </span>
                 </label>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/5">
                 <button
                   type="button"
                   onClick={() => setIsHandoverModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   id="submit-handover-btn"
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-amber-600 transition-colors cursor-pointer shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors cursor-pointer shadow-md"
                 >
                   Confirm Handover & Unlock Car
                 </button>
@@ -811,15 +796,15 @@ export default function AccountPage() {
       {/* ========================================================================= */}
       {isReturnModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 sm:p-8 shadow-2xl border border-white/5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-white/5">
               <div className="flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-emerald-600" />
-                <h3 className="text-lg font-bold text-slate-900">Return & Deposit Settlement</h3>
+                <Receipt className="h-5 w-5 text-emerald-400" />
+                <h3 className="text-lg font-bold text-white">Return & Deposit Settlement</h3>
               </div>
               <button
                 onClick={() => setIsReturnModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -828,14 +813,14 @@ export default function AccountPage() {
             <form onSubmit={handleConfirmReturn} className="mt-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Final Odometer (km)</label>
+                  <label className="font-bold text-slate-200 block mb-1">Final Odometer (km)</label>
                   <input
                     type="number"
                     required
                     min={startOdometer}
                     value={returnOdometer}
                     onChange={(e) => setReturnOdometer(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
                   />
                   <span className="text-[10px] text-slate-400 mt-1 block">
                     Distance: {Math.max(0, returnOdometer - startOdometer)} km driven
@@ -843,7 +828,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Return Fuel (%)</label>
+                  <label className="font-bold text-slate-200 block mb-1">Return Fuel (%)</label>
                   <input
                     type="number"
                     required
@@ -851,7 +836,7 @@ export default function AccountPage() {
                     max={100}
                     value={returnFuel}
                     onChange={(e) => setReturnFuel(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
                   />
                   <span className="text-[10px] text-slate-400 mt-1 block">
                     Pickup was {startFuel}%
@@ -860,7 +845,7 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">
+                <label className="font-bold text-slate-200 block mb-1">
                   Fastag Toll Charges Incurred (₹)
                 </label>
                 <input
@@ -868,54 +853,54 @@ export default function AccountPage() {
                   min={0}
                   value={fastagTolls}
                   onChange={(e) => setFastagTolls(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
                 />
               </div>
 
               {/* Settlement Calculation Live Breakdown */}
-              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 space-y-2 text-xs">
-                <span className="font-bold text-slate-900 block border-b border-slate-200 pb-2">
+              <div className="rounded-2xl bg-surface/50 p-4 border border-white/10 space-y-2 text-xs">
+                <span className="font-bold text-white block border-b border-white/10 pb-2">
                   Security Deposit Release Breakdown
                 </span>
 
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-300">
                   <span>Original Security Deposit:</span>
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-white">
                     ₹{depositRupees.toLocaleString('en-IN')}
                   </span>
                 </div>
 
                 {settlementPreview.tollsDeduction > 0 && (
-                  <div className="flex justify-between text-slate-600">
+                  <div className="flex justify-between text-slate-300">
                     <span>Fastag Electronic Tolls:</span>
-                    <span className="font-semibold text-red-600">
+                    <span className="font-semibold text-red-400">
                       -₹{settlementPreview.tollsDeduction.toLocaleString('en-IN')}
                     </span>
                   </div>
                 )}
 
                 {settlementPreview.fuelDeduction > 0 && (
-                  <div className="flex justify-between text-slate-600">
+                  <div className="flex justify-between text-slate-300">
                     <span>Fuel Adjustment Shortage:</span>
-                    <span className="font-semibold text-red-600">
+                    <span className="font-semibold text-red-400">
                       -₹{settlementPreview.fuelDeduction.toLocaleString('en-IN')}
                     </span>
                   </div>
                 )}
 
-                <div className="flex justify-between border-t border-slate-200 pt-2 text-sm font-extrabold text-slate-900">
+                <div className="flex justify-between border-t border-white/10 pt-2 text-sm font-extrabold text-white">
                   <span>Net Refund to Bank / UPI:</span>
-                  <span className="text-emerald-700">
+                  <span className="text-emerald-400">
                     ₹{settlementPreview.refundAmount.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/5">
                 <button
                   type="button"
                   onClick={() => setIsReturnModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -938,30 +923,30 @@ export default function AccountPage() {
       {/* ========================================================================= */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 sm:p-8 shadow-2xl border border-white/5">
+            <div className="flex items-center justify-between pb-3 border-b border-white/5">
               <div className="flex items-center gap-2">
                 <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-                <h3 className="text-lg font-bold text-slate-900">Rate & Review Your Trip</h3>
+                <h3 className="text-lg font-bold text-white">Rate & Review Your Trip</h3>
               </div>
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitReview} className="mt-5 space-y-4 text-xs">
-              <p className="text-slate-600">
+              <p className="text-slate-300">
                 How was your experience renting <strong>{carName}</strong>? Your feedback ensures
                 transparent standards for our Pune & Nashik fleet.
               </p>
 
               {/* Star Category Ratings */}
-              <div className="grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-4 border border-slate-200">
+              <div className="grid grid-cols-2 gap-3 rounded-2xl bg-surface/50 p-4 border border-white/10">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Overall Rating</label>
+                  <label className="font-bold text-slate-200 block mb-1">Overall Rating</label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
@@ -981,7 +966,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Vehicle Cleanliness</label>
+                  <label className="font-bold text-slate-200 block mb-1">Vehicle Cleanliness</label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
@@ -1003,7 +988,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">
+                  <label className="font-bold text-slate-200 block mb-1">
                     Mechanical Condition
                   </label>
                   <div className="flex items-center gap-1">
@@ -1027,7 +1012,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">
+                  <label className="font-bold text-slate-200 block mb-1">
                     Handover & Passcode Ease
                   </label>
                   <div className="flex items-center gap-1">
@@ -1050,28 +1035,28 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Your Written Review</label>
+                <label className="font-bold text-slate-200 block mb-1">Your Written Review</label>
                 <textarea
                   required
                   rows={3}
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                   placeholder="Tell us about the vehicle condition, road trip experience, pickup smoothness..."
-                  className="w-full rounded-xl border border-slate-300 p-3 text-slate-900 focus:border-amber-600 focus:outline-hidden"
+                  className="w-full rounded-xl border border-white/15 p-3 text-white focus:border-blue-600 focus:outline-hidden"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/5">
                 <button
                   type="button"
                   onClick={() => setIsReviewModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-amber-600 transition-colors cursor-pointer shadow-md flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors cursor-pointer shadow-md flex items-center gap-1.5"
                 >
                   <Check className="h-4 w-4" />
                   <span>Submit Verified Review</span>
@@ -1087,32 +1072,32 @@ export default function AccountPage() {
       {/* ========================================================================= */}
       {isDisputeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 sm:p-8 shadow-2xl border border-white/5">
+            <div className="flex items-center justify-between pb-3 border-b border-white/5">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-bold text-slate-900">Contest Settlement Deduction</h3>
+                <AlertTriangle className="h-5 w-5 text-amber-400" />
+                <h3 className="text-lg font-bold text-white">Contest Settlement Deduction</h3>
               </div>
               <button
                 onClick={() => setIsDisputeModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitDispute} className="mt-5 space-y-4 text-xs">
-              <p className="text-slate-600">
+              <p className="text-slate-300">
                 Believe you were incorrectly charged for Fastag tolls or fuel shortage? Submit your
                 counter-evidence for our operations desk.
               </p>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Reason for Dispute</label>
+                <label className="font-bold text-slate-200 block mb-1">Reason for Dispute</label>
                 <select
                   value={disputeReason}
                   onChange={(e: any) => setDisputeReason(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-medium focus:border-amber-600 focus:outline-hidden"
+                  className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-medium focus:border-blue-600 focus:outline-hidden"
                 >
                   <option value="FASTAG_MISMATCH">Fastag Toll Duplicate / Mismatch</option>
                   <option value="FUEL_READING_INCORRECT">Incorrect Fuel Gauge Reading</option>
@@ -1122,7 +1107,7 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">
+                <label className="font-bold text-slate-200 block mb-1">
                   Claimed Refund Amount (₹)
                 </label>
                 <input
@@ -1132,12 +1117,12 @@ export default function AccountPage() {
                   max={5000}
                   value={disputeClaimAmount}
                   onChange={(e) => setDisputeClaimAmount(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 font-bold focus:border-amber-600 focus:outline-hidden"
+                  className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">
+                <label className="font-bold text-slate-200 block mb-1">
                   Detailed Explanation & Toll/Fuel Details
                 </label>
                 <textarea
@@ -1146,15 +1131,15 @@ export default function AccountPage() {
                   value={disputeNotes}
                   onChange={(e) => setDisputeNotes(e.target.value)}
                   placeholder="Provide toll plaza name, fuel station bill details, or reference timestamp..."
-                  className="w-full rounded-xl border border-slate-300 p-3 text-slate-900 focus:border-amber-600 focus:outline-hidden"
+                  className="w-full rounded-xl border border-white/15 p-3 text-white focus:border-blue-600 focus:outline-hidden"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/5">
                 <button
                   type="button"
                   onClick={() => setIsDisputeModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-bold cursor-pointer"
                 >
                   Cancel
                 </button>

@@ -270,24 +270,24 @@ function CarsSearchContent() {
   ]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAF8] text-slate-900 font-sans">
+    <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
       <Navbar selectedCity={city} />
 
       {/* Top Search Context Bar */}
-      <div className="border-b border-slate-200 bg-white py-4 shadow-xs">
+      <div className="border-b border-white/10 bg-card py-4 shadow-xs">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
               <MapPin className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Searching In
               </div>
-              <div className="text-base font-bold text-slate-900 capitalize">
+              <div className="text-base font-bold text-white capitalize">
                 {city === 'nashik' ? 'Nashik' : 'Pune'}
                 {location && location !== 'all' && (
-                  <span className="text-xs font-normal text-slate-500 ml-1.5">
+                  <span className="text-xs font-normal text-slate-400 ml-1.5">
                     ({location.replace('loc-pn-', '').replace('loc-ns-', '')})
                   </span>
                 )}
@@ -297,8 +297,8 @@ function CarsSearchContent() {
 
           {/* Quick Date Badge */}
           {start && end && (
-            <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
-              <Calendar className="h-3.5 w-3.5 text-amber-600" />
+            <div className="flex items-center gap-2 rounded-xl bg-surface px-3 py-1.5 text-xs font-semibold text-slate-200">
+              <Calendar className="h-3.5 w-3.5 text-blue-400" />
               <span>
                 {start.split('T')[0]} to {end.split('T')[0]}
               </span>
@@ -308,9 +308,9 @@ function CarsSearchContent() {
           {/* Mobile Filter Button */}
           <button
             onClick={() => setMobileFilterOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-xs md:hidden"
+            className="flex items-center gap-2 rounded-xl border border-white/15 bg-card px-3.5 py-2 text-xs font-bold text-slate-100 shadow-xs md:hidden"
           >
-            <Filter className="h-4 w-4 text-amber-600" />
+            <Filter className="h-4 w-4 text-blue-400" />
             <span>Filters ({filteredCars.length})</span>
           </button>
         </div>
@@ -320,10 +320,10 @@ function CarsSearchContent() {
       <main className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 py-8 sm:px-6 lg:px-8">
         {/* Left Filter Sidebar (Desktop) */}
         <aside className="hidden w-64 shrink-0 md:block">
-          <div className="sticky top-24 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
-                <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+          <div className="sticky top-24 rounded-2xl border border-white/10 bg-card p-5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <div className="flex items-center gap-2 font-bold text-sm text-white">
+                <SlidersHorizontal className="h-4 w-4 text-blue-400" />
                 <span>Filters</span>
               </div>
               <button
@@ -334,15 +334,15 @@ function CarsSearchContent() {
                   setSelectedSeats('ALL');
                   setMaxPrice(6000);
                 }}
-                className="text-xs font-semibold text-amber-600 hover:underline"
+                className="text-xs font-semibold text-blue-400 hover:underline"
               >
                 Reset All
               </button>
             </div>
 
             {/* Price Slider */}
-            <div className="mt-5 border-b border-slate-100 pb-5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            <div className="mt-5 border-b border-white/5 pb-5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Max Daily Rate: ₹{maxPrice.toLocaleString('en-IN')}
               </label>
               <input
@@ -352,7 +352,7 @@ function CarsSearchContent() {
                 step="500"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="mt-2 w-full accent-amber-600 cursor-pointer"
+                className="mt-2 w-full accent-blue-600 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-400 mt-1">
                 <span>₹1,500</span>
@@ -361,8 +361,8 @@ function CarsSearchContent() {
             </div>
 
             {/* Vehicle Type / Category */}
-            <div className="mt-5 border-b border-slate-100 pb-5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            <div className="mt-5 border-b border-white/5 pb-5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Vehicle Type
               </label>
               <div className="mt-2.5 space-y-1.5">
@@ -375,14 +375,14 @@ function CarsSearchContent() {
                 ].map((item) => (
                   <label
                     key={item.id}
-                    className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer hover:text-slate-900"
+                    className="flex items-center gap-2 text-xs font-medium text-slate-200 cursor-pointer hover:text-white"
                   >
                     <input
                       type="radio"
                       name="category"
                       checked={selectedCategory === item.id}
                       onChange={() => setSelectedCategory(item.id)}
-                      className="accent-amber-600"
+                      className="accent-blue-600"
                     />
                     <span>{item.label}</span>
                   </label>
@@ -391,8 +391,8 @@ function CarsSearchContent() {
             </div>
 
             {/* Transmission */}
-            <div className="mt-5 border-b border-slate-100 pb-5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            <div className="mt-5 border-b border-white/5 pb-5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Transmission
               </label>
               <div className="mt-2.5 flex gap-2">
@@ -402,8 +402,8 @@ function CarsSearchContent() {
                     onClick={() => setSelectedTransmission(t)}
                     className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                       selectedTransmission === t
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-surface text-slate-200 hover:bg-slate-700'
                     }`}
                   >
                     {t === 'ALL' ? 'All' : t.charAt(0) + t.slice(1).toLowerCase()}
@@ -413,8 +413,8 @@ function CarsSearchContent() {
             </div>
 
             {/* Fuel Type */}
-            <div className="mt-5 border-b border-slate-100 pb-5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            <div className="mt-5 border-b border-white/5 pb-5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Fuel Type
               </label>
               <div className="mt-2.5 flex flex-wrap gap-2">
@@ -424,8 +424,8 @@ function CarsSearchContent() {
                     onClick={() => setSelectedFuel(f)}
                     className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                       selectedFuel === f
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-surface text-slate-200 hover:bg-slate-700'
                     }`}
                   >
                     {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}
@@ -436,7 +436,7 @@ function CarsSearchContent() {
 
             {/* Seating Capacity */}
             <div className="mt-5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Seating Capacity
               </label>
               <div className="mt-2.5 flex gap-2">
@@ -450,8 +450,8 @@ function CarsSearchContent() {
                     onClick={() => setSelectedSeats(s.id)}
                     className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                       selectedSeats === s.id
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-surface text-slate-200 hover:bg-slate-700'
                     }`}
                   >
                     {s.label}
@@ -465,23 +465,23 @@ function CarsSearchContent() {
         {/* Right Vehicle Results */}
         <div className="flex-1">
           {/* Header & Sort Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4 mb-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+              <h1 className="text-xl sm:text-2xl font-bold text-white">
                 Available Cars in {city === 'nashik' ? 'Nashik' : 'Pune'}
               </h1>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Showing {filteredCars.length} verified vehicles with guaranteed availability
               </p>
             </div>
 
             {/* Sort Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-500">Sort by:</span>
+              <span className="text-xs font-medium text-slate-400">Sort by:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-900 shadow-xs focus:border-amber-600 focus:outline-none"
+                className="rounded-xl border border-white/15 bg-card px-3 py-1.5 text-xs font-bold text-white shadow-xs focus:border-blue-600 focus:outline-none"
               >
                 <option value="RECOMMENDED">Recommended</option>
                 <option value="PRICE_ASC">Price: Low to High</option>
@@ -499,12 +499,12 @@ function CarsSearchContent() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-xs">
+            <div className="rounded-2xl border border-white/10 bg-card p-12 text-center shadow-xs">
               <Car className="mx-auto h-12 w-12 text-slate-300" />
-              <h3 className="mt-4 text-base font-bold text-slate-900">
+              <h3 className="mt-4 text-base font-bold text-white">
                 No vehicles match your current filters
               </h3>
-              <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
                 Try widening your price range, clearing fuel or transmission selections.
               </p>
               <button
@@ -515,7 +515,7 @@ function CarsSearchContent() {
                   setSelectedSeats('ALL');
                   setMaxPrice(6000);
                 }}
-                className="mt-5 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800"
+                className="mt-5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500"
               >
                 Reset Filters
               </button>

@@ -8,16 +8,16 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-slate-900 text-white hover:bg-slate-800 shadow-sm focus-visible:ring-slate-950',
-        brand: 'bg-amber-600 text-white hover:bg-amber-700 shadow-sm focus-visible:ring-amber-600',
+          'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/20 focus-visible:ring-blue-600',
+        brand: 'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/20 focus-visible:ring-blue-600',
         emerald:
-          'bg-emerald-700 text-white hover:bg-emerald-800 shadow-sm focus-visible:ring-emerald-700',
-        secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400',
+          'bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm focus-visible:ring-emerald-600',
+        secondary: 'bg-surface text-slate-100 hover:bg-slate-700 focus-visible:ring-slate-400',
         outline:
-          'border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus-visible:ring-slate-400',
+          'border border-white/15 bg-card text-white hover:bg-surface focus-visible:ring-blue-500',
         ghost:
-          'text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400',
-        link: 'text-amber-600 underline-offset-4 hover:underline focus-visible:ring-amber-600',
+          'text-slate-300 hover:bg-surface hover:text-white focus-visible:ring-blue-500',
+        link: 'text-blue-400 underline-offset-4 hover:underline focus-visible:ring-blue-400',
       },
       size: {
         sm: 'h-8 px-3 text-xs',
