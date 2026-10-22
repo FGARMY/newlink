@@ -19,11 +19,19 @@ import {
   X,
   Filter,
   Check,
+  Lock,
+  KeyRound,
+  FileCheck2,
+  Compass,
+  PhoneCall,
+  RotateCcw,
+  Navigation,
 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { SearchWidget } from '../components/SearchWidget';
 import { VehicleCard } from '../components/VehicleCard';
 import { Footer } from '../components/Footer';
+import { HubLocatorModal } from '../components/HubLocatorModal';
 import type { VehicleCard as VehicleCardType } from '@newlink/contracts';
 
 // Seeded inventory for Pune & Nashik
@@ -217,6 +225,8 @@ export default function HomePage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [hubLocatorOpen, setHubLocatorOpen] = useState(false);
+  const [hubLocatorCity, setHubLocatorCity] = useState<'pune' | 'nashik'>('pune');
 
   // Filter state (City kept inside Sort/Filter so front page remains clean)
   const [filterCity, setFilterCity] = useState<'all' | 'pune' | 'nashik'>('all');
@@ -480,228 +490,602 @@ export default function HomePage() {
       </section>
 
       {/* ===== HOW IT WORKS SECTION ===== */}
-      <section className="bg-white dark:bg-card py-16 sm:py-20 border-y border-slate-200/80 dark:border-white/10 transition-colors">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-              Simple &amp; Transparent
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-              How Renting with Speion Cars Works
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-canvas dark:via-surface/40 dark:to-canvas py-20 sm:py-24 border-y border-slate-200/80 dark:border-white/10 transition-colors">
+        {/* Soft background aura glows */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-3.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-300">
+              <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <span>EFFORTLESS SELF-DRIVE EXPERIENCE</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white mt-3 tracking-tight font-display">
+              How Renting with Speion Works
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              No lengthy paperwork or dealership queues. Book in under two minutes from your phone.
+            <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+              No dealership counters, no paperwork hurdles, and no surprise deductions. Book in under two minutes from your phone.
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-4">
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-lg border border-blue-500/20 shadow-xs">
-                1
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Step 1 */}
+            <div className="relative flex flex-col justify-between rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-card/90 p-7 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-md group">
+              <div className="absolute top-6 right-6 font-display font-black text-3xl text-slate-200 dark:text-white/10 select-none group-hover:text-blue-500/20 transition-colors">
+                01
               </div>
-              <h3 className="mt-4 text-sm font-bold text-slate-900 dark:text-white">Choose Dates &amp; Hub</h3>
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Pick Pune or Nashik, select your convenient pickup hub and trip hours.
-              </p>
+              <div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
+                  <MapPin className="h-6 w-6" />
+                </div>
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="rounded-md bg-blue-100 dark:bg-blue-500/20 px-2 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-300">
+                    Step 1
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    Instant Availability
+                  </span>
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-white font-display">
+                  Choose Dates &amp; Hub
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                  Select Pune or Nashik. Pick your designated airport parking bay, express city hub, or select doorstep delivery.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>24/7 Airport &amp; Highway Bays</span>
+              </div>
             </div>
 
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-lg border border-blue-500/20 shadow-xs">
-                2
+            {/* Step 2 */}
+            <div className="relative flex flex-col justify-between rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-card/90 p-7 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-md group">
+              <div className="absolute top-6 right-6 font-display font-black text-3xl text-slate-200 dark:text-white/10 select-none group-hover:text-sky-500/20 transition-colors">
+                02
               </div>
-              <h3 className="mt-4 text-sm font-bold text-slate-900 dark:text-white">Select Your Car</h3>
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Browse verified cars with genuine photos, transparent rates, and sanitized interiors.
-              </p>
+              <div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 group-hover:scale-105 transition-transform">
+                  <Car className="h-6 w-6" />
+                </div>
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="rounded-md bg-sky-100 dark:bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-700 dark:text-sky-300">
+                    Step 2
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    Zero Bait &amp; Switch
+                  </span>
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-white font-display">
+                  Select Exact Car
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                  Browse authentic photos of the actual car you will drive. Inspect verified transmission, fuel type, boot space, and sanitization.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Exact Number Plate &amp; Specs</span>
+              </div>
             </div>
 
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-lg border border-blue-500/20 shadow-xs">
-                3
+            {/* Step 3 */}
+            <div className="relative flex flex-col justify-between rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-card/90 p-7 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-md group">
+              <div className="absolute top-6 right-6 font-display font-black text-3xl text-slate-200 dark:text-white/10 select-none group-hover:text-emerald-500/20 transition-colors">
+                03
               </div>
-              <h3 className="mt-4 text-sm font-bold text-slate-900 dark:text-white">Fast Digital KYC</h3>
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Quick DL upload and secure payment via UPI, cards or netbanking with a 10-min lock.
-              </p>
+              <div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform">
+                  <FileCheck2 className="h-6 w-6" />
+                </div>
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="rounded-md bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                    Step 3
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    60-Second KYC
+                  </span>
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-white font-display">
+                  Instant Verification
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                  Upload your Driving License or verify via DigiLocker. Secure payment via UPI, cards, or netbanking with a 10-minute instant inventory lock.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Encrypted &amp; 100% Paperless</span>
+              </div>
             </div>
 
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-lg border border-blue-500/20 shadow-xs">
-                4
+            {/* Step 4 */}
+            <div className="relative flex flex-col justify-between rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-card/90 p-7 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-md group">
+              <div className="absolute top-6 right-6 font-display font-black text-3xl text-slate-200 dark:text-white/10 select-none group-hover:text-amber-500/20 transition-colors">
+                04
               </div>
-              <h3 className="mt-4 text-sm font-bold text-slate-900 dark:text-white">Drive with Freedom</h3>
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Collect keys at the hub with our checklist or get it delivered right to your doorstep.
-              </p>
+              <div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform">
+                  <KeyRound className="h-6 w-6" />
+                </div>
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="rounded-md bg-amber-100 dark:bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                    Step 4
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    Fast Handover
+                  </span>
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-white font-display">
+                  Unlock &amp; Drive Free
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                  Collect keys at the bay in under 3 minutes with our mobile checklist, or have our concierge deliver the vehicle right to your door.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>24/7 Roadside Assistance</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== WHY CHOOSE SPEION / COMPANY PROFILE ===== */}
-      <section id="about" className="py-16 sm:py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-              The Speion Standard
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">
-              Built for people who love the drive.
-            </h2>
-            <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              We started in Pune and Nashik with a clear mission: eliminate the uncertainty, surprise penalties, and worn-out vehicles common in traditional car rentals.
-            </p>
+      {/* ===== THE SPEION STANDARD / BENTO GRID ===== */}
+      <section id="about" className="py-20 sm:py-28 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>THE SPEION STANDARD</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white mt-3 tracking-tight font-display">
+            Engineered for drivers who demand excellence.
+          </h2>
+          <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+            We eliminated the friction, bait-and-switch cars, and surprise damage penalties common with traditional car rentals in Maharashtra.
+          </p>
+        </div>
 
-            <div className="mt-8 space-y-4">
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-4 w-4" />
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Card 1: Large Featured Card (Spans 2 cols on lg) */}
+          <div className="lg:col-span-2 relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-8 sm:p-10 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            {/* Background scenic image with deep gradient scrim */}
+            <div className="absolute inset-0 z-0">
+              <Image
+                src="/images/dest-lonavala-hd.jpg"
+                alt="Scenic Western Ghats drive"
+                fill
+                className="object-cover opacity-20 dark:opacity-15 group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-card dark:via-card/90 dark:to-transparent" />
+            </div>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 dark:bg-blue-500/20 px-3 py-1 text-xs font-bold text-blue-700 dark:text-blue-300 border border-blue-500/20">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Zero Bait-and-Switch Guarantee</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-4 font-display">
+                The exact vehicle you select is what you drive.
+              </h3>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-sans leading-relaxed max-w-2xl">
+                Unlike competitors who promise &ldquo;or similar category&rdquo; and downgrade you at the bay, Speion provides the exact vehicle, verified transmission, and precise registration number you reserved.
+              </p>
+
+              {/* Feature pills */}
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-surface/80 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  Real VIN &amp; Odometer Photos
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-surface/80 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  Fleet Under 3 Years Old
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-surface/80 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  Deep Interior Sanitization
+                </span>
+              </div>
+            </div>
+
+            <div className="relative z-10 mt-8 pt-6 border-t border-slate-100 dark:border-white/10 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                  <Compass className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Guaranteed Specific Vehicle</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    No bait-and-switch. You get the exact car you booked, in clean condition.
-                  </p>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">Western Ghats &amp; Expressway Ready</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">Pre-inspected tyres, brakes &amp; fluids for mountain drives</div>
                 </div>
               </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                    Server-Side Double-Booking Shield
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Our atomic reservation engine ensures your chosen car is exclusively locked for you.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                    Swift Security Deposit Refund
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Automated bank refunds initiated within 48 hours of vehicle return inspection.
-                  </p>
-                </div>
-              </div>
+              <Link
+                href="/cars"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:gap-2.5 transition-all"
+              >
+                <span>Browse Available Fleet</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </div>
 
-          <div className="relative rounded-3xl overflow-hidden aspect-4/3 shadow-xl border border-slate-200 dark:border-white/10">
-            <Image
-              src="/images/dest-lonavala.jpg"
-              alt="Road trip through Western Ghats"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-6">
-              <div className="text-white">
-                <div className="text-xs font-semibold text-blue-400">
-                  Road Trips From Pune &amp; Nashik
+          {/* Card 2: Server-Side Concurrency Shield */}
+          <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                  <Lock className="h-6 w-6" />
                 </div>
-                <div className="text-lg font-bold">Lonavala, Mahabaleshwar, Trimbakeshwar, Goa</div>
-                <div className="text-xs text-slate-300 mt-1">
-                  Unlimited memories, zero odometer anxiety.
-                </div>
+                <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Active Concurrency Shield
+                </span>
               </div>
+              <h3 className="mt-5 text-xl font-bold text-slate-900 dark:text-white font-display">
+                Atomic Double-Booking Shield
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                Our backend concurrency engine places a cryptographically sealed reservation lock on your car the instant you enter checkout. You will never arrive to an unavailable car.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Inventory Integrity</span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400">100% Guaranteed Lock</span>
+            </div>
+          </div>
+
+          {/* Card 3: Instant UPI Security Deposit Refund */}
+          <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <RotateCcw className="h-6 w-6" />
+                </div>
+                <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  Within 48 Hours
+                </span>
+              </div>
+              <h3 className="mt-5 text-xl font-bold text-slate-900 dark:text-white font-display">
+                Automated Deposit Release
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                No chasing customer service for your security deposit. Post-trip inspection triggers an automated UPI/bank transfer refund within 48 hours with full audit transparency.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Smart Shield Option</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">₹0 Deposit Available</span>
+            </div>
+          </div>
+
+          {/* Card 4: 24/7 Roadside Assistance */}
+          <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  <PhoneCall className="h-6 w-6" />
+                </div>
+                <span className="rounded-full bg-amber-50 dark:bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  24/7 Maharashtra SOS
+                </span>
+              </div>
+              <h3 className="mt-5 text-xl font-bold text-slate-900 dark:text-white font-display">
+                Highway Breakdown Assist
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                Dedicated rapid-response roadside assistance on Pune-Mumbai Expressway, NH-48, NH-60, Igatpuri, and Khandala ghats with emergency flat tyre and battery jumpstart service.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Helpline</span>
+              <span className="font-bold text-slate-900 dark:text-white">+91 98765 43210</span>
+            </div>
+          </div>
+
+          {/* Card 5: Express Doorstep Delivery */}
+          <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                  <Navigation className="h-6 w-6" />
+                </div>
+                <span className="rounded-full bg-blue-50 dark:bg-blue-500/15 border border-blue-500/30 px-2.5 py-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                  30+ Pincodes
+                </span>
+              </div>
+              <h3 className="mt-5 text-xl font-bold text-slate-900 dark:text-white font-display">
+                Doorstep Handover &amp; Return
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
+                Prefer not to travel to a hub? Our executive brings the sanitized car directly to your apartment, office, or hotel in Pune &amp; Nashik with live delivery ETA.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Delivery Time</span>
+              <span className="font-bold text-blue-600 dark:text-blue-400">60-90 Min Window</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ===== POPULAR PICKUP LOCATIONS ===== */}
-      <section className="bg-slate-100 dark:bg-surface/50 py-16 sm:py-20 border-t border-slate-200/80 dark:border-white/10 transition-colors">
+      <section className="bg-slate-50/80 dark:bg-surface/40 py-20 sm:py-24 border-t border-slate-200/80 dark:border-white/10 transition-colors">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-              Convenient Hubs
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-              Popular Pickup Locations
-            </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Collect at high-connectivity transport nodes or key business districts.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-3.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-300">
+                <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <span>OFFICIAL PICKUP BAYS</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-3 tracking-tight font-display">
+                Convenient Hubs Across Pune &amp; Nashik
+              </h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 font-sans max-w-xl">
+                Collect at high-connectivity airport terminals and key business bypasses, or get your car delivered directly to your doorstep.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setHubLocatorCity('pune');
+                setHubLocatorOpen(true);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-500 px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer shrink-0"
+            >
+              <Navigation className="h-4 w-4" />
+              <span>Explore Interactive Bay Map</span>
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-card p-5 shadow-xs">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold">
-                <MapPin className="h-4 w-4" />
-                <span>Pune Airport</span>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Hub 1: Pune Airport */}
+            <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-lg bg-blue-100 dark:bg-blue-500/20 px-2.5 py-1 text-[11px] font-extrabold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                    Pune
+                  </span>
+                  <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    24 Hours Open
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base mt-4 font-display">
+                  Pune Airport (PNQ)
+                </h3>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">
+                  Lohegaon MLCP Level 2, Bay 4
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed font-sans">
+                  2-minute direct walk from Terminal 1 &amp; 2 arrivals exit. Perfect for inbound flights and immediate city or highway exit.
+                </p>
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-1">Lohegaon Terminal Hub</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Parking Bay 4. Ideal for inbound flights and immediate city exit.
-              </p>
-              <div className="mt-3 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                Operating: 24 Hours
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Walking: 2 mins
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHubLocatorCity('pune');
+                    setHubLocatorOpen(true);
+                  }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View Details</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-card p-5 shadow-xs">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold">
-                <MapPin className="h-4 w-4" />
-                <span>Baner High Street</span>
+            {/* Hub 2: Baner High Street */}
+            <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-lg bg-blue-100 dark:bg-blue-500/20 px-2.5 py-1 text-[11px] font-extrabold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                    Pune West
+                  </span>
+                  <span className="rounded-full bg-slate-100 dark:bg-surface border border-slate-200 dark:border-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                    6 AM &ndash; 11 PM
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base mt-4 font-display">
+                  Baner High Street Hub
+                </h3>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">
+                  Balewadi Promenade Underground Bay
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed font-sans">
+                  Direct ramp to Mumbai-Pune Expressway bypass. Ideal for quick weekend road trips to Lonavala, Khandala, and Mumbai.
+                </p>
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-1">Western Pune Corridor</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Near expressway bypass for quick escapes to Mumbai or Goa.
-              </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-500">Operating: 6 AM - 11 PM</div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Near Balewadi
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHubLocatorCity('pune');
+                    setHubLocatorOpen(true);
+                  }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View Details</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-card p-5 shadow-xs">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold">
-                <MapPin className="h-4 w-4" />
-                <span>Nashik City Centre</span>
+            {/* Hub 3: Viman Nagar */}
+            <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-lg bg-blue-100 dark:bg-blue-500/20 px-2.5 py-1 text-[11px] font-extrabold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                    Pune East
+                  </span>
+                  <span className="rounded-full bg-slate-100 dark:bg-surface border border-slate-200 dark:border-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                    8 AM &ndash; 11 PM
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base mt-4 font-display">
+                  Viman Nagar / Phoenix Bay
+                </h3>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">
+                  West Gate Complex, Phoenix Marketcity
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed font-sans">
+                  Central eastern hub connecting Kharadi IT park, Koregaon Park, and direct Nagar Road highway transit corridor.
+                </p>
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-1">Untwadi Road Mall Hub</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Central access point for vineyards and city business trips.
-              </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-500">Operating: 7 AM - 10 PM</div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  1 min from Metro
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHubLocatorCity('pune');
+                    setHubLocatorOpen(true);
+                  }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View Details</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-card p-5 shadow-xs">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold">
-                <MapPin className="h-4 w-4" />
-                <span>Mumbai Naka Nashik</span>
+            {/* Hub 4: Nashik Mumbai Naka */}
+            <div className="rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-card p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-lg bg-emerald-100 dark:bg-emerald-500/20 px-2.5 py-1 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                    Nashik
+                  </span>
+                  <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    24 Hours Open
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base mt-4 font-display">
+                  Mumbai Naka Interchange
+                </h3>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                  Central National Highway Hub
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed font-sans">
+                  Major interchange point for Sula Vineyards, Trimbakeshwar temple, Shirdi pilgrimages, and Igatpuri expressway travel.
+                </p>
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-1">National Highway Hub</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Direct highway junction for Shirdi, Igatpuri, and Mumbai transit.
-              </p>
-              <div className="mt-3 text-[11px] font-semibold text-slate-500">Operating: 6 AM - 11 PM</div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Opposite Bus Bay
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHubLocatorCity('nashik');
+                    setHubLocatorOpen(true);
+                  }}
+                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View Details</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ===== FINAL CALL TO ACTION ===== */}
-      <section className="relative overflow-hidden bg-primary-gradient py-16 text-white text-center">
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-extrabold sm:text-4xl text-white">
-            Ready to hit the road in Pune or Nashik?
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-black py-20 sm:py-24 text-white border-t border-slate-200/80 dark:border-white/10">
+        {/* Ambient neon radial glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-blue-500/20 blur-3xl pointer-events-none rounded-full" />
+        <div className="absolute -bottom-10 right-10 w-80 h-80 bg-indigo-600/15 blur-3xl pointer-events-none rounded-full" />
+
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-bold text-blue-300 mb-6 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+            <span>INSTANT RESERVATION LOCK &bull; ZERO CANCEL PENALTY UP TO 24H</span>
+          </div>
+
+          <h2 className="text-3xl font-extrabold sm:text-5xl text-white font-display tracking-tight leading-tight">
+            Ready to explore Maharashtra on your terms?
           </h2>
-          <p className="mt-3 text-sm text-blue-100 max-w-xl mx-auto">
-            Book now and enjoy transparent prices, clean vehicles, and complete peace of mind.
+          <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-sans leading-relaxed">
+            Reserve your verified SUV or Sedan in Pune and Nashik today. 100% genuine cars, clean interiors, guaranteed rates, and 24/7 roadside assistance.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/cars"
-              className="rounded-full bg-white text-blue-600 px-7 py-3 text-sm font-bold shadow-lg hover:bg-slate-100 transition-all cursor-pointer"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 text-sm font-extrabold shadow-xl shadow-blue-600/30 hover:scale-105 transition-all cursor-pointer flex items-center gap-2"
             >
-              Search &amp; Book Cars
+              <span>Search &amp; Book Fleet</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setHubLocatorCity('pune');
+                setHubLocatorOpen(true);
+              }}
+              className="rounded-2xl border border-white/20 bg-white/10 hover:bg-white/15 backdrop-blur-md text-white px-7 py-3.5 text-sm font-bold shadow-lg transition-all cursor-pointer flex items-center gap-2"
+            >
+              <MapPin className="h-4 w-4 text-blue-400" />
+              <span>Locate Nearest Hub</span>
+            </button>
+          </div>
+
+          {/* Trust points bar */}
+          <div className="mt-14 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-emerald-400 shrink-0">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-white">100% Sanitized</div>
+                <div className="text-slate-400 text-[11px]">Deep cleaned before trip</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-blue-400 shrink-0">
+                <Zap className="h-4 w-4" />
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-white">Zero Hidden Charges</div>
+                <div className="text-slate-400 text-[11px]">GST &amp; fastag itemized</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-amber-400 shrink-0">
+                <PhoneCall className="h-4 w-4" />
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-white">24/7 Roadside SOS</div>
+                <div className="text-slate-400 text-[11px]">Anywhere in Maharashtra</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-emerald-400 shrink-0">
+                <RotateCcw className="h-4 w-4" />
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-white">Instant UPI Refund</div>
+                <div className="text-slate-400 text-[11px]">Deposit returned in 48h</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -840,6 +1224,13 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* ===== HUB LOCATOR MODAL ===== */}
+      <HubLocatorModal
+        isOpen={hubLocatorOpen}
+        onClose={() => setHubLocatorOpen(false)}
+        selectedCity={hubLocatorCity}
+      />
 
       <Footer />
     </div>
