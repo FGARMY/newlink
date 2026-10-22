@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { BrandLockup } from './BrandLogo';
+import { BecomeHostModal } from './BecomeHostModal';
 
 interface NavbarProps {
   selectedCity?: string;
@@ -30,19 +31,6 @@ export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [howToBookOpen, setHowToBookOpen] = useState(false);
   const [becomeHostOpen, setBecomeHostOpen] = useState(false);
-
-  // Host form states
-  const [hostName, setHostName] = useState('');
-  const [hostPhone, setHostPhone] = useState('');
-  const [hostCar, setHostCar] = useState('');
-  const [hostCity, setHostCity] = useState(selectedCity || 'Pune');
-  const [hostSubmitted, setHostSubmitted] = useState(false);
-
-  const handleHostSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!hostPhone.trim()) return;
-    setHostSubmitted(true);
-  };
 
   return (
     <>
@@ -82,7 +70,6 @@ export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
 
             <button
               onClick={() => {
-                setHostSubmitted(false);
                 setBecomeHostOpen(true);
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-xs font-bold transition-all cursor-pointer shadow-xs"
@@ -151,7 +138,6 @@ export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
             </Link>
             <button
               onClick={() => {
-                setHostSubmitted(false);
                 setBecomeHostOpen(true);
                 setMobileMenuOpen(false);
               }}
@@ -254,145 +240,7 @@ export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
       )}
 
       {/* Become a Host Modal */}
-      {becomeHostOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-card p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white animate-fade-up max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                  <KeyRound className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">Become a Speion Host</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Earn up to ₹45,000/month by sharing your car
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setBecomeHostOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {hostSubmitted ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
-                  <CheckCircle2 className="h-8 w-8" />
-                </div>
-                <h4 className="text-lg font-bold">Interest Received!</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
-                  Thank you, <strong>{hostName || 'Host'}</strong>! Our Speion fleet onboarding specialist will call you at <strong>{hostPhone}</strong> within 24 hours to review your car&apos;s earning potential and schedule inspection.
-                </p>
-                <button
-                  onClick={() => setBecomeHostOpen(false)}
-                  className="mt-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-6 py-2 text-xs font-bold text-white transition-colors cursor-pointer"
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <div className="mt-5 space-y-5">
-                {/* Value Props */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
-                    <TrendingUp className="h-4 w-4 text-emerald-500 mb-1" />
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">High Earnings</div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Earn up to ₹45k/mo with weekly bank payouts</div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
-                    <ShieldCheck className="h-4 w-4 text-blue-500 mb-1" />
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">₹50L Insurance</div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Complete accidental & theft coverage on trip</div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-teal-500 mb-1" />
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">Verified Drivers</div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Aadhaar + driving license authenticated guests</div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-surface border border-slate-200/60 dark:border-white/5">
-                    <Sparkles className="h-4 w-4 text-amber-500 mb-1" />
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">Full Flexibility</div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Block personal dates anytime via host portal</div>
-                  </div>
-                </div>
-
-                {/* Inquiry Form */}
-                <form onSubmit={handleHostSubmit} className="space-y-3 pt-2">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Your Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Ramesh Patil"
-                      value={hostName}
-                      onChange={(e) => setHostName(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="e.g. 9876543210"
-                        value={hostPhone}
-                        onChange={(e) => setHostPhone(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                        Car City
-                      </label>
-                      <select
-                        value={hostCity}
-                        onChange={(e) => setHostCity(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-                      >
-                        <option value="Pune">Pune</option>
-                        <option value="Nashik">Nashik</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Car Make &amp; Model
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Hyundai Creta, Maruti Swift, Mahindra Thar"
-                      value={hostCar}
-                      onChange={(e) => setHostCar(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full mt-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer shadow-md shadow-emerald-500/20"
-                  >
-                    Register as a Host
-                  </button>
-                  <p className="text-[10px] text-center text-slate-400">
-                    Zero upfront listing fee · Free GPS &amp; safety device installation
-                  </p>
-                </form>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <BecomeHostModal isOpen={becomeHostOpen} onClose={() => setBecomeHostOpen(false)} />
     </>
   );
 }

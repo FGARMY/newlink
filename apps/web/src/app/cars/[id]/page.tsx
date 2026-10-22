@@ -20,6 +20,7 @@ import {
   Briefcase,
   Plane,
   Car,
+  Zap,
   Phone,
   FileCheck,
   AlertCircle,
@@ -31,6 +32,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
 import { Footer } from '../../../components/Footer';
+import { HubLocatorModal } from '../../../components/HubLocatorModal';
 import type { VehicleCard as VehicleCardType } from '@newlink/contracts';
 
 const ALL_CARS: Record<string, VehicleCardType> = {
@@ -284,6 +286,13 @@ export default function VehicleDetailsPage() {
   const [name, setName] = useState('Aarav Sharma');
   const [phone, setPhone] = useState('+91 98765 43210');
 
+  // Add-ons State
+  const [zeroLiability, setZeroLiability] = useState(false);
+  const [fastagPack, setFastagPack] = useState<'NONE' | 'PACK_500' | 'PACK_1000'>('NONE');
+  const [doorstepDelivery, setDoorstepDelivery] = useState(false);
+  const [deliveryPincode, setDeliveryPincode] = useState('411014');
+  const [hubModalOpen, setHubModalOpen] = useState(false);
+
   // Mode adjustments
   const modeDiscountRate = mode === 'subscription' ? 0.35 : mode === 'weekday' ? 0.20 : 0;
   const rawDailyRateRupees = vehicle.dailyRatePaise / 100;
@@ -292,17 +301,32 @@ export default function VehicleDetailsPage() {
   const modeDiscountAmount = Math.round(baseRental * modeDiscountRate);
   const effectiveBaseRental = baseRental - modeDiscountAmount;
 
+  // Add-on Cost Calculations
+  const smartShieldCost = zeroLiability ? 299 * days : 0;
+  const fastagCost = fastagPack === 'PACK_500' ? 500 : fastagPack === 'PACK_1000' ? 1000 : 0;
+  const isFreeDelivery = mode === 'subscription';
+  const deliveryCost = doorstepDelivery ? (isFreeDelivery ? 0 : 499) : 0;
+  const totalAddOnsCost = smartShieldCost + fastagCost + deliveryCost;
+
+  const isPunePin = /^411\d{3}$/.test(deliveryPincode.trim());
+  const isNashikPin = /^422\d{3}$/.test(deliveryPincode.trim());
+  const isPincodeValid = isPunePin || isNashikPin;
+
   const [appliedDiscountAmount, setAppliedDiscountAmount] = useState<number>(0);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const taxableValue = Math.max(0, effectiveBaseRental - appliedDiscountAmount);
   const gst = Math.round(taxableValue * 0.18);
-  const rentalTotal = taxableValue + gst;
-  const deposit = mode === 'subscription'
+  const rentalTotal = taxableValue + gst + totalAddOnsCost;
+
+  // Deposit calculation: Zero liability or weekday pass completely waives deposit!
+  const baseDeposit = mode === 'subscription'
     ? Math.round((vehicle.securityDepositPaise / 100) * 0.5) // 50% deposit discount for subscribers
     : mode === 'weekday'
     ? 0 // Zero deposit for verified weekday office commuters
     : vehicle.securityDepositPaise / 100;
+  const deposit = zeroLiability ? 0 : baseDeposit;
+
   const totalPayable = rentalTotal + deposit;
 
   const applyPromo = (rawCode: string) => {
@@ -530,10 +554,19 @@ export default function VehicleDetailsPage() {
 
             {/* Pickup Location Info */}
             <div className="rounded-2xl border border-white/10 bg-card p-6 shadow-xs">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-blue-400" />
-                Pickup & Handover Location
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-blue-400" />
+                  Pickup & Handover Location
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setHubModalOpen(true)}
+                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1 cursor-pointer"
+                >
+                  View Bay Guide & Map
+                </button>
+              </div>
               <div className="mt-3">
                 <div className="text-base font-bold text-white">{vehicle.locationName}</div>
                 <div className="text-xs text-slate-400 mt-1">
@@ -669,6 +702,138 @@ export default function VehicleDetailsPage() {
                 </div>
               </div>
 
+              {/* Trip Add-ons Selection */}
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-200">Trip Add-ons &amp; Protection</label>
+                  <span className="text-[10px] text-emerald-400 font-semibold">Optional Perks</span>
+                </div>
+
+                {/* 1. Smart Shield Zero Liability */}
+                <div
+                  onClick={() => setZeroLiability(!zeroLiability)}
+                  className={`p-3 rounded-2xl border transition-all cursor-pointer ${
+                    zeroLiability
+                      ? 'border-emerald-500/40 bg-emerald-500/10 shadow-xs'
+                      : 'border-white/10 bg-surface/40 hover:bg-surface/60'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        checked={zeroLiability}
+                        onChange={() => {}}
+                        className="mt-0.5 accent-emerald-500 rounded h-4 w-4"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5 flex-wrap">
+                          <span>Smart Shield Zero Liability</span>
+                          <span className="rounded bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 text-[9px] font-extrabold uppercase">
+                            Zero Deposit
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                          Cap financial liability to ₹0 for scratches, dents &amp; mishaps. Waives security deposit!
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-bold text-emerald-400">+₹299/day</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Fastag Pre-Loaded Toll Pass */}
+                <div className="p-3 rounded-2xl border border-white/10 bg-surface/40 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Zap className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Pre-Loaded Fastag Toll Pass</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400">Expressway Ready</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 text-xs">
+                    {[
+                      { id: 'NONE', label: 'No Pass' },
+                      { id: 'PACK_500', label: '+₹500 Pass' },
+                      { id: 'PACK_1000', label: '+₹1,000 Pass' },
+                    ].map((pack) => (
+                      <button
+                        key={pack.id}
+                        type="button"
+                        onClick={() => setFastagPack(pack.id as any)}
+                        className={`rounded-xl py-1.5 text-[11px] font-bold border transition-all cursor-pointer ${
+                          fastagPack === pack.id
+                            ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
+                            : 'bg-surface/50 border-white/5 text-slate-300 hover:bg-surface'
+                        }`}
+                      >
+                        {pack.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Doorstep Express Delivery & Return */}
+                <div className={`p-3 rounded-2xl border transition-all ${
+                  doorstepDelivery
+                    ? 'border-blue-500/40 bg-blue-500/10'
+                    : 'border-white/10 bg-surface/40'
+                }`}>
+                  <div
+                    onClick={() => setDoorstepDelivery(!doorstepDelivery)}
+                    className="flex items-start justify-between gap-2 cursor-pointer"
+                  >
+                    <div className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        checked={doorstepDelivery}
+                        onChange={() => {}}
+                        className="mt-0.5 accent-blue-500 rounded h-4 w-4"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-white">
+                          Doorstep Express Delivery &amp; Return
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                          {isFreeDelivery
+                            ? 'Free with Subscription mode!'
+                            : 'Vehicle delivered directly to your doorstep in Pune or Nashik.'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-bold text-blue-400">
+                        {isFreeDelivery ? 'FREE' : '+₹499'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {doorstepDelivery && (
+                    <div className="mt-2.5 pt-2 border-t border-white/10 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          maxLength={6}
+                          placeholder="Enter 6-digit Pincode"
+                          value={deliveryPincode}
+                          onChange={(e) => setDeliveryPincode(e.target.value)}
+                          className="w-32 rounded-xl border border-white/15 bg-card px-2.5 py-1.5 font-mono text-xs text-white focus:border-blue-500 focus:outline-none"
+                        />
+                        <span className={`text-[11px] font-semibold ${
+                          isPincodeValid ? 'text-emerald-400' : 'text-rose-400'
+                        }`}>
+                          {isPincodeValid
+                            ? isPunePin ? '✓ Pune Pincode Verified' : '✓ Nashik Pincode Verified'
+                            : 'Enter 411xxx or 422xxx'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Coupon Input & Quick Suggestions */}
               <div className="mt-5">
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
@@ -763,6 +928,27 @@ export default function VehicleDetailsPage() {
                   </div>
                 )}
 
+                {smartShieldCost > 0 && (
+                  <div className="flex justify-between text-emerald-400 font-semibold">
+                    <span>Smart Shield Zero Liability ({days}d @ ₹299/d)</span>
+                    <span>+₹{smartShieldCost.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+
+                {fastagCost > 0 && (
+                  <div className="flex justify-between text-amber-300 font-semibold">
+                    <span>Pre-Loaded Fastag Pass ({fastagPack === 'PACK_500' ? '₹500' : '₹1,000'})</span>
+                    <span>+₹{fastagCost.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+
+                {doorstepDelivery && (
+                  <div className="flex justify-between text-blue-300 font-semibold">
+                    <span>Doorstep Express Delivery ({isFreeDelivery ? 'Free' : 'Pune/Nashik'})</span>
+                    <span>{isFreeDelivery ? 'FREE' : `+₹${deliveryCost.toLocaleString('en-IN')}`}</span>
+                  </div>
+                )}
+
                 {appliedDiscountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400 font-semibold">
                     <span>Coupon Discount ({couponCode})</span>
@@ -778,7 +964,7 @@ export default function VehicleDetailsPage() {
                 </div>
 
                 <div className="flex justify-between border-t border-white/10 pt-2 text-white font-bold">
-                  <span>Rental Total</span>
+                  <span>Rental &amp; Add-ons Total</span>
                   <span>₹{rentalTotal.toLocaleString('en-IN')}</span>
                 </div>
 
@@ -786,10 +972,13 @@ export default function VehicleDetailsPage() {
                   <span className="flex items-center gap-1">
                     <Shield className="h-3 w-3 text-emerald-400" />
                     Refundable Security Deposit
-                    {mode === 'subscription' && (
+                    {zeroLiability && (
+                      <span className="text-[10px] text-emerald-400 font-bold ml-1">(Waived by Smart Shield)</span>
+                    )}
+                    {!zeroLiability && mode === 'subscription' && (
                       <span className="text-[10px] text-emerald-400 font-bold ml-1">(50% Off)</span>
                     )}
-                    {mode === 'weekday' && (
+                    {!zeroLiability && mode === 'weekday' && (
                       <span className="text-[10px] text-emerald-400 font-bold ml-1">(Zero Deposit)</span>
                     )}
                   </span>
@@ -1180,6 +1369,13 @@ export default function VehicleDetailsPage() {
           </div>
         </div>
       )}
+
+      {/* Official Pune & Nashik Hub Locator Modal */}
+      <HubLocatorModal
+        isOpen={hubModalOpen}
+        onClose={() => setHubModalOpen(false)}
+        selectedCity={vehicle.cityId === 'city-nashik' ? 'nashik' : 'pune'}
+      />
 
       <Footer />
     </div>

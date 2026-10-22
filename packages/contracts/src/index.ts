@@ -169,6 +169,15 @@ export type SearchVehiclesQuery = z.infer<typeof SearchVehiclesQuerySchema>;
 /* Price Quote & Booking Schemas                                                              */
 /* ------------------------------------------------------------------------------------------ */
 
+export const AddOnsSchema = z.object({
+  zeroLiability: z.boolean().default(false),
+  fastagPack: z.enum(['NONE', 'PACK_500', 'PACK_1000']).default('NONE'),
+  doorstepDelivery: z.boolean().default(false),
+  deliveryAddress: z.string().optional(),
+  deliveryPincode: z.string().optional(),
+});
+export type AddOns = z.infer<typeof AddOnsSchema>;
+
 export const QuoteRequestSchema = z.object({
   vehicleId: z.string(),
   pickupLocationId: z.string(),
@@ -177,11 +186,12 @@ export const QuoteRequestSchema = z.object({
   end: z.string(),
   couponCode: z.string().optional(),
   mode: z.enum(['daily', 'subscription', 'weekday', 'outstation']).optional(),
+  addOns: AddOnsSchema.optional(),
 });
 export type QuoteRequest = z.infer<typeof QuoteRequestSchema>;
 
 export const PricingLineItemSchema = z.object({
-  kind: z.enum(['RENTAL', 'DISCOUNT', 'TAX', 'FEE', 'DEPOSIT']),
+  kind: z.enum(['RENTAL', 'DISCOUNT', 'TAX', 'FEE', 'DEPOSIT', 'ADDON']),
   label: z.string(),
   amountPaise: z.number(),
 });

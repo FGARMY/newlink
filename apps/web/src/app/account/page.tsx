@@ -30,6 +30,12 @@ import {
   Star,
   MessageSquare,
   AlertTriangle,
+  Lock,
+  Unlock,
+  Radio,
+  Volume2,
+  Camera,
+  Smartphone,
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
@@ -70,6 +76,35 @@ export default function AccountPage() {
   const [handoverCheckedFastag, setHandoverCheckedFastag] = useState(true);
   const [handoverCheckedClean, setHandoverCheckedClean] = useState(true);
   const [handoverCheckedSpare, setHandoverCheckedSpare] = useState(true);
+
+  // 4-Angle Photo Inspection State
+  const [inspectionPhotos, setInspectionPhotos] = useState<{
+    front: boolean;
+    rear: boolean;
+    left: boolean;
+    right: boolean;
+  }>({ front: true, rear: true, left: true, right: true });
+
+  // Digital Car Key & Keyless Simulator State
+  const [isCarUnlocked, setIsCarUnlocked] = useState(false);
+  const [keyActionFeedback, setKeyActionFeedback] = useState<string | null>(null);
+  const [isHonking, setIsHonking] = useState(false);
+
+  const toggleCarLock = () => {
+    const nextState = !isCarUnlocked;
+    setIsCarUnlocked(nextState);
+    setKeyActionFeedback(nextState ? '🔓 Vehicle Unlocked via Bluetooth Telemetry' : '🔒 Vehicle Locked & Immobilized');
+    setTimeout(() => setKeyActionFeedback(null), 3500);
+  };
+
+  const triggerHonk = () => {
+    setIsHonking(true);
+    setKeyActionFeedback('🚨 Beep-Beep! Hazard Lights Flashed & Horn Sounded');
+    setTimeout(() => {
+      setIsHonking(false);
+      setKeyActionFeedback(null);
+    }, 2500);
+  };
 
   // Return (Drop-off) form state
   const [returnOdometer, setReturnOdometer] = useState(14550);
@@ -500,6 +535,90 @@ export default function AccountPage() {
                   </div>
                 </div>
 
+                {/* Digital Car Key & Telemetry Console for Active Trip */}
+                {bookingStatus === 'ACTIVE' && (
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="h-5 w-5 text-blue-400" />
+                        <div>
+                          <h4 className="text-sm font-bold text-white">Digital Car Key (BLE Simulator)</h4>
+                          <p className="text-[11px] text-slate-400">
+                            Keyless access paired with your mobile device • BLE 5.2 Connected
+                          </p>
+                        </div>
+                      </div>
+                      <span className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[11px] font-bold text-emerald-300">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                        Connected to {carName}
+                      </span>
+                    </div>
+
+                    {keyActionFeedback && (
+                      <div className="mb-4 rounded-xl bg-blue-500/20 border border-blue-500/40 p-3 text-xs text-blue-200 font-bold animate-fade-in flex items-center gap-2">
+                        <Radio className="h-4 w-4 text-blue-400 animate-pulse" />
+                        <span>{keyActionFeedback}</span>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Lock / Unlock Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={toggleCarLock}
+                        className={`flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${
+                          isCarUnlocked
+                            ? 'bg-emerald-600/20 border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30'
+                            : 'bg-blue-600/20 border-blue-500/40 text-blue-300 hover:bg-blue-600/30'
+                        }`}
+                      >
+                        {isCarUnlocked ? (
+                          <Unlock className="h-6 w-6 text-emerald-400" />
+                        ) : (
+                          <Lock className="h-6 w-6 text-blue-400" />
+                        )}
+                        <div className="text-left">
+                          <div className="text-xs font-bold text-white">
+                            {isCarUnlocked ? 'Car Unlocked' : 'Car Locked'}
+                          </div>
+                          <div className="text-[10px] text-slate-400">
+                            {isCarUnlocked ? 'Tap to Lock Vehicle' : 'Tap to Unlock Doors'}
+                          </div>
+                        </div>
+                      </button>
+
+                      {/* Remote Flash & Honk */}
+                      <button
+                        type="button"
+                        onClick={triggerHonk}
+                        className={`flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${
+                          isHonking
+                            ? 'bg-amber-600/30 border-amber-500 text-amber-200 scale-95'
+                            : 'bg-card border-white/10 text-slate-200 hover:border-white/20 hover:text-white'
+                        }`}
+                      >
+                        <Volume2 className={`h-6 w-6 ${isHonking ? 'text-amber-400 animate-bounce' : 'text-slate-400'}`} />
+                        <div className="text-left">
+                          <div className="text-xs font-bold text-white">Find My Car</div>
+                          <div className="text-[10px] text-slate-400">Flash Hazards & Honk</div>
+                        </div>
+                      </button>
+
+                      {/* Remote Telemetry Specs */}
+                      <div className="flex items-center justify-between p-4 rounded-2xl bg-surface/50 border border-white/5">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-slate-400">Fuel & Range</div>
+                          <div className="text-xs font-bold text-white mt-0.5">{startFuel}% (Est. ~580 km)</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] uppercase font-bold text-slate-400">Odometer</div>
+                          <div className="text-xs font-bold text-white mt-0.5">{startOdometer} km</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Active Trip Telemetry Strip (When ACTIVE) */}
                 {bookingStatus === 'ACTIVE' && (
                   <div className="mt-6 pt-5 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
@@ -716,16 +835,66 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-200 block mb-1">Fuel Level (%)</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold text-slate-200">Fuel Level</label>
+                    <span className="font-mono font-bold text-emerald-400">{startFuel}%</span>
+                  </div>
                   <input
-                    type="number"
-                    required
-                    min={10}
+                    type="range"
+                    min={20}
                     max={100}
+                    step={5}
                     value={startFuel}
                     onChange={(e) => setStartFuel(Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-bold focus:border-blue-600 focus:outline-none"
+                    className="w-full accent-emerald-500 cursor-pointer"
                   />
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Reserve</span>
+                    <span>Half</span>
+                    <span>Full Tank</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4-Angle Digital Car Inspection Photo Upload */}
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-100 flex items-center gap-1.5">
+                    <Camera className="h-4 w-4 text-blue-400" />
+                    4-Angle Vehicle Inspection Photos
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-semibold">
+                    {Object.values(inspectionPhotos).filter(Boolean).length}/4 Verified
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { key: 'front' as const, label: 'Front View' },
+                    { key: 'rear' as const, label: 'Rear View' },
+                    { key: 'left' as const, label: 'Left Side' },
+                    { key: 'right' as const, label: 'Right Side' },
+                  ].map((angle) => {
+                    const isDone = inspectionPhotos[angle.key];
+                    return (
+                      <div
+                        key={angle.key}
+                        onClick={() =>
+                          setInspectionPhotos((p) => ({ ...p, [angle.key]: !p[angle.key] }))
+                        }
+                        className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                          isDone
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+                            : 'bg-surface/50 border-white/10 text-slate-400 hover:border-white/20'
+                        }`}
+                      >
+                        <Camera className={`h-4 w-4 mx-auto mb-1 ${isDone ? 'text-emerald-400' : 'text-slate-400'}`} />
+                        <div className="text-[11px] font-bold text-white">{angle.label}</div>
+                        <div className="text-[9px] mt-0.5">
+                          {isDone ? '✓ Captured' : 'Tap to Upload'}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

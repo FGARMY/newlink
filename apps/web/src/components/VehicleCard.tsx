@@ -9,16 +9,20 @@ import type { VehicleCard as VehicleCardType } from '@newlink/contracts';
 interface VehicleCardProps {
   vehicle: VehicleCardType;
   searchParams?: string;
+  isCompared?: boolean;
+  onToggleCompare?: (carId: string) => void;
 }
 
-export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
+export function VehicleCard({ vehicle, searchParams, isCompared, onToggleCompare }: VehicleCardProps) {
   const dailyPriceRupees = Math.round(vehicle.dailyRatePaise / 100);
   const depositRupees = Math.round(vehicle.securityDepositPaise / 100);
 
   const detailUrl = searchParams ? `/cars/${vehicle.id}?${searchParams}` : `/cars/${vehicle.id}`;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-card shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-xl">
+    <div className={`group flex flex-col overflow-hidden rounded-2xl border ${
+      isCompared ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-slate-200 dark:border-white/10'
+    } bg-white dark:bg-card shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-xl`}>
       {/* Image & Badges */}
       <div className="relative aspect-16/10 w-full overflow-hidden bg-slate-100 dark:bg-surface">
         <Image
@@ -33,6 +37,25 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
         <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white backdrop-blur-xs">
           <span>{vehicle.category}</span>
         </div>
+
+        {/* Compare Checkbox Button */}
+        {onToggleCompare && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleCompare(vehicle.id);
+            }}
+            className={`absolute top-3 left-20 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold backdrop-blur-md transition-all cursor-pointer ${
+              isCompared
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-900/50'
+                : 'bg-black/60 text-slate-300 hover:text-white hover:bg-black/80'
+            }`}
+          >
+            <span>{isCompared ? '✓ Added' : '+ Compare'}</span>
+          </button>
+        )}
 
         {/* Verified Fleet Pill */}
         <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/95 dark:bg-card/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs backdrop-blur-xs border border-emerald-500/30">

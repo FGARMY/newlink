@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
+import { WhatsAppSupportWidget } from '../components/WhatsAppSupportWidget';
+import { MobileBottomNav } from '../components/MobileBottomNav';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -68,7 +70,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col font-sans bg-slate-50 dark:bg-canvas text-slate-900 dark:text-white transition-colors duration-200">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <WhatsAppSupportWidget />
+            <MobileBottomNav />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

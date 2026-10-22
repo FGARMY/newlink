@@ -20,6 +20,7 @@ import {
 import { Navbar } from '../../components/Navbar';
 import { VehicleCard } from '../../components/VehicleCard';
 import { Footer } from '../../components/Footer';
+import { CompareVehiclesModal } from '../../components/CompareVehiclesModal';
 import type { VehicleCard as VehicleCardType } from '@newlink/contracts';
 
 const ALL_CARS: VehicleCardType[] = [
@@ -225,6 +226,30 @@ function CarsSearchContent() {
   const [sortBy, setSortBy] = useState<string>('RECOMMENDED');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  // Quick Filter Pill State
+  const [quickFilter, setQuickFilter] = useState<'ALL' | 'AUTOMATIC' | '7_SEATER' | 'SUNROOF' | 'DIESEL' | 'NEW_FLEET'>('ALL');
+
+  // Compare Vehicles State
+  const [comparedIds, setComparedIds] = useState<string[]>([]);
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
+
+  const toggleCompare = (id: string) => {
+    setComparedIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id);
+      }
+      if (prev.length >= 3) {
+        alert('You can compare up to 3 vehicles side-by-side.');
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
+  const comparedVehicles = useMemo(() => {
+    return ALL_CARS.filter((c) => comparedIds.includes(c.id));
+  }, [comparedIds]);
+
   // Filter and Sort Logic with Mode-based adjustments
   const filteredCars = useMemo(() => {
     return ALL_CARS.map((car) => {
@@ -275,6 +300,18 @@ function CarsSearchContent() {
       const dailyRupees = car.dailyRatePaise / 100;
       if (dailyRupees > maxPrice) return false;
 
+      // Quick Filter Pills
+      if (quickFilter === 'AUTOMATIC' && car.transmission !== 'AUTOMATIC') return false;
+      if (quickFilter === '7_SEATER' && car.seats < 7) return false;
+      if (quickFilter === 'SUNROOF') {
+        const hasSunroof = car.features.some(
+          (f) => f.toLowerCase().includes('sunroof') || f.toLowerCase().includes('skyroof')
+        );
+        if (!hasSunroof) return false;
+      }
+      if (quickFilter === 'DIESEL' && car.fuel !== 'DIESEL') return false;
+      if (quickFilter === 'NEW_FLEET' && car.registrationYear < 2024) return false;
+
       return true;
     }).sort((a, b) => {
       if (sortBy === 'PRICE_ASC') return a.dailyRatePaise - b.dailyRatePaise;
@@ -290,6 +327,7 @@ function CarsSearchContent() {
     selectedFuel,
     selectedSeats,
     maxPrice,
+    quickFilter,
     sortBy,
   ]);
 
@@ -541,6 +579,31 @@ function CarsSearchContent() {
             </div>
           </div>
 
+          {/* Quick-Filter Pills */}
+          <div className="mb-5 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {[
+              { id: 'ALL', label: 'All Fleet' },
+              { id: 'AUTOMATIC', label: 'Automatic Only' },
+              { id: '7_SEATER', label: '7-Seaters' },
+              { id: 'SUNROOF', label: 'Panoramic Sunroof' },
+              { id: 'DIESEL', label: 'Diesel Mileage' },
+              { id: 'NEW_FLEET', label: 'New 2024 Fleet' },
+            ].map((pill) => (
+              <button
+                key={pill.id}
+                type="button"
+                onClick={() => setQuickFilter(pill.id as any)}
+                className={`whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer border ${
+                  quickFilter === pill.id
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-900/40'
+                    : 'bg-card border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                }`}
+              >
+                {pill.label}
+              </button>
+            ))}
+          </div>
+
           {/* Mode Notification Banner */}
           {mode !== 'daily' && (
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-emerald-300 shadow-sm">
@@ -584,7 +647,13 @@ function CarsSearchContent() {
           {filteredCars.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
               {filteredCars.map((car) => (
-                <VehicleCard key={car.id} vehicle={car} searchParams={searchParams.toString()} />
+                <VehicleCard
+                  key={car.id}
+                  vehicle={car}
+                  searchParams={searchParams.toString()}
+                  isCompared={comparedIds.includes(car.id)}
+                  onToggleCompare={toggleCompare}
+                />
               ))}
             </div>
           ) : (
@@ -603,8 +672,9 @@ function CarsSearchContent() {
                   setSelectedFuel('ALL');
                   setSelectedSeats('ALL');
                   setMaxPrice(6000);
+                  setQuickFilter('ALL');
                 }}
-                className="mt-5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500"
+                className="mt-5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 cursor-pointer"
               >
                 Reset Filters
               </button>
@@ -612,6 +682,65 @@ function CarsSearchContent() {
           )}
         </div>
       </main>
+
+      {/* Floating Compare Vehicles Tray */}
+      {comparedIds.length > 0 && (
+        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-2xl rounded-2xl bg-card/95 border border-blue-500/30 p-3 sm:p-4 shadow-2xl backdrop-blur-xl animate-fade-in text-white">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 overflow-x-auto">
+              <div className="hidden sm:block">
+                <span className="text-xs font-bold text-slate-200 block">Compare Cars</span>
+                <span className="text-[11px] text-slate-400">({comparedIds.length}/3 selected)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {comparedVehicles.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center gap-2 rounded-xl bg-surface/80 border border-white/10 px-2.5 py-1.5 text-xs"
+                  >
+                    <span className="font-bold text-white whitespace-nowrap">
+                      {c.brand} {c.model}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toggleCompare(c.id)}
+                      className="text-slate-400 hover:text-rose-400 font-bold ml-1 cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setComparedIds([])}
+                className="rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-white cursor-pointer"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompareModalOpen(true)}
+                className="rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-blue-900/40 transition-all cursor-pointer"
+              >
+                Compare Now ({comparedIds.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compare Modal */}
+      <CompareVehiclesModal
+        isOpen={compareModalOpen}
+        onClose={() => setCompareModalOpen(false)}
+        vehicles={comparedVehicles}
+        onRemoveVehicle={toggleCompare}
+        searchParams={searchParams.toString()}
+      />
 
       <Footer />
     </div>

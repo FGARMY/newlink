@@ -178,8 +178,84 @@ export class ApiController {
       });
     }
 
-    const finalRentalTotal = Math.max(0, quote.baseRental - discountPaise + quote.tax);
-    const payableNow = finalRentalTotal + quote.securityDeposit;
+    let addOnsTotalPaise = 0;
+    let effectiveDepositPaise = quote.securityDeposit;
+
+    if (req.mode === 'subscription') {
+      effectiveDepositPaise = Math.round(effectiveDepositPaise * 0.5); // 50% deposit discount
+    } else if (req.mode === 'weekday') {
+      effectiveDepositPaise = 0; // Zero deposit for weekday pass
+    }
+
+    if (req.addOns) {
+      const days = Math.max(1, Math.ceil(quote.billableHours / 24));
+
+      // 1. Zero Liability Cover (Smart Shield)
+      if (req.addOns.zeroLiability) {
+        const smartShieldCostPaise = 29900 * days;
+        addOnsTotalPaise += smartShieldCostPaise;
+        lineItems.push({
+          kind: 'FEE' as const,
+          label: `Smart Shield Zero Liability Cover (${days} day${days > 1 ? 's' : ''} @ ₹299/day)`,
+          amountPaise: smartShieldCostPaise,
+        });
+        // Smart Shield completely waives the security deposit!
+        effectiveDepositPaise = 0;
+      }
+
+      // 2. Fastag Pre-Loaded Pack
+      if (req.addOns.fastagPack === 'PACK_500') {
+        const fastagCostPaise = 50000;
+        addOnsTotalPaise += fastagCostPaise;
+        lineItems.push({
+          kind: 'FEE' as const,
+          label: 'Pre-Loaded Fastag Toll Pass (₹500 Credit)',
+          amountPaise: fastagCostPaise,
+        });
+      } else if (req.addOns.fastagPack === 'PACK_1000') {
+        const fastagCostPaise = 100000;
+        addOnsTotalPaise += fastagCostPaise;
+        lineItems.push({
+          kind: 'FEE' as const,
+          label: 'Pre-Loaded Fastag Toll Pass (₹1,000 Credit)',
+          amountPaise: fastagCostPaise,
+        });
+      }
+
+      // 3. Doorstep Express Delivery & Return
+      if (req.addOns.doorstepDelivery) {
+        if (req.addOns.deliveryPincode) {
+          const pin = req.addOns.deliveryPincode.trim();
+          const isPunePin = /^411\d{3}$/.test(pin);
+          const isNashikPin = /^422\d{3}$/.test(pin);
+          if (!isPunePin && !isNashikPin) {
+            throw new HttpException(
+              {
+                error: {
+                  code: 'DELIVERY_OUT_OF_BOUNDS',
+                  message: `Doorstep delivery is only available within Pune (411xxx) and Nashik (422xxx). Pincode "${pin}" is outside the active service area.`,
+                },
+              },
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        const isFreeSubscriptionDelivery = req.mode === 'subscription';
+        const deliveryFeePaise = isFreeSubscriptionDelivery ? 0 : 49900;
+        addOnsTotalPaise += deliveryFeePaise;
+        lineItems.push({
+          kind: 'FEE' as const,
+          label: isFreeSubscriptionDelivery
+            ? 'Doorstep Express Delivery & Return (Free with Subscription)'
+            : 'Doorstep Express Delivery & Return (Pune & Nashik)',
+          amountPaise: deliveryFeePaise,
+        });
+      }
+    }
+
+    const finalRentalTotal = Math.max(0, quote.baseRental - discountPaise + quote.tax + addOnsTotalPaise);
+    const payableNow = finalRentalTotal + effectiveDepositPaise;
 
     return {
       data: {
@@ -192,7 +268,7 @@ export class ApiController {
         taxableValuePaise: Math.max(0, quote.baseRental - discountPaise),
         taxPaise: quote.tax,
         rentalTotalPaise: finalRentalTotal,
-        securityDepositPaise: quote.securityDeposit,
+        securityDepositPaise: effectiveDepositPaise,
         payableNowPaise: payableNow,
         lineItems,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
