@@ -179,27 +179,27 @@ const CATEGORIES = [
 // Destination slides for the hero background slideshow
 const DESTINATION_SLIDES = [
   {
-    image: '/images/dest-goa.jpg',
+    image: '/images/dest-goa-hd.jpg',
     title: 'Goa Coastal Highway',
     location: 'Goa Coastline',
   },
   {
-    image: '/images/dest-lonavala.jpg',
+    image: '/images/dest-lonavala-hd.jpg',
     title: 'Western Ghats & Lonavala',
     location: 'Lonavala Ghats',
   },
   {
-    image: '/images/dest-mahabaleshwar.jpg',
+    image: '/images/dest-mahabaleshwar-hd.jpg',
     title: 'Mahabaleshwar Hills',
     location: 'Mahabaleshwar',
   },
   {
-    image: '/images/dest-pune.jpg',
+    image: '/images/dest-pune-hd.jpg',
     title: 'Pune & Sahyadri Foothills',
     location: 'Pune Outskirts',
   },
   {
-    image: '/images/dest-mumbai.jpg',
+    image: '/images/dest-mumbai-hd.jpg',
     title: 'Mumbai-Pune Expressway',
     location: 'Expressway Route',
   },
@@ -276,15 +276,14 @@ export default function HomePage() {
                 alt={slide.title}
                 fill
                 priority={idx === 0}
-                className={`object-cover object-center transition-transform duration-10000 ease-out ${
-                  idx === currentSlide ? 'scale-105' : 'scale-100'
-                }`}
+                className="object-cover object-center"
               />
             </div>
           ))}
 
-          {/* Theme-aware contrast overlay: ensures title & search widget pop with supreme readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/92 via-white/85 to-slate-50 dark:from-black/88 dark:via-black/80 dark:to-black backdrop-blur-[1px]" />
+          {/* Theme-aware contrast overlay: crisp, vivid, zero blur to keep 16:9 scenic photos razor-sharp */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/40 to-slate-50 dark:from-black/75 dark:via-black/50 dark:to-canvas" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-slate-50/50 dark:to-black/60 pointer-events-none" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
