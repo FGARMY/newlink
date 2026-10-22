@@ -255,8 +255,7 @@ function CarsSearchContent() {
     }).sort((a, b) => {
       if (sortBy === 'PRICE_ASC') return a.dailyRatePaise - b.dailyRatePaise;
       if (sortBy === 'PRICE_DESC') return b.dailyRatePaise - a.dailyRatePaise;
-      if (sortBy === 'RATING') return b.ratingAvg - a.ratingAvg;
-      return b.ratingCount - a.ratingCount; // RECOMMENDED
+      return 0; // RECOMMENDED
     });
   }, [
     city,
@@ -486,7 +485,6 @@ function CarsSearchContent() {
                 <option value="RECOMMENDED">Recommended</option>
                 <option value="PRICE_ASC">Price: Low to High</option>
                 <option value="PRICE_DESC">Price: High to Low</option>
-                <option value="RATING">Highest Rated</option>
               </select>
             </div>
           </div>

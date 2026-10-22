@@ -5,7 +5,6 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  Star,
   Shield,
   ShieldCheck,
   Check,
@@ -420,10 +419,9 @@ export default function VehicleDetailsPage() {
               <div className="absolute top-4 left-4 rounded-full bg-slate-900/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-xs">
                 {vehicle.category}
               </div>
-              <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-xs">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span>{vehicle.ratingAvg.toFixed(1)}</span>
-                <span className="text-slate-400">({vehicle.ratingCount} reviews)</span>
+              <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-bold text-emerald-300 shadow-sm backdrop-blur-xs">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Verified Fleet</span>
               </div>
             </div>
 
@@ -516,132 +514,41 @@ export default function VehicleDetailsPage() {
               </div>
             </div>
 
-            {/* Verified Customer Reviews & Ratings (PRD §50) */}
+            {/* Speion Quality & Fresh Fleet Guarantee */}
             <div className="rounded-2xl border border-white/10 bg-card p-6 shadow-xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-4">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-                    <span>Verified Renter Reviews & Ratings</span>
+                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    <span>Speion Fresh Fleet Guarantee</span>
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Authentic feedback from customers who completed trips with this vehicle.
+                    Starting fresh across Pune &amp; Nashik with verified, sanitized cars.
                   </p>
                 </div>
                 <span className="self-start sm:self-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  100% Verified Trips
+                  Fresh Fleet 2026
                 </span>
               </div>
 
-              {/* Rating Summary Breakdown */}
-              <div className="mt-5 grid grid-cols-1 sm:grid-cols-12 gap-4 rounded-2xl bg-surface/50 p-4 border border-white/5">
-                <div className="sm:col-span-4 flex flex-col items-center justify-center border-b sm:border-b-0 sm:border-r border-white/10 pb-3 sm:pb-0">
-                  <span className="text-4xl font-black text-white">4.92</span>
-                  <div className="flex items-center gap-1 mt-1">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} className="h-4 w-4 text-amber-500 fill-amber-500" />
-                    ))}
-                  </div>
-                  <span className="text-[11px] text-slate-400 mt-1">
-                    Based on 128 completed trips
-                  </span>
-                </div>
-
-                <div className="sm:col-span-8 space-y-2 text-xs">
-                  <div>
-                    <div className="flex justify-between font-semibold text-slate-200 mb-1">
-                      <span>Vehicle Cleanliness & Sanitization</span>
-                      <span className="font-bold text-white">4.9 / 5.0</span>
-                    </div>
-                    <div className="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-amber-500 h-full rounded-full w-[98%]" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between font-semibold text-slate-200 mb-1">
-                      <span>Mechanical Condition & AC Performance</span>
-                      <span className="font-bold text-white">4.9 / 5.0</span>
-                    </div>
-                    <div className="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-amber-500 h-full rounded-full w-[98%]" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between font-semibold text-slate-200 mb-1">
-                      <span>Handover Speed & Passcode Smoothness</span>
-                      <span className="font-bold text-white">5.0 / 5.0</span>
-                    </div>
-                    <div className="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-emerald-600 h-full rounded-full w-[100%]" />
-                    </div>
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-4 rounded-xl bg-surface/50 border border-white/5">
+                  <div className="text-xs font-bold text-white">Full Sanitization</div>
+                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    Multi-point cabin disinfection and vacuum cleaning before each booking handover.
                   </div>
                 </div>
-              </div>
-
-              {/* Individual Reviews Stream */}
-              <div className="mt-6 divide-y divide-white/5 space-y-4">
-                <div className="pt-4 first:pt-0 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-bold text-white">Aditya Kulkarni</span>
-                      <span className="text-[10px] text-slate-400 ml-2">
-                        Pune Airport Pickup • Oct 2026
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} className="h-3 w-3 text-amber-500 fill-amber-500" />
-                      ))}
-                    </div>
+                <div className="p-4 rounded-xl bg-surface/50 border border-white/5">
+                  <div className="text-xs font-bold text-white">Zero Deposit Option</div>
+                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    Fast KYC verification with prompt automated deposit settlements.
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    "Immaculate condition! Picked up from Pune Airport in 2 minutes using the
-                    digital passcode. Panoramic sunroof was a hit on our Lavasa weekend drive."
-                  </p>
                 </div>
-
-                <div className="pt-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-bold text-white">Sneha Kadam</span>
-                      <span className="text-[10px] text-slate-400 ml-2">
-                        Mumbai Renter • Sep 2026
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} className="h-3 w-3 text-amber-500 fill-amber-500" />
-                      ))}
-                    </div>
+                <div className="p-4 rounded-xl bg-surface/50 border border-white/5">
+                  <div className="text-xs font-bold text-white">24/7 Roadside Assist</div>
+                  <div className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    Dedicated round-the-clock emergency support across Maharashtra highways.
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    "Super smooth automatic transmission. Full tank handed over, Fastag worked
-                    effortlessly on the Mumbai-Pune Expressway."
-                  </p>
-                </div>
-
-                <div className="pt-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-bold text-white">Rohan Deshpande</span>
-                      <span className="text-[10px] text-slate-400 ml-2">
-                        Pune Baner Hub • Sep 2026
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {[1, 2, 3, 4].map((s) => (
-                        <Star key={s} className="h-3 w-3 text-amber-500 fill-amber-500" />
-                      ))}
-                      <Star className="h-3 w-3 text-slate-300" />
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    "Very well maintained Creta Turbo. Great driving dynamics and instant security
-                    deposit settlement upon return."
-                  </p>
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, Users, Fuel, Gauge, MapPin, Shield } from 'lucide-react';
+import { Users, Fuel, Gauge, MapPin, Shield } from 'lucide-react';
 import type { VehicleCard as VehicleCardType } from '@newlink/contracts';
 
 interface VehicleCardProps {
@@ -34,11 +34,10 @@ export function VehicleCard({ vehicle, searchParams }: VehicleCardProps) {
           <span>{vehicle.category}</span>
         </div>
 
-        {/* Rating Pill */}
-        <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/95 dark:bg-card/90 px-2.5 py-1 text-[11px] font-bold text-slate-800 dark:text-white shadow-xs backdrop-blur-xs border border-slate-200/60 dark:border-white/10">
-          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-          <span>{vehicle.ratingAvg.toFixed(1)}</span>
-          <span className="text-slate-400 font-normal">({vehicle.ratingCount})</span>
+        {/* Verified Fleet Pill */}
+        <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/95 dark:bg-card/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs backdrop-blur-xs border border-emerald-500/30">
+          <Shield className="h-3 w-3 text-emerald-500" />
+          <span>Verified</span>
         </div>
       </div>
 

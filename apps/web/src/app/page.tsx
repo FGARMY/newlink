@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -19,7 +19,6 @@ import {
   X,
   Filter,
   Check,
-  Star,
 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { SearchWidget } from '../components/SearchWidget';
@@ -177,42 +176,51 @@ const CATEGORIES = [
   { id: 'LUXURY', label: 'Luxury 4x4' },
 ];
 
-// Cards for the roadtrip inspiration fan matching Zoomcar
-const FAN_CARDS = [
-  {
-    image: '/images/dest-lonavala.jpg',
-    title: 'Western Ghats Escape',
-    rotation: '-rotate-6 sm:-rotate-8 translate-y-3',
-  },
+// Destination slides for the hero background slideshow
+const DESTINATION_SLIDES = [
   {
     image: '/images/dest-goa.jpg',
-    title: 'Coastal Drives to Goa',
-    rotation: '-rotate-3 sm:-rotate-4 translate-y-1',
+    title: 'Goa Coastal Highway',
+    location: 'Goa Coastline',
+  },
+  {
+    image: '/images/dest-lonavala.jpg',
+    title: 'Western Ghats & Lonavala',
+    location: 'Lonavala Ghats',
   },
   {
     image: '/images/dest-mahabaleshwar.jpg',
     title: 'Mahabaleshwar Hills',
-    rotation: 'rotate-0 -translate-y-1 scale-105 z-10',
-  },
-  {
-    image: '/images/dest-mumbai.jpg',
-    title: 'Expressway Commute',
-    rotation: 'rotate-3 sm:rotate-4 translate-y-1',
+    location: 'Mahabaleshwar',
   },
   {
     image: '/images/dest-pune.jpg',
-    title: 'City & Vineyard Trips',
-    rotation: 'rotate-6 sm:rotate-8 translate-y-3',
+    title: 'Pune & Sahyadri Foothills',
+    location: 'Pune Outskirts',
+  },
+  {
+    image: '/images/dest-mumbai.jpg',
+    title: 'Mumbai-Pune Expressway',
+    location: 'Expressway Route',
   },
 ];
 
 export default function HomePage() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % DESTINATION_SLIDES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   // Filter state (City kept inside Sort/Filter so front page remains clean)
   const [filterCity, setFilterCity] = useState<'all' | 'pune' | 'nashik'>('all');
-  const [sortBy, setSortBy] = useState<'popular' | 'price_low' | 'price_high' | 'rating'>('popular');
+  const [sortBy, setSortBy] = useState<'popular' | 'price_low' | 'price_high'>('popular');
   const [filterFuel, setFilterFuel] = useState<'all' | 'PETROL' | 'DIESEL'>('all');
   const [filterTransmission, setFilterTransmission] = useState<'all' | 'AUTOMATIC' | 'MANUAL'>('all');
 
@@ -231,8 +239,7 @@ export default function HomePage() {
     }).sort((a, b) => {
       if (sortBy === 'price_low') return a.dailyRatePaise - b.dailyRatePaise;
       if (sortBy === 'price_high') return b.dailyRatePaise - a.dailyRatePaise;
-      if (sortBy === 'rating') return b.ratingAvg - a.ratingAvg;
-      return b.ratingCount - a.ratingCount; // popular
+      return 0; // recommended / default
     });
   }, [selectedCategory, filterCity, sortBy, filterFuel, filterTransmission]);
 
@@ -253,15 +260,58 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-canvas text-slate-900 dark:text-white font-sans transition-colors duration-200">
       <Navbar />
 
-      {/* ===== HERO SECTION (Zoomcar Styled Banner + Tilted Cards Fan) ===== */}
+      {/* ===== HERO SECTION WITH DYNAMIC DESTINATION BACKGROUND SLIDESHOW ===== */}
       <section className="relative overflow-hidden pt-10 pb-20 sm:pt-14 sm:pb-28">
-        {/* Subtle background glow */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 -top-40 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-blue-500/10 dark:bg-blue-600/15 blur-[120px]"
-        />
+        {/* Background Slideshow Layer */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {DESTINATION_SLIDES.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                idx === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                priority={idx === 0}
+                className={`object-cover object-center transition-transform duration-10000 ease-out ${
+                  idx === currentSlide ? 'scale-105' : 'scale-100'
+                }`}
+              />
+            </div>
+          ))}
+
+          {/* Theme-aware contrast overlay: ensures title & search widget pop with supreme readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/92 via-white/85 to-slate-50 dark:from-black/88 dark:via-black/80 dark:to-black backdrop-blur-[1px]" />
+        </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Destination Badge & Slide Indicators */}
+          <div className="flex justify-center mb-5">
+            <div className="inline-flex items-center gap-2 sm:gap-3 rounded-full border border-slate-200/80 dark:border-white/15 bg-white/85 dark:bg-black/70 px-4 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-md">
+              <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <span className="hidden sm:inline text-slate-500 dark:text-slate-400 font-normal">Scenic Escapes:</span>
+              <span className="font-bold text-slate-900 dark:text-white">{DESTINATION_SLIDES[currentSlide].title}</span>
+              <div className="flex items-center gap-1.5 ml-1.5">
+                {DESTINATION_SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setCurrentSlide(i)}
+                    className={`h-1.5 rounded-full transition-all cursor-pointer pointer-events-auto ${
+                      i === currentSlide
+                        ? 'w-4 bg-blue-600 dark:bg-blue-400'
+                        : 'w-1.5 bg-slate-300 dark:bg-white/30 hover:bg-slate-400'
+                    }`}
+                    aria-label={`Go to ${DESTINATION_SLIDES[i].title}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Main Title & Subtitle Matching Reference Image */}
           <div className="mx-auto max-w-4xl text-center">
             <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 dark:text-white leading-[1.15]">
@@ -269,19 +319,19 @@ export default function HomePage() {
               <span className="text-blue-600 dark:text-primary-gradient">Book by Hour or Day</span>
             </h1>
 
-            {/* Stats Bar */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
+            {/* Trust Badges Bar */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5">
-                <span className="font-bold text-slate-900 dark:text-white">50,00,000+</span> Trips
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-slate-900 dark:text-white">Pune &amp; Nashik Hubs</span>
               </span>
               <span className="text-slate-300 dark:text-white/20">&bull;</span>
               <span className="flex items-center gap-1.5">
-                <span className="font-bold text-slate-900 dark:text-white">30,00,000+</span> User Ratings
+                <span className="font-bold text-slate-900 dark:text-white">100% Sanitized Fleet</span>
               </span>
               <span className="text-slate-300 dark:text-white/20">&bull;</span>
-              <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-                <Star className="h-3.5 w-3.5 fill-current" />
-                4.9+ Average Trip Rating
+              <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold">
+                Doorstep Delivery &amp; Hub Pickup
               </span>
             </div>
 
@@ -291,33 +341,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* ===== Tilted Roadtrip Card Fan Gallery (Matching Zoomcar Image) ===== */}
-          <div className="mt-10 mb-8 flex justify-center items-center overflow-hidden py-4 px-2">
-            <div className="flex items-center justify-center gap-2 sm:gap-4 max-w-5xl">
-              {FAN_CARDS.map((card, idx) => (
-                <div
-                  key={idx}
-                  className={`relative w-28 sm:w-44 md:w-52 aspect-4/5 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 sm:border-4 border-white dark:border-white/10 transition-transform duration-300 hover:scale-108 hover:z-20 hover:rotate-0 cursor-pointer ${card.rotation}`}
-                >
-                  <Image
-                    src={card.image}
-                    alt={card.title}
-                    fill
-                    sizes="(max-width: 640px) 120px, 220px"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2 sm:p-3">
-                    <span className="text-[10px] sm:text-xs font-bold text-white leading-tight drop-shadow-sm">
-                      {card.title}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ===== SEARCH WIDGET (Directly overlapping below the cards) ===== */}
-          <div className="mt-4">
+          {/* ===== SEARCH WIDGET (Directly below headline) ===== */}
+          <div className="mt-8">
             <SearchWidget defaultCity="pune" />
           </div>
         </div>
@@ -483,7 +508,7 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 text-sm font-bold text-slate-900 dark:text-white">Select Your Car</h3>
               <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Browse verified cars with genuine photos, transparent rates, and real ratings.
+                Browse verified cars with genuine photos, transparent rates, and sanitized interiors.
               </p>
             </div>
 
@@ -724,12 +749,11 @@ export default function HomePage() {
                 <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">
                   Sort By
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: 'popular', label: 'Most Popular' },
-                    { id: 'rating', label: 'Highest Rated' },
-                    { id: 'price_low', label: 'Price: Low to High' },
-                    { id: 'price_high', label: 'Price: High to Low' },
+                    { id: 'popular', label: 'Recommended' },
+                    { id: 'price_low', label: 'Price: Low' },
+                    { id: 'price_high', label: 'Price: High' },
                   ].map((s) => (
                     <button
                       key={s.id}
