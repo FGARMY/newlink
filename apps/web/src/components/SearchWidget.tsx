@@ -13,6 +13,9 @@ import {
   Square,
   ShieldCheck,
   ChevronDown,
+  Zap,
+  Briefcase,
+  Plane,
 } from 'lucide-react';
 
 const LOCATIONS_BY_CITY: Record<string, { id: string; name: string; tag?: string }[]> = {
@@ -85,8 +88,15 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
     }
 
     const durationHours = (endDateTime.getTime() - startDateTime.getTime()) / (3600 * 1000);
+    const durationDays = durationHours / 24;
+
     if (durationHours < 8) {
       setError('Minimum rental duration is 8 hours');
+      return;
+    }
+
+    if (activeTab === 'subscription' && durationDays < 7) {
+      setError('Subscription mode requires a minimum duration of 7 days (30 days recommended for 35% discount)');
       return;
     }
 
@@ -102,6 +112,55 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
     router.push(`/cars?${params.toString()}`);
   };
 
+  // Smart presets when switching service tabs
+  const handleTabChange = (tab: ServiceTab) => {
+    setActiveTab(tab);
+    setError(null);
+
+    const d = new Date();
+
+    if (tab === 'daily') {
+      const start = new Date(Date.now() + 24 * 3600 * 1000);
+      const end = new Date(Date.now() + 48 * 3600 * 1000);
+      setPickupDate(formatDateInput(start));
+      setPickupTime('15:00');
+      setReturnDate(formatDateInput(end));
+      setReturnTime('15:00');
+    } else if (tab === 'subscription') {
+      // 30 Days preset for subscription (35% discount)
+      const start = new Date(Date.now() + 24 * 3600 * 1000);
+      const end = new Date(Date.now() + 31 * 24 * 3600 * 1000);
+      setPickupDate(formatDateInput(start));
+      setPickupTime('10:00');
+      setReturnDate(formatDateInput(end));
+      setReturnTime('10:00');
+      setHomeDelivery(true);
+    } else if (tab === 'weekday') {
+      // Upcoming Monday 09:00 AM to Friday 18:00 PM
+      const currentDay = d.getDay(); // 0 is Sun, 1 is Mon...
+      const daysUntilNextMon = currentDay === 0 ? 1 : currentDay === 1 ? 7 : 8 - currentDay;
+      const mon = new Date(d.getTime() + daysUntilNextMon * 24 * 3600 * 1000);
+      const fri = new Date(mon.getTime() + 4 * 24 * 3600 * 1000);
+      setPickupDate(formatDateInput(mon));
+      setPickupTime('09:00');
+      setReturnDate(formatDateInput(fri));
+      setReturnTime('18:00');
+    } else if (tab === 'outstation') {
+      // Airport terminal / outstation highway preset
+      if (city === 'pune') {
+        setLocation('loc-pn-airport');
+      } else {
+        setLocation('all');
+      }
+      const start = new Date(Date.now() + 24 * 3600 * 1000);
+      const end = new Date(Date.now() + 96 * 3600 * 1000);
+      setPickupDate(formatDateInput(start));
+      setPickupTime('08:00');
+      setReturnDate(formatDateInput(end));
+      setReturnTime('20:00');
+    }
+  };
+
   const availableLocations = LOCATIONS_BY_CITY[city] || [];
   const selectedLocationName =
     availableLocations.find((l) => l.id === location)?.name || 'Select Location';
@@ -114,14 +173,17 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
           {/* Tab 1: Daily Drives */}
           <button
             type="button"
-            onClick={() => setActiveTab('daily')}
+            onClick={() => handleTabChange('daily')}
             className={`flex flex-col items-center justify-center px-5 py-2.5 rounded-xl transition-all text-left cursor-pointer whitespace-nowrap ${
               activeTab === 'daily'
                 ? 'bg-emerald-700 text-white shadow-md'
                 : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
             }`}
           >
-            <span className="text-xs sm:text-sm font-bold leading-tight">Daily Drives</span>
+            <span className="text-xs sm:text-sm font-bold leading-tight flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5" />
+              Daily Drives
+            </span>
             <span
               className={`text-[10px] mt-0.5 leading-tight ${
                 activeTab === 'daily' ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-400'
@@ -134,14 +196,17 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
           {/* Tab 2: Subscription */}
           <button
             type="button"
-            onClick={() => setActiveTab('subscription')}
+            onClick={() => handleTabChange('subscription')}
             className={`flex flex-col items-center justify-center px-5 py-2.5 rounded-xl transition-all text-left cursor-pointer whitespace-nowrap ${
               activeTab === 'subscription'
                 ? 'bg-emerald-700 text-white shadow-md'
                 : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
             }`}
           >
-            <span className="text-xs sm:text-sm font-bold leading-tight">Subscription</span>
+            <span className="text-xs sm:text-sm font-bold leading-tight flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              Subscription
+            </span>
             <span
               className={`text-[10px] mt-0.5 leading-tight ${
                 activeTab === 'subscription' ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-400'
@@ -154,14 +219,17 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
           {/* Tab 3: Weekday Pass */}
           <button
             type="button"
-            onClick={() => setActiveTab('weekday')}
+            onClick={() => handleTabChange('weekday')}
             className={`flex flex-col items-center justify-center px-5 py-2.5 rounded-xl transition-all text-left cursor-pointer whitespace-nowrap ${
               activeTab === 'weekday'
                 ? 'bg-emerald-700 text-white shadow-md'
                 : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
             }`}
           >
-            <span className="text-xs sm:text-sm font-bold leading-tight">Weekday Pass</span>
+            <span className="text-xs sm:text-sm font-bold leading-tight flex items-center gap-1.5">
+              <Briefcase className="h-3.5 w-3.5" />
+              Weekday Pass
+            </span>
             <span
               className={`text-[10px] mt-0.5 leading-tight ${
                 activeTab === 'weekday' ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-400'
@@ -174,7 +242,7 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
           {/* Tab 4: Airport & Outstation */}
           <button
             type="button"
-            onClick={() => setActiveTab('outstation')}
+            onClick={() => handleTabChange('outstation')}
             className={`relative flex flex-col items-center justify-center px-5 py-2.5 rounded-xl transition-all text-left cursor-pointer whitespace-nowrap ${
               activeTab === 'outstation'
                 ? 'bg-emerald-700 text-white shadow-md'
@@ -184,7 +252,10 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
             <span className="absolute -top-1.5 right-2 rounded-full bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 shadow-xs">
               New
             </span>
-            <span className="text-xs sm:text-sm font-bold leading-tight">Airport / Outstation</span>
+            <span className="text-xs sm:text-sm font-bold leading-tight flex items-center gap-1.5">
+              <Plane className="h-3.5 w-3.5" />
+              Airport / Outstation
+            </span>
             <span
               className={`text-[10px] mt-0.5 leading-tight ${
                 activeTab === 'outstation' ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-400'
@@ -198,6 +269,29 @@ export function SearchWidget({ defaultCity = 'pune' }: { defaultCity?: string })
 
       {/* ===== FLOATING SEARCH CARD (4-Field Card + Search Button) ===== */}
       <div className="relative z-10 rounded-3xl bg-white dark:bg-card border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-2xl backdrop-blur-md transition-colors">
+        {/* Dynamic Mode Notification Bar */}
+        <div className="mb-4 px-3.5 py-2 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center justify-between gap-2 shadow-xs">
+          <div className="flex items-center gap-2">
+            {activeTab === 'daily' && <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+            {activeTab === 'subscription' && <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+            {activeTab === 'weekday' && <Briefcase className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+            {activeTab === 'outstation' && <Plane className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+            <span className="leading-tight">
+              {activeTab === 'daily' && 'Daily Self-Drive: Flexible hourly & daily bookings with zero hidden charges.'}
+              {activeTab === 'subscription' && 'Subscription Mode: 30-Day preset selected. Flat 35% Long-Term discount + Free Doorstep Delivery!'}
+              {activeTab === 'weekday' && 'Weekday Pass: Upcoming Mon 9 AM - Fri 6 PM selected. Flat 20% package with 500 KM included!'}
+              {activeTab === 'outstation' && 'Airport / Outstation: Direct Airport Bay pickup selected with unlimited KMs & highway assist!'}
+            </span>
+          </div>
+
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full shrink-0">
+            {activeTab === 'daily' && 'Pay Per Day'}
+            {activeTab === 'subscription' && '35% OFF'}
+            {activeTab === 'weekday' && '5-Day Pass'}
+            {activeTab === 'outstation' && 'Unlimited KM'}
+          </span>
+        </div>
+
         <form onSubmit={handleSearch}>
           <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-0 md:divide-x divide-slate-200 dark:divide-white/10 w-full">
             {/* Field 1: City */}

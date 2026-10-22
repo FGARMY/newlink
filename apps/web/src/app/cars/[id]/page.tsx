@@ -17,6 +17,9 @@ import {
   ChevronLeft,
   ArrowRight,
   Sparkles,
+  Briefcase,
+  Plane,
+  Car,
   Phone,
   FileCheck,
   AlertCircle,
@@ -245,8 +248,25 @@ export default function VehicleDetailsPage() {
   const id = String(params.id);
   const vehicle = ALL_CARS[id] || ALL_CARS['veh-creta-pn'];
 
+  const mode = searchParams.get('mode') || 'daily';
+
+  // Initial duration calculation based on search dates or selected mode
+  const initialDays = useMemo(() => {
+    const startStr = searchParams.get('start');
+    const endStr = searchParams.get('end');
+    if (startStr && endStr) {
+      const s = new Date(startStr).getTime();
+      const e = new Date(endStr).getTime();
+      const diffDays = Math.max(1, Math.round((e - s) / (1000 * 60 * 60 * 24)));
+      if (!isNaN(diffDays) && diffDays > 0) return diffDays;
+    }
+    if (mode === 'subscription') return 30;
+    if (mode === 'weekday') return 5;
+    return 2;
+  }, [searchParams, mode]);
+
   // Rental duration calculations
-  const [days, setDays] = useState(2);
+  const [days, setDays] = useState(initialDays);
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -264,16 +284,25 @@ export default function VehicleDetailsPage() {
   const [name, setName] = useState('Aarav Sharma');
   const [phone, setPhone] = useState('+91 98765 43210');
 
-  // Financial calculations
-  const dailyRateRupees = vehicle.dailyRatePaise / 100;
-  const baseRental = dailyRateRupees * days;
+  // Mode adjustments
+  const modeDiscountRate = mode === 'subscription' ? 0.35 : mode === 'weekday' ? 0.20 : 0;
+  const rawDailyRateRupees = vehicle.dailyRatePaise / 100;
+  const dailyRateRupees = modeDiscountRate > 0 ? Math.round(rawDailyRateRupees * (1 - modeDiscountRate)) : rawDailyRateRupees;
+  const baseRental = rawDailyRateRupees * days;
+  const modeDiscountAmount = Math.round(baseRental * modeDiscountRate);
+  const effectiveBaseRental = baseRental - modeDiscountAmount;
+
   const [appliedDiscountAmount, setAppliedDiscountAmount] = useState<number>(0);
   const [couponError, setCouponError] = useState<string | null>(null);
 
-  const taxableValue = Math.max(0, baseRental - appliedDiscountAmount);
+  const taxableValue = Math.max(0, effectiveBaseRental - appliedDiscountAmount);
   const gst = Math.round(taxableValue * 0.18);
   const rentalTotal = taxableValue + gst;
-  const deposit = vehicle.securityDepositPaise / 100;
+  const deposit = mode === 'subscription'
+    ? Math.round((vehicle.securityDepositPaise / 100) * 0.5) // 50% deposit discount for subscribers
+    : mode === 'weekday'
+    ? 0 // Zero deposit for verified weekday office commuters
+    : vehicle.securityDepositPaise / 100;
   const totalPayable = rentalTotal + deposit;
 
   const applyPromo = (rawCode: string) => {
@@ -557,16 +586,46 @@ export default function VehicleDetailsPage() {
           {/* Right Column: Transparent Pricing & Booking Box (5 cols) */}
           <div className="lg:col-span-5">
             <div className="sticky top-24 rounded-3xl border border-white/10 bg-card p-6 shadow-xl">
+              {/* Mode Active Badge */}
+              {mode !== 'daily' && (
+                <div className="mb-4 rounded-2xl border border-primary/30 bg-primary/10 p-3.5 text-xs text-emerald-300">
+                  <div className="flex items-center gap-2 font-bold text-white">
+                    {mode === 'subscription' && <Sparkles className="h-4 w-4 text-emerald-400" />}
+                    {mode === 'weekday' && <Briefcase className="h-4 w-4 text-emerald-400" />}
+                    {mode === 'outstation' && <Plane className="h-4 w-4 text-emerald-400" />}
+                    <span>
+                      {mode === 'subscription'
+                        ? '35% Subscription Savings Active'
+                        : mode === 'weekday'
+                        ? '20% Weekday Commuter Pass Active'
+                        : 'Airport & Highway Outstation Mode'}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-[11px] text-slate-300 leading-relaxed">
+                    {mode === 'subscription'
+                      ? 'Free doorstep handover, regular maintenance & 50% deposit discount.'
+                      : mode === 'weekday'
+                      ? 'Mon-Fri package with 500 free KMs and zero security deposit.'
+                      : 'Airport terminal bay handover with unlimited highway KMs.'}
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-baseline justify-between border-b border-white/5 pb-4">
                 <div>
                   <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">
                     Rental Rate
                   </span>
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1.5">
                     <span className="text-3xl font-extrabold text-white">
                       ₹{dailyRateRupees.toLocaleString('en-IN')}
                     </span>
                     <span className="text-xs font-medium text-slate-400">/day</span>
+                    {modeDiscountRate > 0 && (
+                      <span className="text-xs text-slate-500 line-through">
+                        ₹{rawDailyRateRupees.toLocaleString('en-IN')}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -579,13 +638,26 @@ export default function VehicleDetailsPage() {
 
               {/* Duration Selector */}
               <div className="mt-4">
-                <label className="text-xs font-bold text-slate-200">Trip Duration</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-200">Trip Duration</label>
+                  {mode === 'subscription' && (
+                    <span className="text-[11px] font-semibold text-emerald-400">Min 7 days</span>
+                  )}
+                  {mode === 'weekday' && (
+                    <span className="text-[11px] font-semibold text-blue-400">Mon-Fri (5-15 Days)</span>
+                  )}
+                </div>
                 <div className="mt-2 flex gap-2">
-                  {[1, 2, 3, 5, 7].map((d) => (
+                  {(mode === 'subscription'
+                    ? [7, 14, 30, 60]
+                    : mode === 'weekday'
+                    ? [5, 10, 15]
+                    : [1, 2, 3, 5, 7]
+                  ).map((d) => (
                     <button
                       key={d}
                       onClick={() => setDays(d)}
-                      className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all ${
+                      className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all cursor-pointer ${
                         days === d
                           ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
                           : 'bg-surface text-slate-200 hover:bg-slate-700'
@@ -674,12 +746,22 @@ export default function VehicleDetailsPage() {
               <div className="mt-5 space-y-2.5 rounded-2xl bg-surface/50 p-4 border border-white/5 text-xs text-slate-200">
                 <div className="flex justify-between">
                   <span>
-                    Base Rental ({days} days @ ₹{dailyRateRupees.toLocaleString('en-IN')})
+                    Base Rental ({days} days @ ₹{rawDailyRateRupees.toLocaleString('en-IN')})
                   </span>
                   <span className="font-semibold text-white">
                     ₹{baseRental.toLocaleString('en-IN')}
                   </span>
                 </div>
+
+                {modeDiscountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-400 font-semibold">
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" />
+                      {mode === 'subscription' ? 'Subscription Discount (35%)' : 'Weekday Pass Discount (20%)'}
+                    </span>
+                    <span>-₹{modeDiscountAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
 
                 {appliedDiscountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400 font-semibold">
@@ -704,9 +786,15 @@ export default function VehicleDetailsPage() {
                   <span className="flex items-center gap-1">
                     <Shield className="h-3 w-3 text-emerald-400" />
                     Refundable Security Deposit
+                    {mode === 'subscription' && (
+                      <span className="text-[10px] text-emerald-400 font-bold ml-1">(50% Off)</span>
+                    )}
+                    {mode === 'weekday' && (
+                      <span className="text-[10px] text-emerald-400 font-bold ml-1">(Zero Deposit)</span>
+                    )}
                   </span>
                   <span className="font-semibold text-white">
-                    ₹{deposit.toLocaleString('en-IN')}
+                    {deposit === 0 ? '₹0 (Waived)' : `₹${deposit.toLocaleString('en-IN')}`}
                   </span>
                 </div>
               </div>

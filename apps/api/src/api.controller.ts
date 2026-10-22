@@ -64,13 +64,37 @@ export class ApiController {
   }
 
   @Get('vehicles')
-  async getVehicles(@Query('city') city?: string, @Query('location') location?: string) {
+  async getVehicles(
+    @Query('city') city?: string,
+    @Query('location') location?: string,
+    @Query('mode') mode?: string,
+  ) {
     let cityId: string | undefined;
     if (city) {
       const c = await this.fleetRepo.getCityBySlug(city);
       if (c) cityId = c.id;
     }
-    const vehicles = await this.fleetRepo.getVehicles(cityId, location);
+    let vehicles = await this.fleetRepo.getVehicles(cityId, location);
+
+    if (mode === 'subscription') {
+      vehicles = vehicles.map((v) => ({
+        ...v,
+        dailyRatePaise: Math.round(v.dailyRatePaise * 0.65), // 35% subscription rate
+        features: [...v.features, '35% Monthly Discount', 'Free Doorstep Delivery'],
+      }));
+    } else if (mode === 'weekday') {
+      vehicles = vehicles.map((v) => ({
+        ...v,
+        dailyRatePaise: Math.round(v.dailyRatePaise * 0.8), // 20% weekday package rate
+        features: [...v.features, 'Mon-Fri 500 KM Pass', 'Zero Security Deposit'],
+      }));
+    } else if (mode === 'outstation') {
+      vehicles = vehicles.map((v) => ({
+        ...v,
+        features: [...v.features, 'Unlimited KMs Included', 'Airport Express Pickup'],
+      }));
+    }
+
     return { data: vehicles };
   }
 
@@ -129,6 +153,34 @@ export class ApiController {
       taxRule,
     });
 
+    let discountPaise = quote.discount;
+    const lineItems = quote.lineItems.map((li) => ({
+      kind: li.kind,
+      label: li.label,
+      amountPaise: li.amount,
+    }));
+
+    if (req.mode === 'subscription') {
+      const subDiscount = Math.round(quote.baseRental * 0.35);
+      discountPaise += subDiscount;
+      lineItems.push({
+        kind: 'DISCOUNT' as const,
+        label: 'Subscription 35% Long-Term Discount',
+        amountPaise: -subDiscount,
+      });
+    } else if (req.mode === 'weekday') {
+      const weekdayDiscount = Math.round(quote.baseRental * 0.2);
+      discountPaise += weekdayDiscount;
+      lineItems.push({
+        kind: 'DISCOUNT' as const,
+        label: 'Weekday Pass Special Package (20% Off)',
+        amountPaise: -weekdayDiscount,
+      });
+    }
+
+    const finalRentalTotal = Math.max(0, quote.baseRental - discountPaise + quote.tax);
+    const payableNow = finalRentalTotal + quote.securityDeposit;
+
     return {
       data: {
         quoteId: `qt-${Date.now()}`,
@@ -136,17 +188,13 @@ export class ApiController {
         rentalDurationMinutes: quote.rentalDurationMinutes,
         billableHours: quote.billableHours,
         baseRentalPaise: quote.baseRental,
-        discountPaise: quote.discount,
-        taxableValuePaise: quote.taxableValue,
+        discountPaise,
+        taxableValuePaise: Math.max(0, quote.baseRental - discountPaise),
         taxPaise: quote.tax,
-        rentalTotalPaise: quote.rentalTotal,
+        rentalTotalPaise: finalRentalTotal,
         securityDepositPaise: quote.securityDeposit,
-        payableNowPaise: quote.payableNow,
-        lineItems: quote.lineItems.map((li) => ({
-          kind: li.kind,
-          label: li.label,
-          amountPaise: li.amount,
-        })),
+        payableNowPaise: payableNow,
+        lineItems,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       },
     };

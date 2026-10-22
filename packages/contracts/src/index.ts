@@ -161,6 +161,7 @@ export const SearchVehiclesQuerySchema = z.object({
   sort: z
     .enum(['RECOMMENDED', 'PRICE_ASC', 'PRICE_DESC', 'RATING', 'POPULARITY'])
     .default('RECOMMENDED'),
+  mode: z.enum(['daily', 'subscription', 'weekday', 'outstation']).optional(),
 });
 export type SearchVehiclesQuery = z.infer<typeof SearchVehiclesQuerySchema>;
 
@@ -175,6 +176,7 @@ export const QuoteRequestSchema = z.object({
   start: z.string(),
   end: z.string(),
   couponCode: z.string().optional(),
+  mode: z.enum(['daily', 'subscription', 'weekday', 'outstation']).optional(),
 });
 export type QuoteRequest = z.infer<typeof QuoteRequestSchema>;
 

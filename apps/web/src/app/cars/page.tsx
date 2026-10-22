@@ -12,6 +12,10 @@ import {
   X,
   MapPin,
   Calendar,
+  Zap,
+  Sparkles,
+  Briefcase,
+  Plane,
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { VehicleCard } from '../../components/VehicleCard';
@@ -210,6 +214,7 @@ function CarsSearchContent() {
   const location = searchParams.get('location') || '';
   const start = searchParams.get('start') || '';
   const end = searchParams.get('end') || '';
+  const mode = searchParams.get('mode') || 'daily';
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -220,9 +225,28 @@ function CarsSearchContent() {
   const [sortBy, setSortBy] = useState<string>('RECOMMENDED');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Filter and Sort Logic
+  // Filter and Sort Logic with Mode-based adjustments
   const filteredCars = useMemo(() => {
-    return ALL_CARS.filter((car) => {
+    return ALL_CARS.map((car) => {
+      let dailyRatePaise = car.dailyRatePaise;
+      let features = [...car.features];
+
+      if (mode === 'subscription') {
+        dailyRatePaise = Math.round(car.dailyRatePaise * 0.65); // 35% Long-term discount
+        features = ['35% Monthly Discount', 'Free Doorstep Delivery', ...features.slice(0, 2)];
+      } else if (mode === 'weekday') {
+        dailyRatePaise = Math.round(car.dailyRatePaise * 0.8); // 20% Weekday Package discount
+        features = ['Mon-Fri 500 KM Pass', 'Zero Security Deposit', ...features.slice(0, 2)];
+      } else if (mode === 'outstation') {
+        features = ['Unlimited KMs Included', 'Airport Terminal Bay Handover', ...features.slice(0, 2)];
+      }
+
+      return {
+        ...car,
+        dailyRatePaise,
+        features,
+      };
+    }).filter((car) => {
       // City Match
       const matchesCity =
         city === 'nashik' ? car.cityId === 'city-nashik' : car.cityId === 'city-pune';
@@ -260,6 +284,7 @@ function CarsSearchContent() {
   }, [
     city,
     location,
+    mode,
     selectedCategory,
     selectedTransmission,
     selectedFuel,
@@ -294,15 +319,42 @@ function CarsSearchContent() {
             </div>
           </div>
 
-          {/* Quick Date Badge */}
-          {start && end && (
-            <div className="flex items-center gap-2 rounded-xl bg-surface px-3 py-1.5 text-xs font-semibold text-slate-200">
-              <Calendar className="h-3.5 w-3.5 text-blue-400" />
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Active Service Mode Pill */}
+            <div className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold border ${
+              mode === 'subscription'
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                : mode === 'weekday'
+                ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                : mode === 'outstation'
+                ? 'bg-primary/10 border-primary/30 text-primary-light'
+                : 'bg-surface border-white/10 text-slate-300'
+            }`}>
+              {mode === 'subscription' && <Sparkles className="h-3.5 w-3.5" />}
+              {mode === 'weekday' && <Briefcase className="h-3.5 w-3.5" />}
+              {mode === 'outstation' && <Plane className="h-3.5 w-3.5" />}
+              {mode === 'daily' && <Car className="h-3.5 w-3.5" />}
               <span>
-                {start.split('T')[0]} to {end.split('T')[0]}
+                {mode === 'subscription'
+                  ? 'Subscription (35% Off)'
+                  : mode === 'weekday'
+                  ? 'Weekday Pass (20% Off)'
+                  : mode === 'outstation'
+                  ? 'Airport / Outstation'
+                  : 'Daily Drives'}
               </span>
             </div>
-          )}
+
+            {/* Quick Date Badge */}
+            {start && end && (
+              <div className="flex items-center gap-2 rounded-xl bg-surface px-3 py-1.5 text-xs font-semibold text-slate-200">
+                <Calendar className="h-3.5 w-3.5 text-blue-400" />
+                <span>
+                  {start.split('T')[0]} to {end.split('T')[0]}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Mobile Filter Button */}
           <button
@@ -488,6 +540,45 @@ function CarsSearchContent() {
               </select>
             </div>
           </div>
+
+          {/* Mode Notification Banner */}
+          {mode !== 'daily' && (
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-emerald-300 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-emerald-400 font-bold">
+                  {mode === 'subscription' && <Sparkles className="h-5 w-5" />}
+                  {mode === 'weekday' && <Briefcase className="h-5 w-5" />}
+                  {mode === 'outstation' && <Plane className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    {mode === 'subscription'
+                      ? 'Long-term Subscription Discount (35% Off Applied)'
+                      : mode === 'weekday'
+                      ? 'Weekday Commuter Pass (20% Off Applied)'
+                      : 'Airport & Highway Outstation Mode Active'}
+                  </h4>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    {mode === 'subscription'
+                      ? 'All car rates already reflect 35% savings. Includes doorstep delivery, comprehensive maintenance & 50% reduced deposit.'
+                      : mode === 'weekday'
+                      ? 'Mon-Fri special package pricing with 500 included kilometers and zero security deposit.'
+                      : 'Direct airport terminal bay handover, 24/7 highway assistance & unlimited kilometers included.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set('mode', 'daily');
+                  router.push(`/cars?${params.toString()}`);
+                }}
+                className="self-end sm:self-center shrink-0 rounded-xl bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors cursor-pointer"
+              >
+                Reset to Daily
+              </button>
+            </div>
+          )}
 
           {/* Cars Grid */}
           {filteredCars.length > 0 ? (
