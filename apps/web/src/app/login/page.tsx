@@ -80,19 +80,6 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Pre-fill demo credentials
-  const fillDemoAccount = () => {
-    setError(null);
-    if (mode === 'LOGIN') {
-      setLoginEmail('aarav.patel@testmail.com');
-      setLoginPassword('SecurePassword123!');
-    } else {
-      setRegisterName('Aarav Patel');
-      setRegisterEmail(`user_${Date.now().toString(36)}@example.com`);
-      setRegisterPassword('SecurePassword123!');
-      setRegisterPhone('9876543210');
-    }
-  };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,20 +249,8 @@ function LoginContent() {
         window.location.href = nextUrl;
       }, 400);
     } catch (err: unknown) {
-      // Resilient fallback: create authenticated customer session so user is never blocked
-      const fallbackCustomer: CustomerProfile = {
-        id: payload.googleId || `cust-g-${Date.now().toString(36)}`,
-        name: payload.name || 'Google Verified User',
-        email: payload.email || 'verified.user@gmail.com',
-        avatarUrl: payload.avatarUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80',
-        kycStatus: 'NOT_SUBMITTED',
-        createdAt: new Date().toISOString(),
-      };
-      setSuccessMsg('Google verification successful! Redirecting to account...');
-      login(fallbackCustomer, `jwt-google-${Date.now()}`);
-      setTimeout(() => {
-        window.location.href = nextUrl;
-      }, 400);
+      const msg = err instanceof Error ? err.message : 'Google sign-in failed. Please try again or use your email.';
+      setError(msg);
     } finally {
       setGoogleLoading(false);
     }
@@ -284,20 +259,6 @@ function LoginContent() {
   const handleGoogleSignIn = async () => {
     setError(null);
     setGoogleLoading(true);
-
-    let hasHandled = false;
-    // Safety timer: if Google One Tap is blocked or takes too long, authenticate seamlessly
-    const fallbackTimer = setTimeout(() => {
-      if (!hasHandled) {
-        hasHandled = true;
-        sendGooglePayload({
-          name: 'Google Verified User',
-          email: 'verified.user@gmail.com',
-          googleId: `g-${Date.now().toString(36)}`,
-          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80',
-        });
-      }
-    }, 2000);
 
     try {
       // Check if official Google Identity Services is available in window
@@ -309,48 +270,30 @@ function LoginContent() {
           client_id: GOOGLE_CLIENT_ID,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           callback: async (response: any) => {
-            if (!hasHandled && response.credential) {
-              hasHandled = true;
-              clearTimeout(fallbackTimer);
+            if (response.credential) {
               await sendGooglePayload({ credential: response.credential });
+            } else {
+              setGoogleLoading(false);
             }
           },
         });
 
         // Trigger Google dialog
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        google.accounts.id.prompt(async (notification: any) => {
-          if (!hasHandled && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
-            hasHandled = true;
-            clearTimeout(fallbackTimer);
-            await sendGooglePayload({
-              name: 'Google Verified User',
-              email: 'verified.user@gmail.com',
-              googleId: `g-${Date.now().toString(36)}`,
-              avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80',
-            });
+        google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            setGoogleLoading(false);
+            setError('Google sign-in popup was dismissed or blocked. You can also sign in with your email and password below.');
           }
         });
       } else {
-        hasHandled = true;
-        clearTimeout(fallbackTimer);
-        await sendGooglePayload({
-          name: 'Priya Sharma',
-          email: 'priya.sharma@gmail.com',
-          googleId: `g-${Date.now().toString(36)}`,
-          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=256&q=80',
-        });
+        setGoogleLoading(false);
+        setError('Google Services is initializing. Please try again in a few seconds or use email sign in.');
       }
-    } catch {
-      if (!hasHandled) {
-        hasHandled = true;
-        clearTimeout(fallbackTimer);
-        await sendGooglePayload({
-          name: 'Google Verified User',
-          email: 'verified.user@gmail.com',
-          googleId: `g-${Date.now().toString(36)}`,
-        });
-      }
+    } catch (err: unknown) {
+      setGoogleLoading(false);
+      const msg = err instanceof Error ? err.message : 'Unable to connect to Google Sign-In.';
+      setError(msg);
     }
   };
 
@@ -416,20 +359,6 @@ function LoginContent() {
               </button>
             </div>
 
-            {/* Quick Demo Helper */}
-            <div className="mt-4 flex items-center justify-between rounded-xl bg-blue-50/70 dark:bg-surface/60 px-3.5 py-2 border border-blue-200/60 dark:border-white/5">
-              <div className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-300">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
-                <span>Need quick testing?</span>
-              </div>
-              <button
-                type="button"
-                onClick={fillDemoAccount}
-                className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-              >
-                Fill Demo Credentials
-              </button>
-            </div>
 
             {/* Error Banner */}
             {error && (
@@ -536,7 +465,7 @@ function LoginContent() {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Aarav Patel"
+                      placeholder="Enter your full name"
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
                       className="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-surface pl-10 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-xs focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 transition-colors"

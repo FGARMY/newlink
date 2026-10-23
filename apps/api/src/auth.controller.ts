@@ -498,21 +498,26 @@ export class AuthController {
       if (neonUser) return { data: mapCustomerProfile(neonUser) };
     }
 
-    let customer = await this.customerRepo.findById(id || 'cust-demo');
-    if (!customer) {
-      customer = await this.customerRepo.create('+919876543210', 'Rahul Sharma');
+    if (id) {
+      const memCustomer = await this.customerRepo.findById(id);
+      if (memCustomer) {
+        return {
+          data: {
+            id: memCustomer.id,
+            phone: memCustomer.phone,
+            name: memCustomer.name,
+            email: memCustomer.email,
+            kycStatus: memCustomer.kycStatus,
+            createdAt: memCustomer.createdAt.toISOString(),
+          },
+        };
+      }
     }
 
-    return {
-      data: {
-        id: customer.id,
-        phone: customer.phone,
-        name: customer.name,
-        email: customer.email,
-        kycStatus: customer.kycStatus,
-        createdAt: customer.createdAt.toISOString(),
-      },
-    };
+    throw new HttpException(
+      { error: { code: 'UNAUTHORIZED', message: 'User profile not found. Please sign in.' } },
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 
   @Patch('me')
@@ -531,9 +536,15 @@ export class AuthController {
         email = verified.payload.email || undefined;
       }
     }
-    id = id || 'cust-demo';
 
-    let updatedNeon = await this.neonService.updateCustomerProfile(id, body || {});
+    if (!id && !email) {
+      throw new HttpException(
+        { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    let updatedNeon = id ? await this.neonService.updateCustomerProfile(id, body || {}) : null;
     if (!updatedNeon && email) {
       const found = await this.neonService.findCustomerByEmail(email);
       if (found) {
@@ -545,11 +556,18 @@ export class AuthController {
       return { data: mapCustomerProfile(updatedNeon) };
     }
 
-    const updated = await this.customerRepo.update(id, {
-      name: body?.name,
-      email: body?.email,
-    });
-    return { data: updated };
+    if (id) {
+      const updated = await this.customerRepo.update(id, {
+        name: body?.name,
+        email: body?.email,
+      });
+      return { data: updated };
+    }
+
+    throw new HttpException(
+      { error: { code: 'NOT_FOUND', message: 'Customer account not found' } },
+      HttpStatus.NOT_FOUND,
+    );
   }
 
   @Post('me/digilocker/simulate')
@@ -567,7 +585,13 @@ export class AuthController {
         email = verified.payload.email || undefined;
       }
     }
-    id = id || 'cust-demo';
+
+    if (!id && !email) {
+      throw new HttpException(
+        { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
 
     const updates = {
       kycStatus: 'APPROVED',
@@ -581,7 +605,7 @@ export class AuthController {
       pincode: '411001',
     };
 
-    let updated = await this.neonService.updateCustomerProfile(id, updates);
+    let updated = id ? await this.neonService.updateCustomerProfile(id, updates) : null;
     if (!updated && email) {
       const found = await this.neonService.findCustomerByEmail(email);
       if (found) {
@@ -589,7 +613,7 @@ export class AuthController {
       }
     }
 
-    if (!updated) {
+    if (!updated && id) {
       await this.customerRepo.update(id, { kycStatus: 'APPROVED' });
     }
 
@@ -604,7 +628,15 @@ export class AuthController {
 
   @Get('me/kyc')
   async getKycStatus(@Headers('x-customer-id') customerId?: string) {
-    const id = customerId || 'cust-demo';
+    const id = customerId;
+    if (!id) {
+      return {
+        data: {
+          status: 'NOT_SUBMITTED',
+          documents: [],
+        },
+      };
+    }
     const customer = await this.customerRepo.findById(id);
     const docs = await this.customerRepo.getKycDocuments(id);
 

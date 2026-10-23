@@ -63,16 +63,16 @@ export default function AccountPage() {
   const [profileName, setProfileName] = useState(customer?.name || '');
   const [profileEmail, setProfileEmail] = useState(customer?.email || '');
   const [profilePhone, setProfilePhone] = useState(customer?.phone || '');
-  const [profileDob, setProfileDob] = useState(customer?.dob || '1995-08-14');
-  const [profileAddress, setProfileAddress] = useState(customer?.address || 'Flat 402, Royal Palms, Baner');
-  const [profileCity, setProfileCity] = useState(customer?.city || 'Pune');
-  const [profileState, setProfileState] = useState(customer?.state || 'Maharashtra');
-  const [profilePincode, setProfilePincode] = useState(customer?.pincode || '411045');
-  const [emergencyName, setEmergencyName] = useState(customer?.emergencyContactName || 'Rohan Sharma');
-  const [emergencyPhone, setEmergencyPhone] = useState(customer?.emergencyContactPhone || '+91 98765 12345');
+  const [profileDob, setProfileDob] = useState(customer?.dob || '');
+  const [profileAddress, setProfileAddress] = useState(customer?.address || '');
+  const [profileCity, setProfileCity] = useState(customer?.city || '');
+  const [profileState, setProfileState] = useState(customer?.state || '');
+  const [profilePincode, setProfilePincode] = useState(customer?.pincode || '');
+  const [emergencyName, setEmergencyName] = useState(customer?.emergencyContactName || '');
+  const [emergencyPhone, setEmergencyPhone] = useState(customer?.emergencyContactPhone || '');
   const [emergencyRelation, setEmergencyRelation] = useState(customer?.emergencyContactRelation || 'Brother');
-  const [profileDlNumber, setProfileDlNumber] = useState(customer?.dlNumber || 'MH-12-2021-0089421');
-  const [profileDlExpiry, setProfileDlExpiry] = useState(customer?.dlExpiry || '2041-06-25');
+  const [profileDlNumber, setProfileDlNumber] = useState(customer?.dlNumber || '');
+  const [profileDlExpiry, setProfileDlExpiry] = useState(customer?.dlExpiry || '');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileFeedback, setProfileFeedback] = useState<string | null>(null);
 
@@ -93,34 +93,40 @@ export default function AccountPage() {
       if (customer.dlNumber) setProfileDlNumber(customer.dlNumber);
       if (customer.dlExpiry) setProfileDlExpiry(customer.dlExpiry);
       if (customer.digilockerVerified) setDigiLockerVerified(true);
+      if (customer.paymentMethods?.upi) setSavedUpis(customer.paymentMethods.upi);
+      if (customer.paymentMethods?.cards) setSavedCards(customer.paymentMethods.cards);
+      if (customer.paymentMethods?.bankAccount) {
+        setBankAccount({
+          ...customer.paymentMethods.bankAccount,
+          confirmAccountNumber: customer.paymentMethods.bankAccount.accountNumber,
+        });
+      }
     }
   }, [customer]);
 
   // Payment Methods state
-  const [savedUpis, setSavedUpis] = useState<Array<{ id: string; upiId: string; provider: string; isDefault: boolean }>>([
-    { id: 'upi-1', upiId: `${(customer?.email || 'user').split('@')[0]}@okhdfcbank`, provider: 'Google Pay', isDefault: true },
-    { id: 'upi-2', upiId: `${(customer?.phone ? customer.phone.replace(/[^0-9]/g, '') : '9876543210')}@ybl`, provider: 'PhonePe', isDefault: false },
-  ]);
+  const [savedUpis, setSavedUpis] = useState<Array<{ id: string; upiId: string; provider?: string; isDefault: boolean }>>(
+    customer?.paymentMethods?.upi || []
+  );
   const [newUpiInput, setNewUpiInput] = useState('');
   const [newUpiProvider, setNewUpiProvider] = useState('Google Pay');
   const [isAddingUpi, setIsAddingUpi] = useState(false);
 
-  const [savedCards, setSavedCards] = useState<Array<{ id: string; cardholderName: string; last4: string; expiry: string; brand: string; isDefault: boolean }>>([
-    { id: 'card-1', cardholderName: customer?.name || 'Aarav Patel', last4: '4242', expiry: '08/28', brand: 'Visa Platinum', isDefault: true },
-    { id: 'card-2', cardholderName: customer?.name || 'Aarav Patel', last4: '8819', expiry: '11/29', brand: 'Mastercard World', isDefault: false },
-  ]);
+  const [savedCards, setSavedCards] = useState<Array<{ id: string; cardholderName: string; last4: string; expiry: string; brand: string; isDefault: boolean }>>(
+    customer?.paymentMethods?.cards || []
+  );
   const [newCardNumber, setNewCardNumber] = useState('');
   const [newCardHolder, setNewCardHolder] = useState(customer?.name || '');
   const [newCardExpiry, setNewCardExpiry] = useState('');
   const [isAddingCard, setIsAddingCard] = useState(false);
 
   const [bankAccount, setBankAccount] = useState({
-    bankName: 'HDFC Bank Ltd',
-    accountHolder: customer?.name || 'Aarav Patel',
-    accountNumber: '50100482910394',
-    confirmAccountNumber: '50100482910394',
-    ifsc: 'HDFC0000039',
-    isVerified: true,
+    bankName: customer?.paymentMethods?.bankAccount?.bankName || '',
+    accountHolder: customer?.paymentMethods?.bankAccount?.accountHolder || customer?.name || '',
+    accountNumber: customer?.paymentMethods?.bankAccount?.accountNumber || '',
+    confirmAccountNumber: customer?.paymentMethods?.bankAccount?.accountNumber || '',
+    ifsc: customer?.paymentMethods?.bankAccount?.ifsc || '',
+    isVerified: Boolean(customer?.paymentMethods?.bankAccount?.isVerified),
   });
   const [bankSavedFeedback, setBankSavedFeedback] = useState<string | null>(null);
 
@@ -302,8 +308,8 @@ export default function AccountPage() {
   };
 
   // KYC upload form states
-  const [dlNumber, setDlNumber] = useState('MH-12-2018-004821');
-  const [expiryDate, setExpiryDate] = useState('2038-08-15');
+  const [dlNumber, setDlNumber] = useState(customer?.dlNumber || '');
+  const [expiryDate, setExpiryDate] = useState(customer?.dlExpiry || '');
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
