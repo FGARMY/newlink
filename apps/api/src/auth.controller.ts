@@ -47,6 +47,10 @@ function verifyPassword(password: string, combinedHash: string): boolean {
   }
 }
 
+import { SecurityService } from './security.service.js';
+import type { Request } from 'express';
+import { Req } from '@nestjs/common';
+
 // In-memory challenge store (in production, Redis)
 const otpChallenges: Map<string, ReturnType<typeof createOtpChallenge>> = new Map();
 
@@ -55,10 +59,11 @@ export class AuthController {
   constructor(
     @Inject(MemoryCustomerRepository) private customerRepo: MemoryCustomerRepository,
     @Inject(NeonService) private neonService: NeonService,
+    @Inject(SecurityService) private securityService: SecurityService,
   ) {}
 
   @Post('auth/register')
-  async registerWithEmail(@Body() body: unknown) {
+  async registerWithEmail(@Body() body: unknown, @Req() req: Request) {
     const parse = EmailRegisterSchema.safeParse(body);
     if (!parse.success) {
       throw new HttpException(
@@ -75,6 +80,21 @@ export class AuthController {
 
     const { name, email, password, phone } = parse.data;
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Rate limit registration by IP (max 15 attempts per hour)
+    const ip = req.ip || req.headers['x-forwarded-for'] || 'client';
+    const regLimit = this.securityService.checkRateLimit(`reg:${ip}`, 15, 3600, 3600);
+    if (!regLimit.allowed) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'TOO_MANY_REQUESTS',
+            message: 'Too many registration attempts from this address. Please try again later.',
+          },
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
 
     // Check if customer already exists in Neon
     const existing = await this.neonService.findCustomerByEmail(normalizedEmail);
@@ -111,7 +131,11 @@ export class AuthController {
       createdAt: new Date().toISOString(),
     };
 
-    const token = `jwt-${customerId}-${Date.now()}`;
+    const token = this.securityService.signJwt({
+      sub: customerId,
+      email: normalizedEmail,
+      name,
+    });
 
     return {
       data: {
@@ -141,8 +165,24 @@ export class AuthController {
     const { email, password } = parse.data;
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Anti-brute-force rate limiting (max 5 failed attempts per 5 minutes, 15-minute lockout)
+    const rateLimitKey = `login:${normalizedEmail}`;
+    const rateCheck = this.securityService.checkRateLimit(rateLimitKey, 5, 300, 900);
+    if (!rateCheck.allowed) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'TOO_MANY_REQUESTS',
+            message: `Account temporarily locked due to multiple failed login attempts. Please retry in ${Math.ceil(rateCheck.retryAfterSeconds / 60)} minutes.`,
+          },
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
     const user = await this.neonService.findCustomerByEmail(normalizedEmail);
     if (!user || !user.password_hash) {
+      this.securityService.recordFailure(rateLimitKey);
       throw new HttpException(
         {
           error: {
@@ -156,6 +196,7 @@ export class AuthController {
 
     const isMatch = verifyPassword(password, user.password_hash);
     if (!isMatch) {
+      this.securityService.recordFailure(rateLimitKey);
       throw new HttpException(
         {
           error: {
@@ -167,6 +208,9 @@ export class AuthController {
       );
     }
 
+    // Reset rate limit counter upon successful authentication
+    this.securityService.resetRateLimit(rateLimitKey);
+
     const customer: CustomerProfile = {
       id: user.id,
       name: user.name,
@@ -177,7 +221,11 @@ export class AuthController {
       createdAt: user.created_at || new Date().toISOString(),
     };
 
-    const token = `jwt-${user.id}-${Date.now()}`;
+    const token = this.securityService.signJwt({
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    });
 
     return {
       data: {
@@ -263,7 +311,11 @@ export class AuthController {
       createdAt: user?.created_at || new Date().toISOString(),
     };
 
-    const token = `jwt-${customer.id}-${Date.now()}`;
+    const token = this.securityService.signJwt({
+      sub: customer.id,
+      email: customer.email,
+      name: customer.name,
+    });
 
     return {
       data: {
@@ -390,8 +442,20 @@ export class AuthController {
   }
 
   @Get('me')
-  async getProfile(@Headers('x-customer-id') customerId?: string) {
-    const id = customerId || 'cust-demo';
+  async getProfile(
+    @Headers('authorization') authHeader?: string,
+    @Headers('x-customer-id') customerId?: string,
+  ) {
+    let id = customerId;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      const verified = this.securityService.verifyJwt(token);
+      if (verified.valid && verified.payload?.sub) {
+        id = verified.payload.sub;
+      }
+    }
+    id = id || 'cust-demo';
+
     let customer = await this.customerRepo.findById(id);
     if (!customer) {
       customer = await this.customerRepo.create('+919876543210', 'Rahul Sharma');
@@ -411,13 +475,23 @@ export class AuthController {
 
   @Patch('me')
   async updateProfile(
-    @Headers('x-customer-id') customerId: string,
-    @Body() body: { name?: string; email?: string },
+    @Headers('authorization') authHeader?: string,
+    @Headers('x-customer-id') customerId?: string,
+    @Body() body?: { name?: string; email?: string },
   ) {
-    const id = customerId || 'cust-demo';
+    let id = customerId;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      const verified = this.securityService.verifyJwt(token);
+      if (verified.valid && verified.payload?.sub) {
+        id = verified.payload.sub;
+      }
+    }
+    id = id || 'cust-demo';
+
     const updated = await this.customerRepo.update(id, {
-      name: body.name,
-      email: body.email,
+      name: body?.name,
+      email: body?.email,
     });
     return { data: updated };
   }

@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller.js';
 import { AdminFleetController } from './admin-fleet.controller.js';
 import { PaymentsController } from './payments.controller.js';
 import { NeonService } from './neon.service.js';
+import { SecurityService } from './security.service.js';
 import {
   MemoryFleetRepository,
   MemoryBookingRepository,
@@ -19,6 +20,7 @@ import {
   imports: [],
   controllers: [ApiController, AuthController, AdminFleetController, PaymentsController],
   providers: [
+    SecurityService,
     NeonService,
     NeonFleetRepository,
     NeonCustomerRepository,

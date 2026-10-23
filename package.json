@@ -36,5 +36,8 @@
     "@neon/config": "^1.9.3",
     "@neon/env": "^1.6.4",
     "@neondatabase/serverless": "^1.2.0"
+  },
+  "overrides": {
+    "braces": ">=3.0.3"
   }
 }
