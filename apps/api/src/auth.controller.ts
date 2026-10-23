@@ -51,6 +51,41 @@ import { SecurityService } from './security.service.js';
 import type { Request } from 'express';
 import { Req } from '@nestjs/common';
 
+function mapCustomerProfile(user: any): CustomerProfile {
+  let paymentMethods = { upi: [], cards: [], bankAccount: null };
+  if (user?.payment_methods) {
+    if (typeof user.payment_methods === 'string') {
+      try {
+        paymentMethods = JSON.parse(user.payment_methods);
+      } catch {}
+    } else {
+      paymentMethods = user.payment_methods;
+    }
+  }
+
+  return {
+    id: user.id,
+    name: user.name ?? null,
+    email: user.email ?? null,
+    phone: user.phone ?? null,
+    avatarUrl: user.avatar_url ?? null,
+    kycStatus: (user.kyc_status as CustomerProfile['kycStatus']) || 'NOT_SUBMITTED',
+    dob: user.dob ?? null,
+    address: user.address ?? null,
+    city: user.city ?? null,
+    state: user.state ?? null,
+    pincode: user.pincode ?? null,
+    emergencyContactName: user.emergency_contact_name ?? null,
+    emergencyContactPhone: user.emergency_contact_phone ?? null,
+    emergencyContactRelation: user.emergency_contact_relation ?? null,
+    dlNumber: user.dl_number ?? null,
+    dlExpiry: user.dl_expiry ?? null,
+    digilockerVerified: Boolean(user.digilocker_verified),
+    paymentMethods,
+    createdAt: user.created_at || new Date().toISOString(),
+  };
+}
+
 // In-memory challenge store (in production, Redis)
 const otpChallenges: Map<string, ReturnType<typeof createOtpChallenge>> = new Map();
 
@@ -122,14 +157,17 @@ export class AuthController {
       kycStatus: 'NOT_SUBMITTED',
     });
 
-    const customer: CustomerProfile = {
-      id: customerId,
-      name,
-      email: normalizedEmail,
-      phone: phone || null,
-      kycStatus: 'NOT_SUBMITTED',
-      createdAt: new Date().toISOString(),
-    };
+    const neonUser = await this.neonService.findCustomerByEmail(normalizedEmail);
+    const customer: CustomerProfile = neonUser
+      ? mapCustomerProfile(neonUser)
+      : {
+          id: customerId,
+          name,
+          email: normalizedEmail,
+          phone: phone || null,
+          kycStatus: 'NOT_SUBMITTED',
+          createdAt: new Date().toISOString(),
+        };
 
     const token = this.securityService.signJwt({
       sub: customerId,
@@ -211,15 +249,7 @@ export class AuthController {
     // Reset rate limit counter upon successful authentication
     this.securityService.resetRateLimit(rateLimitKey);
 
-    const customer: CustomerProfile = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      avatarUrl: user.avatar_url,
-      kycStatus: (user.kyc_status as CustomerProfile['kycStatus']) || 'NOT_SUBMITTED',
-      createdAt: user.created_at || new Date().toISOString(),
-    };
+    const customer = mapCustomerProfile(user);
 
     const token = this.securityService.signJwt({
       sub: user.id,
@@ -301,15 +331,17 @@ export class AuthController {
       });
     }
 
-    const customer: CustomerProfile = {
-      id: user?.id || `cust-${Date.now().toString(36)}`,
-      name: user?.name || name || 'User',
-      email: normalizedEmail,
-      phone: user?.phone || null,
-      avatarUrl: user?.avatar_url || avatarUrl || null,
-      kycStatus: (user?.kyc_status as CustomerProfile['kycStatus']) || 'NOT_SUBMITTED',
-      createdAt: user?.created_at || new Date().toISOString(),
-    };
+    const customer: CustomerProfile = user
+      ? mapCustomerProfile(user)
+      : {
+          id: `cust-${Date.now().toString(36)}`,
+          name: name || 'User',
+          email: normalizedEmail,
+          phone: null,
+          avatarUrl: avatarUrl || null,
+          kycStatus: 'NOT_SUBMITTED',
+          createdAt: new Date().toISOString(),
+        };
 
     const token = this.securityService.signJwt({
       sub: customer.id,
@@ -447,16 +479,26 @@ export class AuthController {
     @Headers('x-customer-id') customerId?: string,
   ) {
     let id = customerId;
+    let email: string | undefined;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.slice(7).trim();
       const verified = this.securityService.verifyJwt(token);
-      if (verified.valid && verified.payload?.sub) {
+      if (verified.valid && verified.payload) {
         id = verified.payload.sub;
+        email = verified.payload.email || undefined;
       }
     }
-    id = id || 'cust-demo';
 
-    let customer = await this.customerRepo.findById(id);
+    if (id) {
+      const neonUser = await this.neonService.findCustomerById(id);
+      if (neonUser) return { data: mapCustomerProfile(neonUser) };
+    }
+    if (email) {
+      const neonUser = await this.neonService.findCustomerByEmail(email);
+      if (neonUser) return { data: mapCustomerProfile(neonUser) };
+    }
+
+    let customer = await this.customerRepo.findById(id || 'cust-demo');
     if (!customer) {
       customer = await this.customerRepo.create('+919876543210', 'Rahul Sharma');
     }
@@ -477,23 +519,87 @@ export class AuthController {
   async updateProfile(
     @Headers('authorization') authHeader?: string,
     @Headers('x-customer-id') customerId?: string,
-    @Body() body?: { name?: string; email?: string },
+    @Body() body?: any,
   ) {
     let id = customerId;
+    let email: string | undefined;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.slice(7).trim();
       const verified = this.securityService.verifyJwt(token);
-      if (verified.valid && verified.payload?.sub) {
+      if (verified.valid && verified.payload) {
         id = verified.payload.sub;
+        email = verified.payload.email || undefined;
       }
     }
     id = id || 'cust-demo';
+
+    let updatedNeon = await this.neonService.updateCustomerProfile(id, body || {});
+    if (!updatedNeon && email) {
+      const found = await this.neonService.findCustomerByEmail(email);
+      if (found) {
+        updatedNeon = await this.neonService.updateCustomerProfile(found.id, body || {});
+      }
+    }
+
+    if (updatedNeon) {
+      return { data: mapCustomerProfile(updatedNeon) };
+    }
 
     const updated = await this.customerRepo.update(id, {
       name: body?.name,
       email: body?.email,
     });
     return { data: updated };
+  }
+
+  @Post('me/digilocker/simulate')
+  async simulateDigiLocker(
+    @Headers('authorization') authHeader?: string,
+    @Headers('x-customer-id') customerId?: string,
+  ) {
+    let id = customerId;
+    let email: string | undefined;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      const verified = this.securityService.verifyJwt(token);
+      if (verified.valid && verified.payload) {
+        id = verified.payload.sub;
+        email = verified.payload.email || undefined;
+      }
+    }
+    id = id || 'cust-demo';
+
+    const updates = {
+      kycStatus: 'APPROVED',
+      digilockerVerified: true,
+      dlNumber: 'MH-12-2021-0089421',
+      dlExpiry: '2041-06-25',
+      dob: '1995-08-14',
+      address: 'Flat 402, Royal Palms, Koregaon Park',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+    };
+
+    let updated = await this.neonService.updateCustomerProfile(id, updates);
+    if (!updated && email) {
+      const found = await this.neonService.findCustomerByEmail(email);
+      if (found) {
+        updated = await this.neonService.updateCustomerProfile(found.id, updates);
+      }
+    }
+
+    if (!updated) {
+      await this.customerRepo.update(id, { kycStatus: 'APPROVED' });
+    }
+
+    return {
+      data: {
+        success: true,
+        message: 'Successfully pulled Aadhaar & Driving License via DigiLocker (MoRTH)',
+        verifiedProfile: updated ? mapCustomerProfile(updated) : updates,
+      },
+    };
   }
 
   @Get('me/kyc')

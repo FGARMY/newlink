@@ -195,6 +195,18 @@ export class NeonService implements OnModuleInit {
     await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS password_hash TEXT;`);
     await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS google_id VARCHAR(128);`);
     await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS avatar_url TEXT;`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS dob VARCHAR(32);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS address TEXT;`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS city VARCHAR(64);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS state VARCHAR(64);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS pincode VARCHAR(16);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(128);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(32);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(64);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS dl_number VARCHAR(64);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS dl_expiry VARCHAR(32);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS digilocker_verified BOOLEAN DEFAULT false;`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS payment_methods JSONB DEFAULT '{"upi":[],"cards":[],"bankAccount":null}'::jsonb;`);
     await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email ON customers(email) WHERE email IS NOT NULL;`);
 
     await sql.query(`
@@ -419,8 +431,48 @@ export class NeonService implements OnModuleInit {
       google_id: string | null;
       avatar_url: string | null;
       kyc_status: string;
+      dob: string | null;
+      address: string | null;
+      city: string | null;
+      state: string | null;
+      pincode: string | null;
+      emergency_contact_name: string | null;
+      emergency_contact_phone: string | null;
+      emergency_contact_relation: string | null;
+      dl_number: string | null;
+      dl_expiry: string | null;
+      digilocker_verified: boolean | null;
+      payment_methods: any;
       created_at: string;
     }>('SELECT * FROM customers WHERE email = $1 LIMIT 1', [email]);
+    return rows[0] || null;
+  }
+
+  async findCustomerById(id: string) {
+    if (!this.getSql('pooled')) return null;
+    const rows = await this.query<{
+      id: string;
+      email: string;
+      name: string | null;
+      phone: string | null;
+      password_hash: string | null;
+      google_id: string | null;
+      avatar_url: string | null;
+      kyc_status: string;
+      dob: string | null;
+      address: string | null;
+      city: string | null;
+      state: string | null;
+      pincode: string | null;
+      emergency_contact_name: string | null;
+      emergency_contact_phone: string | null;
+      emergency_contact_relation: string | null;
+      dl_number: string | null;
+      dl_expiry: string | null;
+      digilocker_verified: boolean | null;
+      payment_methods: any;
+      created_at: string;
+    }>('SELECT * FROM customers WHERE id = $1 LIMIT 1', [id]);
     return rows[0] || null;
   }
 
@@ -435,6 +487,18 @@ export class NeonService implements OnModuleInit {
       google_id: string | null;
       avatar_url: string | null;
       kyc_status: string;
+      dob: string | null;
+      address: string | null;
+      city: string | null;
+      state: string | null;
+      pincode: string | null;
+      emergency_contact_name: string | null;
+      emergency_contact_phone: string | null;
+      emergency_contact_relation: string | null;
+      dl_number: string | null;
+      dl_expiry: string | null;
+      digilocker_verified: boolean | null;
+      payment_methods: any;
       created_at: string;
     }>('SELECT * FROM customers WHERE google_id = $1 LIMIT 1', [googleId]);
     return rows[0] || null;
@@ -449,12 +513,30 @@ export class NeonService implements OnModuleInit {
     googleId?: string | null;
     avatarUrl?: string | null;
     kycStatus: string;
+    dob?: string | null;
+    address?: string | null;
+    city?: string | null;
+    state?: string | null;
+    pincode?: string | null;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    emergencyContactRelation?: string | null;
+    dlNumber?: string | null;
+    dlExpiry?: string | null;
+    digilockerVerified?: boolean;
+    paymentMethods?: any;
   }) {
     if (!this.getSql('pooled')) return;
     try {
       await this.query(
-        `INSERT INTO customers (id, phone, name, email, password_hash, google_id, avatar_url, kyc_status, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        `INSERT INTO customers (
+          id, phone, name, email, password_hash, google_id, avatar_url, kyc_status,
+          dob, address, city, state, pincode,
+          emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+          dl_number, dl_expiry, digilocker_verified, payment_methods,
+          created_at, updated_at
+        )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, NOW(), NOW())
          ON CONFLICT (id) DO UPDATE SET
            name = COALESCE(EXCLUDED.name, customers.name),
            email = COALESCE(EXCLUDED.email, customers.email),
@@ -463,6 +545,18 @@ export class NeonService implements OnModuleInit {
            google_id = COALESCE(EXCLUDED.google_id, customers.google_id),
            avatar_url = COALESCE(EXCLUDED.avatar_url, customers.avatar_url),
            kyc_status = EXCLUDED.kyc_status,
+           dob = COALESCE(EXCLUDED.dob, customers.dob),
+           address = COALESCE(EXCLUDED.address, customers.address),
+           city = COALESCE(EXCLUDED.city, customers.city),
+           state = COALESCE(EXCLUDED.state, customers.state),
+           pincode = COALESCE(EXCLUDED.pincode, customers.pincode),
+           emergency_contact_name = COALESCE(EXCLUDED.emergency_contact_name, customers.emergency_contact_name),
+           emergency_contact_phone = COALESCE(EXCLUDED.emergency_contact_phone, customers.emergency_contact_phone),
+           emergency_contact_relation = COALESCE(EXCLUDED.emergency_contact_relation, customers.emergency_contact_relation),
+           dl_number = COALESCE(EXCLUDED.dl_number, customers.dl_number),
+           dl_expiry = COALESCE(EXCLUDED.dl_expiry, customers.dl_expiry),
+           digilocker_verified = COALESCE(EXCLUDED.digilocker_verified, customers.digilocker_verified),
+           payment_methods = COALESCE(EXCLUDED.payment_methods, customers.payment_methods),
            updated_at = NOW()`,
         [
           customer.id,
@@ -473,10 +567,85 @@ export class NeonService implements OnModuleInit {
           customer.googleId || null,
           customer.avatarUrl || null,
           customer.kycStatus,
+          customer.dob || null,
+          customer.address || null,
+          customer.city || null,
+          customer.state || null,
+          customer.pincode || null,
+          customer.emergencyContactName || null,
+          customer.emergencyContactPhone || null,
+          customer.emergencyContactRelation || null,
+          customer.dlNumber || null,
+          customer.dlExpiry || null,
+          customer.digilockerVerified ?? false,
+          JSON.stringify(customer.paymentMethods || { upi: [], cards: [], bankAccount: null }),
         ]
       );
     } catch (err) {
       this.logger.warn(`Failed to persist customer in Neon: ${err}`);
+    }
+  }
+
+  async updateCustomerProfile(id: string, updates: Record<string, any>) {
+    if (!this.getSql('pooled')) return null;
+    try {
+      const existing = await this.findCustomerById(id);
+      if (!existing) return null;
+
+      const merged = {
+        name: updates.name !== undefined ? updates.name : existing.name,
+        email: updates.email !== undefined ? updates.email : existing.email,
+        phone: updates.phone !== undefined ? updates.phone : existing.phone,
+        avatar_url: updates.avatarUrl !== undefined ? updates.avatarUrl : existing.avatar_url,
+        kyc_status: updates.kycStatus !== undefined ? updates.kycStatus : existing.kyc_status,
+        dob: updates.dob !== undefined ? updates.dob : existing.dob,
+        address: updates.address !== undefined ? updates.address : existing.address,
+        city: updates.city !== undefined ? updates.city : existing.city,
+        state: updates.state !== undefined ? updates.state : existing.state,
+        pincode: updates.pincode !== undefined ? updates.pincode : existing.pincode,
+        emergency_contact_name: updates.emergencyContactName !== undefined ? updates.emergencyContactName : existing.emergency_contact_name,
+        emergency_contact_phone: updates.emergencyContactPhone !== undefined ? updates.emergencyContactPhone : existing.emergency_contact_phone,
+        emergency_contact_relation: updates.emergencyContactRelation !== undefined ? updates.emergencyContactRelation : existing.emergency_contact_relation,
+        dl_number: updates.dlNumber !== undefined ? updates.dlNumber : existing.dl_number,
+        dl_expiry: updates.dlExpiry !== undefined ? updates.dlExpiry : existing.dl_expiry,
+        digilocker_verified: updates.digilockerVerified !== undefined ? updates.digilockerVerified : existing.digilocker_verified,
+        payment_methods: updates.paymentMethods !== undefined ? JSON.stringify(updates.paymentMethods) : (typeof existing.payment_methods === 'string' ? existing.payment_methods : JSON.stringify(existing.payment_methods || { upi: [], cards: [], bankAccount: null })),
+      };
+
+      await this.query(
+        `UPDATE customers SET
+           name = $1, email = $2, phone = $3, avatar_url = $4, kyc_status = $5,
+           dob = $6, address = $7, city = $8, state = $9, pincode = $10,
+           emergency_contact_name = $11, emergency_contact_phone = $12, emergency_contact_relation = $13,
+           dl_number = $14, dl_expiry = $15, digilocker_verified = $16, payment_methods = $17::jsonb,
+           updated_at = NOW()
+         WHERE id = $18`,
+        [
+          merged.name,
+          merged.email,
+          merged.phone,
+          merged.avatar_url,
+          merged.kyc_status,
+          merged.dob,
+          merged.address,
+          merged.city,
+          merged.state,
+          merged.pincode,
+          merged.emergency_contact_name,
+          merged.emergency_contact_phone,
+          merged.emergency_contact_relation,
+          merged.dl_number,
+          merged.dl_expiry,
+          merged.digilocker_verified,
+          merged.payment_methods,
+          id,
+        ]
+      );
+
+      return await this.findCustomerById(id);
+    } catch (err) {
+      this.logger.warn(`Failed to update customer in Neon: ${err}`);
+      return null;
     }
   }
 }

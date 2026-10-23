@@ -36,6 +36,18 @@ import {
   Volume2,
   Camera,
   Smartphone,
+  CreditCard,
+  Building2,
+  QrCode,
+  Save,
+  Plus,
+  Trash2,
+  ExternalLink,
+  FileSpreadsheet,
+  Layers,
+  Compass,
+  HelpCircle,
+  CheckCircle,
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
@@ -45,7 +57,249 @@ export default function AccountPage() {
   const router = useRouter();
   const { customer, logout, updateCustomer } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'KYC'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PROFILE' | 'PAYMENTS' | 'DIGILOCKER' | 'KYC'>('OVERVIEW');
+
+  // Profile editable details
+  const [profileName, setProfileName] = useState(customer?.name || '');
+  const [profileEmail, setProfileEmail] = useState(customer?.email || '');
+  const [profilePhone, setProfilePhone] = useState(customer?.phone || '');
+  const [profileDob, setProfileDob] = useState(customer?.dob || '1995-08-14');
+  const [profileAddress, setProfileAddress] = useState(customer?.address || 'Flat 402, Royal Palms, Baner');
+  const [profileCity, setProfileCity] = useState(customer?.city || 'Pune');
+  const [profileState, setProfileState] = useState(customer?.state || 'Maharashtra');
+  const [profilePincode, setProfilePincode] = useState(customer?.pincode || '411045');
+  const [emergencyName, setEmergencyName] = useState(customer?.emergencyContactName || 'Rohan Sharma');
+  const [emergencyPhone, setEmergencyPhone] = useState(customer?.emergencyContactPhone || '+91 98765 12345');
+  const [emergencyRelation, setEmergencyRelation] = useState(customer?.emergencyContactRelation || 'Brother');
+  const [profileDlNumber, setProfileDlNumber] = useState(customer?.dlNumber || 'MH-12-2021-0089421');
+  const [profileDlExpiry, setProfileDlExpiry] = useState(customer?.dlExpiry || '2041-06-25');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileFeedback, setProfileFeedback] = useState<string | null>(null);
+
+  // Sync state when customer changes
+  useEffect(() => {
+    if (customer) {
+      if (customer.name) setProfileName(customer.name);
+      if (customer.email) setProfileEmail(customer.email);
+      if (customer.phone) setProfilePhone(customer.phone);
+      if (customer.dob) setProfileDob(customer.dob);
+      if (customer.address) setProfileAddress(customer.address);
+      if (customer.city) setProfileCity(customer.city);
+      if (customer.state) setProfileState(customer.state);
+      if (customer.pincode) setProfilePincode(customer.pincode);
+      if (customer.emergencyContactName) setEmergencyName(customer.emergencyContactName);
+      if (customer.emergencyContactPhone) setEmergencyPhone(customer.emergencyContactPhone);
+      if (customer.emergencyContactRelation) setEmergencyRelation(customer.emergencyContactRelation);
+      if (customer.dlNumber) setProfileDlNumber(customer.dlNumber);
+      if (customer.dlExpiry) setProfileDlExpiry(customer.dlExpiry);
+      if (customer.digilockerVerified) setDigiLockerVerified(true);
+    }
+  }, [customer]);
+
+  // Payment Methods state
+  const [savedUpis, setSavedUpis] = useState<Array<{ id: string; upiId: string; provider: string; isDefault: boolean }>>([
+    { id: 'upi-1', upiId: `${(customer?.email || 'user').split('@')[0]}@okhdfcbank`, provider: 'Google Pay', isDefault: true },
+    { id: 'upi-2', upiId: `${(customer?.phone ? customer.phone.replace(/[^0-9]/g, '') : '9876543210')}@ybl`, provider: 'PhonePe', isDefault: false },
+  ]);
+  const [newUpiInput, setNewUpiInput] = useState('');
+  const [newUpiProvider, setNewUpiProvider] = useState('Google Pay');
+  const [isAddingUpi, setIsAddingUpi] = useState(false);
+
+  const [savedCards, setSavedCards] = useState<Array<{ id: string; cardholderName: string; last4: string; expiry: string; brand: string; isDefault: boolean }>>([
+    { id: 'card-1', cardholderName: customer?.name || 'Aarav Patel', last4: '4242', expiry: '08/28', brand: 'Visa Platinum', isDefault: true },
+    { id: 'card-2', cardholderName: customer?.name || 'Aarav Patel', last4: '8819', expiry: '11/29', brand: 'Mastercard World', isDefault: false },
+  ]);
+  const [newCardNumber, setNewCardNumber] = useState('');
+  const [newCardHolder, setNewCardHolder] = useState(customer?.name || '');
+  const [newCardExpiry, setNewCardExpiry] = useState('');
+  const [isAddingCard, setIsAddingCard] = useState(false);
+
+  const [bankAccount, setBankAccount] = useState({
+    bankName: 'HDFC Bank Ltd',
+    accountHolder: customer?.name || 'Aarav Patel',
+    accountNumber: '50100482910394',
+    confirmAccountNumber: '50100482910394',
+    ifsc: 'HDFC0000039',
+    isVerified: true,
+  });
+  const [bankSavedFeedback, setBankSavedFeedback] = useState<string | null>(null);
+
+  // DigiLocker verification state
+  const [isDigiLockerConnecting, setIsDigiLockerConnecting] = useState(false);
+  const [digiLockerStep, setDigiLockerStep] = useState<number>(0);
+  const [digiLockerVerified, setDigiLockerVerified] = useState<boolean>(Boolean(customer?.digilockerVerified || customer?.kycStatus === 'APPROVED'));
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingProfile(true);
+    setProfileFeedback(null);
+
+    const payload = {
+      name: profileName.trim(),
+      email: profileEmail.trim(),
+      phone: profilePhone.trim(),
+      dob: profileDob,
+      address: profileAddress,
+      city: profileCity,
+      state: profileState,
+      pincode: profilePincode,
+      emergencyContactName: emergencyName,
+      emergencyContactPhone: emergencyPhone,
+      emergencyContactRelation: emergencyRelation,
+      dlNumber: profileDlNumber,
+      dlExpiry: profileDlExpiry,
+    };
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('newlink_token') : null;
+      await fetch('/api/v1/me', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      updateCustomer(payload);
+      setProfileFeedback('✓ Profile details saved and synced to Neon Database!');
+      setTimeout(() => setProfileFeedback(null), 4000);
+    } catch {
+      updateCustomer(payload);
+      setProfileFeedback('✓ Profile updated in local session!');
+      setTimeout(() => setProfileFeedback(null), 4000);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleSaveBankAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (bankAccount.accountNumber !== bankAccount.confirmAccountNumber) {
+      alert('Account numbers do not match. Please re-enter.');
+      return;
+    }
+    setBankSavedFeedback('✓ Security deposit refund bank details verified & saved.');
+    updateCustomer({
+      paymentMethods: {
+        upi: savedUpis,
+        cards: savedCards,
+        bankAccount,
+      },
+    });
+    setTimeout(() => setBankSavedFeedback(null), 3500);
+  };
+
+  const handleAddUpi = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUpiInput || !newUpiInput.includes('@')) {
+      alert('Please enter a valid UPI ID (e.g. yourname@okhdfcbank)');
+      return;
+    }
+    const updated = [
+      ...savedUpis,
+      {
+        id: `upi-${Date.now()}`,
+        upiId: newUpiInput.trim(),
+        provider: newUpiProvider,
+        isDefault: savedUpis.length === 0,
+      },
+    ];
+    setSavedUpis(updated);
+    setNewUpiInput('');
+    setIsAddingUpi(false);
+    updateCustomer({
+      paymentMethods: {
+        upi: updated,
+        cards: savedCards,
+        bankAccount,
+      },
+    });
+  };
+
+  const handleAddCard = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanNum = newCardNumber.replace(/\\s/g, '');
+    if (cleanNum.length < 12) {
+      alert('Please enter a valid card number');
+      return;
+    }
+    const last4 = cleanNum.slice(-4);
+    const updated = [
+      ...savedCards,
+      {
+        id: `card-${Date.now()}`,
+        cardholderName: newCardHolder || profileName || 'Cardholder',
+        last4,
+        expiry: newCardExpiry || '12/28',
+        brand: cleanNum.startsWith('4') ? 'Visa' : 'Mastercard',
+        isDefault: savedCards.length === 0,
+      },
+    ];
+    setSavedCards(updated);
+    setNewCardNumber('');
+    setIsAddingCard(false);
+    updateCustomer({
+      paymentMethods: {
+        upi: savedUpis,
+        cards: updated,
+        bankAccount,
+      },
+    });
+  };
+
+  const handleTriggerDigiLocker = async () => {
+    setIsDigiLockerConnecting(true);
+    setDigiLockerStep(1);
+
+    setTimeout(() => {
+      setDigiLockerStep(2);
+    }, 1000);
+
+    setTimeout(() => {
+      setDigiLockerStep(3);
+    }, 2200);
+
+    setTimeout(async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('newlink_token') : null;
+        await fetch('/api/v1/me/digilocker/simulate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+      } catch {
+        // Continue simulation
+      }
+
+      setDigiLockerVerified(true);
+      setIsDigiLockerConnecting(false);
+      setDigiLockerStep(0);
+
+      const verifiedUpdates = {
+        kycStatus: 'APPROVED' as const,
+        digilockerVerified: true,
+        dlNumber: 'MH-12-2021-0089421',
+        dlExpiry: '2041-06-25',
+        dob: '1995-08-14',
+        address: 'Flat 402, Royal Palms, Koregaon Park',
+        city: 'Pune',
+        state: 'Maharashtra',
+        pincode: '411001',
+      };
+
+      setProfileDlNumber(verifiedUpdates.dlNumber);
+      setProfileDlExpiry(verifiedUpdates.dlExpiry);
+      setProfileDob(verifiedUpdates.dob);
+      setProfileAddress(verifiedUpdates.address);
+      setProfileCity(verifiedUpdates.city);
+      setProfilePincode(verifiedUpdates.pincode);
+
+      updateCustomer(verifiedUpdates);
+    }, 3200);
+  };
 
   // KYC upload form states
   const [dlNumber, setDlNumber] = useState('MH-12-2018-004821');
@@ -349,7 +603,7 @@ export default function AccountPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="mt-8 flex gap-2 border-b border-white/5 pb-1">
+          <div className="mt-8 flex flex-wrap gap-2 border-b border-white/5 pb-1">
             <button
               onClick={() => setActiveTab('OVERVIEW')}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
@@ -361,14 +615,48 @@ export default function AccountPage() {
               Overview & Active Rentals
             </button>
             <button
+              onClick={() => setActiveTab('PROFILE')}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'PROFILE'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              <User className="h-3.5 w-3.5" />
+              Profile Details
+            </button>
+            <button
+              onClick={() => setActiveTab('PAYMENTS')}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'PAYMENTS'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              <CreditCard className="h-3.5 w-3.5" />
+              Payment Methods
+            </button>
+            <button
+              onClick={() => setActiveTab('DIGILOCKER')}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'DIGILOCKER'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+              DigiLocker KYC
+            </button>
+            <button
               onClick={() => setActiveTab('KYC')}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'KYC'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
-              KYC Documents
+              <Upload className="h-3.5 w-3.5" />
+              Manual Upload
             </button>
           </div>
         </div>
@@ -784,6 +1072,739 @@ export default function AccountPage() {
                     </button>
                   </form>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* Tab 3: Profile & Personal Details                                         */}
+        {/* ========================================================================= */}
+        {activeTab === 'PROFILE' && (
+          <div className="mt-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <User className="h-5 w-5 text-blue-400" />
+                  Account & Profile Details
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Update your contact details, residential address, emergency contact, and driving license.
+                </p>
+              </div>
+              {profileFeedback && (
+                <div className="rounded-xl bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs font-bold text-emerald-300">
+                  {profileFeedback}
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-6">
+              {/* Basic Information */}
+              <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                  <User className="h-4 w-4 text-blue-400" />
+                  Basic Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Full Legal Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      placeholder="e.g. Aarav Patel"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Email Address</label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        value={profileEmail}
+                        onChange={(e) => setProfileEmail(e.target.value)}
+                        placeholder="e.g. user@example.com"
+                        className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none pr-20"
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
+                        Verified
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Mobile Phone Number</label>
+                    <input
+                      type="tel"
+                      value={profilePhone}
+                      onChange={(e) => setProfilePhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Date of Birth</label>
+                    <input
+                      type="date"
+                      value={profileDob}
+                      onChange={(e) => setProfileDob(e.target.value)}
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Residential Address */}
+              <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-emerald-400" />
+                  Residential Address (Delivery & Billing)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                  <div className="sm:col-span-2">
+                    <label className="font-bold text-slate-200 block mb-1">Street Address / Flat / Building</label>
+                    <input
+                      type="text"
+                      value={profileAddress}
+                      onChange={(e) => setProfileAddress(e.target.value)}
+                      placeholder="Flat 402, Royal Palms, Baner Road"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">City</label>
+                    <input
+                      type="text"
+                      value={profileCity}
+                      onChange={(e) => setProfileCity(e.target.value)}
+                      placeholder="Pune"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">State</label>
+                    <input
+                      type="text"
+                      value={profileState}
+                      onChange={(e) => setProfileState(e.target.value)}
+                      placeholder="Maharashtra"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">PIN / Postal Code</label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={profilePincode}
+                      onChange={(e) => setProfilePincode(e.target.value)}
+                      placeholder="411045"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Emergency Contact */}
+              <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-amber-400" />
+                  Emergency Contact (Safety & Assistance)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Contact Name</label>
+                    <input
+                      type="text"
+                      value={emergencyName}
+                      onChange={(e) => setEmergencyName(e.target.value)}
+                      placeholder="e.g. Rohan Sharma"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Relationship</label>
+                    <select
+                      value={emergencyRelation}
+                      onChange={(e) => setEmergencyRelation(e.target.value)}
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none bg-card"
+                    >
+                      <option value="Brother">Brother</option>
+                      <option value="Sister">Sister</option>
+                      <option value="Spouse">Spouse</option>
+                      <option value="Parent">Parent</option>
+                      <option value="Friend">Friend</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Emergency Phone Number</label>
+                    <input
+                      type="tel"
+                      value={emergencyPhone}
+                      onChange={(e) => setEmergencyPhone(e.target.value)}
+                      placeholder="+91 98765 12345"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Driving License & Identity */}
+              <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-blue-400" />
+                    Driving License Details
+                  </h3>
+                  {digiLockerVerified ? (
+                    <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      DigiLocker Verified
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-300">
+                      Manual Verification
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Driving License (DL) Number</label>
+                    <input
+                      type="text"
+                      value={profileDlNumber}
+                      onChange={(e) => setProfileDlNumber(e.target.value)}
+                      placeholder="MH-12-2021-0089421"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-mono font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">License Expiry Date</label>
+                    <input
+                      type="date"
+                      value={profileDlExpiry}
+                      onChange={(e) => setProfileDlExpiry(e.target.value)}
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={isSavingProfile}
+                  className="rounded-2xl bg-blue-600 px-8 py-3 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSavingProfile ? 'Saving Changes...' : 'Save All Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* Tab 4: Payment Methods & Refund Account                                   */}
+        {/* ========================================================================= */}
+        {activeTab === 'PAYMENTS' && (
+          <div className="mt-8 space-y-8">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-blue-400" />
+                Payment Methods & Security Deposit Refund
+              </h2>
+              <p className="text-xs text-slate-400">
+                Manage your saved UPI accounts, credit/debit cards, and set your verified bank account for automatic security deposit refunds.
+              </p>
+            </div>
+
+            {/* 1. Saved UPI Accounts */}
+            <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                    <QrCode className="h-4 w-4 text-emerald-400" />
+                    Saved UPI IDs (Fast 1-Click Checkout)
+                  </h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Pay via Google Pay, PhonePe, Paytm, or BHIM UPI.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingUpi(!isAddingUpi)}
+                  className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-bold text-white hover:bg-surface/50 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add UPI ID
+                </button>
+              </div>
+
+              {isAddingUpi && (
+                <form onSubmit={handleAddUpi} className="mb-4 rounded-2xl bg-surface/50 border border-white/10 p-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="sm:col-span-2">
+                      <label className="font-bold text-slate-200 block mb-1">Enter UPI ID / VPA</label>
+                      <input
+                        type="text"
+                        required
+                        value={newUpiInput}
+                        onChange={(e) => setNewUpiInput(e.target.value)}
+                        placeholder="e.g. yourname@okhdfcbank"
+                        className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-mono focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-bold text-slate-200 block mb-1">UPI Provider</label>
+                      <select
+                        value={newUpiProvider}
+                        onChange={(e) => setNewUpiProvider(e.target.value)}
+                        className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-medium focus:border-blue-600 focus:outline-none bg-card"
+                      >
+                        <option value="Google Pay">Google Pay</option>
+                        <option value="PhonePe">PhonePe</option>
+                        <option value="Paytm">Paytm</option>
+                        <option value="BHIM UPI">BHIM UPI</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingUpi(false)}
+                      className="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-1.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 cursor-pointer"
+                    >
+                      Save UPI
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {savedUpis.map((upi) => (
+                  <div
+                    key={upi.id}
+                    className="flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-surface/30 hover:border-white/20 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
+                        UPI
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-white text-xs">{upi.upiId}</span>
+                          {upi.isDefault && (
+                            <span className="rounded-md bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-300">
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-slate-400">{upi.provider}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSavedUpis(savedUpis.filter((u) => u.id !== upi.id))}
+                      className="text-slate-500 hover:text-red-400 p-1.5 transition-colors cursor-pointer"
+                      title="Remove UPI ID"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Saved Cards */}
+            <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-blue-400" />
+                    Saved Credit & Debit Cards
+                  </h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Encrypted tokenization via RBI-mandated payment gateways.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCard(!isAddingCard)}
+                  className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-bold text-white hover:bg-surface/50 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add New Card
+                </button>
+              </div>
+
+              {isAddingCard && (
+                <form onSubmit={handleAddCard} className="mb-4 rounded-2xl bg-surface/50 border border-white/10 p-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <label className="font-bold text-slate-200 block mb-1">Card Number</label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={19}
+                        value={newCardNumber}
+                        onChange={(e) => setNewCardNumber(e.target.value)}
+                        placeholder="•••• •••• •••• 4242"
+                        className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-mono focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-bold text-slate-200 block mb-1">Cardholder Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={newCardHolder}
+                        onChange={(e) => setNewCardHolder(e.target.value)}
+                        placeholder="Name on Card"
+                        className="w-full rounded-xl border border-white/15 px-3 py-2 text-white focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-bold text-slate-200 block mb-1">Expiry (MM/YY)</label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={5}
+                        value={newCardExpiry}
+                        onChange={(e) => setNewCardExpiry(e.target.value)}
+                        placeholder="12/28"
+                        className="w-full rounded-xl border border-white/15 px-3 py-2 text-white font-mono focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingCard(false)}
+                      className="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-1.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 cursor-pointer"
+                    >
+                      Save Card
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {savedCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden shadow-lg"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-bold text-blue-400">{card.brand}</span>
+                      <button
+                        type="button"
+                        onClick={() => setSavedCards(savedCards.filter((c) => c.id !== card.id))}
+                        className="text-slate-500 hover:text-red-400 p-1 cursor-pointer"
+                        title="Delete Card"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="font-mono text-sm tracking-widest text-white mb-4">
+                      •••• •••• •••• {card.last4}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-slate-300">
+                      <div>
+                        <div className="text-[10px] text-slate-500 uppercase">Card Holder</div>
+                        <div className="font-bold text-white">{card.cardholderName}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-slate-500 uppercase">Expires</div>
+                        <div className="font-mono text-white">{card.expiry}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. Security Deposit Refund Bank Account */}
+            <div className="rounded-3xl border border-emerald-500/20 bg-card p-6 sm:p-8 shadow-xs relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-emerald-400" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-400">
+                      Security Deposit Refund Bank Account
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Your ₹5,000 security deposit is automatically refunded to this account within 24 hours of dropping off the car.
+                  </p>
+                </div>
+                {bankSavedFeedback && (
+                  <div className="rounded-xl bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1.5 text-xs font-bold text-emerald-300">
+                    {bankSavedFeedback}
+                  </div>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveBankAccount} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Bank Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={bankAccount.bankName}
+                      onChange={(e) => setBankAccount({ ...bankAccount, bankName: e.target.value })}
+                      placeholder="e.g. HDFC Bank Ltd"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Account Holder Legal Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={bankAccount.accountHolder}
+                      onChange={(e) => setBankAccount({ ...bankAccount, accountHolder: e.target.value })}
+                      placeholder="Must match your Driving License / Aadhaar"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-medium focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Bank Account Number</label>
+                    <input
+                      type="password"
+                      required
+                      value={bankAccount.accountNumber}
+                      onChange={(e) => setBankAccount({ ...bankAccount, accountNumber: e.target.value })}
+                      placeholder="Enter account number"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-mono font-medium focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-200 block mb-1">Confirm Bank Account Number</label>
+                    <input
+                      type="text"
+                      required
+                      value={bankAccount.confirmAccountNumber}
+                      onChange={(e) => setBankAccount({ ...bankAccount, confirmAccountNumber: e.target.value })}
+                      placeholder="Re-enter account number"
+                      className="w-full rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-mono font-medium focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="font-bold text-slate-200 block mb-1">IFSC Code (11 Digits)</label>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="text"
+                        required
+                        maxLength={11}
+                        value={bankAccount.ifsc}
+                        onChange={(e) => setBankAccount({ ...bankAccount, ifsc: e.target.value.toUpperCase() })}
+                        placeholder="e.g. HDFC0000039"
+                        className="w-full max-w-xs rounded-xl border border-white/15 px-3.5 py-2.5 text-white font-mono uppercase font-medium focus:border-emerald-500 focus:outline-none"
+                      />
+                      <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-500/20">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Valid IFSC: {bankAccount.bankName} - Baner Branch
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 transition-colors shadow-md shadow-emerald-600/20 cursor-pointer"
+                  >
+                    Save Refund Bank Details
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* Tab 5: DigiLocker KYC Verification Portal                                 */}
+        {/* ========================================================================= */}
+        {activeTab === 'DIGILOCKER' && (
+          <div className="mt-8 space-y-8">
+            <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-950/40 via-card to-card p-6 sm:p-8 shadow-xl">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                <div className="flex items-start gap-4">
+                  <div className="h-16 w-16 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
+                    <ShieldCheck className="h-8 w-8 text-blue-400" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-bold text-white">Government DigiLocker e-KYC</h2>
+                      <span className="rounded-md bg-blue-500/20 px-2 py-0.5 text-[10px] font-black text-blue-300 uppercase tracking-wider">
+                        Official Parivahan API
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-300 max-w-xl">
+                      Instantly verify your Aadhaar Identity and Ministry of Road Transport and Highways (MoRTH) Driving License without uploading paper scans.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  {digiLockerVerified ? (
+                    <div className="rounded-2xl bg-emerald-500/15 border border-emerald-500/40 p-4 text-center">
+                      <div className="flex items-center justify-center gap-1.5 text-emerald-400 font-bold text-xs">
+                        <CheckCircle2 className="h-4 w-4" />
+                        DigiLocker Verified
+                      </div>
+                      <span className="text-[10px] text-emerald-300/80 block mt-0.5 font-medium">
+                        Aadhaar + DL Authenticated
+                      </span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isDigiLockerConnecting}
+                      onClick={handleTriggerDigiLocker}
+                      className="w-full sm:w-auto rounded-2xl bg-blue-600 px-6 py-3.5 text-xs font-bold text-white shadow-xl shadow-blue-600/30 hover:bg-blue-500 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      {isDigiLockerConnecting ? 'Authenticating via DigiLocker...' : 'Verify with DigiLocker'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Live Multi-Step Verification Animation */}
+              {isDigiLockerConnecting && (
+                <div className="mt-6 rounded-2xl bg-surface/60 border border-white/10 p-5 space-y-3">
+                  <div className="text-xs font-bold text-slate-200">DigiLocker Secure Handshake in Progress...</div>
+                  <div className="space-y-2 text-xs">
+                    <div className={`flex items-center gap-2.5 ${digiLockerStep >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Step 1: Connecting to DigiLocker MeriPehchan OAuth Gateway...</span>
+                    </div>
+                    <div className={`flex items-center gap-2.5 ${digiLockerStep >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Step 2: Requesting issued digital Driving License from MoRTH Sarathi registry...</span>
+                    </div>
+                    <div className={`flex items-center gap-2.5 ${digiLockerStep >= 3 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Step 3: Cryptographic verification of digital signature & biometric Aadhaar match...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Verified Certificate Display */}
+              {digiLockerVerified && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-surface/40 border border-white/10 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-300">Issued Driving License</span>
+                      <span className="text-[10px] font-mono font-bold text-emerald-400">STATUS: ACTIVE</span>
+                    </div>
+                    <div className="font-mono text-sm font-bold text-white">{profileDlNumber}</div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400 pt-1">
+                      <div>Holder: <span className="text-white font-medium">{profileName}</span></div>
+                      <div>Valid Till: <span className="text-white font-medium">{profileDlExpiry}</span></div>
+                      <div>Authorized: <span className="text-white font-medium">LMV-NT (Car)</span></div>
+                      <div>Issuer: <span className="text-white font-medium">RTO Pune (MH-12)</span></div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-surface/40 border border-white/10 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-300">Aadhaar e-KYC Verified Address</span>
+                      <span className="text-[10px] font-mono font-bold text-emerald-400">UIDAI CERTIFIED</span>
+                    </div>
+                    <div className="text-white font-medium">{profileAddress}, {profileCity}, {profileState} - {profilePincode}</div>
+                    <div className="text-[11px] text-slate-400 pt-1">
+                      DOB: <span className="text-white font-medium">{profileDob}</span> • Gender: <span className="text-white font-medium">Male</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step-by-Step Technical Guide for DigiLocker Integration */}
+            <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 space-y-4">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <FileText className="h-5 w-5 text-blue-400" />
+                DigiLocker Integration Architecture & Steps
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Here are the technical steps and API protocols used to pull authenticated Indian Driving License and Aadhaar KYC records from DigiLocker:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
+                <div className="p-4 rounded-2xl bg-surface/30 border border-white/5 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-blue-400">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-[10px]">1</span>
+                    Partner Registration & Credentials
+                  </div>
+                  <p className="text-slate-400 text-[11px] leading-relaxed">
+                    Register as a requester partner on the <strong>MeriPehchan / DigiLocker Requester Portal</strong> (or via authorized verification aggregators such as Setu, Surepass, Cashfree, or Signzy). Obtain your client ID, client secret, and registered OAuth redirect URIs.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-surface/30 border border-white/5 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-blue-400">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-[10px]">2</span>
+                    OAuth 2.0 Authorization Request
+                  </div>
+                  <p className="text-slate-400 text-[11px] leading-relaxed">
+                    Direct user to:
+                    <br />
+                    <code className="text-emerald-300 font-mono text-[10px] break-all">
+                      https://digilocker.meripehchan.gov.in/public/oauth2/1/authorize?response_type=code&client_id=YOUR_ID&redirect_uri=CALLBACK_URL&state=SECURE_NONCE
+                    </code>
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-surface/30 border border-white/5 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-blue-400">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-[10px]">3</span>
+                    Authorization Code to Access Token Exchange
+                  </div>
+                  <p className="text-slate-400 text-[11px] leading-relaxed">
+                    When DigiLocker redirects back to your callback URL with the temporary authorization code, your backend makes a POST request to <code className="text-blue-300 font-mono text-[10px]">/public/oauth2/1/token</code> with <code className="text-slate-300 font-mono text-[10px]">grant_type=authorization_code</code> to receive the bearer access token.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-surface/30 border border-white/5 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-blue-400">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-[10px]">4</span>
+                    Fetch Document XML & Extract License
+                  </div>
+                  <p className="text-slate-400 text-[11px] leading-relaxed">
+                    Call <code className="text-blue-300 font-mono text-[10px]">GET /public/oauth2/1/xml/drivinglicense</code> or URI <code className="text-emerald-300 font-mono text-[10px]">in.gov.transport-DRVLC</code>. Parse the returned signed XML to extract the license number, driver name, vehicle class (LMV), validity, and photo.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -273,6 +273,40 @@ export const GoogleLoginSchema = z.object({
 });
 export type GoogleLogin = z.infer<typeof GoogleLoginSchema>;
 
+export const SavedUpiSchema = z.object({
+  id: z.string(),
+  upiId: z.string(),
+  provider: z.string().optional(),
+  isDefault: z.boolean().default(false),
+});
+export type SavedUpi = z.infer<typeof SavedUpiSchema>;
+
+export const SavedCardSchema = z.object({
+  id: z.string(),
+  cardholderName: z.string(),
+  last4: z.string(),
+  expiry: z.string(),
+  brand: z.string().default('Visa'),
+  isDefault: z.boolean().default(false),
+});
+export type SavedCard = z.infer<typeof SavedCardSchema>;
+
+export const RefundBankAccountSchema = z.object({
+  bankName: z.string(),
+  accountHolder: z.string(),
+  accountNumber: z.string(),
+  ifsc: z.string(),
+  isVerified: z.boolean().default(true),
+});
+export type RefundBankAccount = z.infer<typeof RefundBankAccountSchema>;
+
+export const PaymentMethodsSchema = z.object({
+  upi: z.array(SavedUpiSchema).default([]),
+  cards: z.array(SavedCardSchema).default([]),
+  bankAccount: RefundBankAccountSchema.nullable().optional(),
+});
+export type PaymentMethods = z.infer<typeof PaymentMethodsSchema>;
+
 export const CustomerProfileSchema = z.object({
   id: z.string(),
   phone: z.string().nullable().optional(),
@@ -280,9 +314,24 @@ export const CustomerProfileSchema = z.object({
   email: z.string().email().nullable().optional(),
   avatarUrl: z.string().nullable().optional(),
   kycStatus: z.enum(['NOT_SUBMITTED', 'PENDING_REVIEW', 'APPROVED', 'REJECTED']),
+  dob: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  city: z.string().nullable().optional(),
+  state: z.string().nullable().optional(),
+  pincode: z.string().nullable().optional(),
+  emergencyContactName: z.string().nullable().optional(),
+  emergencyContactPhone: z.string().nullable().optional(),
+  emergencyContactRelation: z.string().nullable().optional(),
+  dlNumber: z.string().nullable().optional(),
+  dlExpiry: z.string().nullable().optional(),
+  digilockerVerified: z.boolean().optional(),
+  paymentMethods: PaymentMethodsSchema.optional(),
   createdAt: z.string(),
 });
 export type CustomerProfile = z.infer<typeof CustomerProfileSchema>;
+
+export const UpdateCustomerProfileSchema = CustomerProfileSchema.partial();
+export type UpdateCustomerProfile = z.infer<typeof UpdateCustomerProfileSchema>;
 
 export const AuthTokenResponseSchema = z.object({
   accessToken: z.string(),
