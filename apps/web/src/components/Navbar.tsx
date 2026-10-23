@@ -101,10 +101,19 @@ export function Navbar({ selectedCity, onCityChange }: NavbarProps = {}) {
                 href="/account"
                 className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-surface px-4 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-gradient text-[10px] font-bold text-white">
-                  {customer.name ? customer.name[0]?.toUpperCase() : 'U'}
-                </div>
-                <span>{customer.name || customer.phone}</span>
+                {customer.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={customer.avatarUrl}
+                    alt={customer.name || 'User avatar'}
+                    className="h-5 w-5 rounded-full object-cover ring-1 ring-white/20"
+                  />
+                ) : (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-gradient text-[10px] font-bold text-white">
+                    {customer.name ? customer.name[0]?.toUpperCase() : (customer.email ? customer.email[0]?.toUpperCase() : 'U')}
+                  </div>
+                )}
+                <span className="max-w-[120px] truncate">{customer.name || customer.email || customer.phone || 'Account'}</span>
               </Link>
             ) : (
               <Link

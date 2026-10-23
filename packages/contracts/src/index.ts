@@ -250,11 +250,35 @@ export const VerifyOtpSchema = z.object({
 });
 export type VerifyOtp = z.infer<typeof VerifyOtpSchema>;
 
+export const EmailRegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  phone: z.string().optional(),
+});
+export type EmailRegister = z.infer<typeof EmailRegisterSchema>;
+
+export const EmailLoginSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
+export type EmailLogin = z.infer<typeof EmailLoginSchema>;
+
+export const GoogleLoginSchema = z.object({
+  credential: z.string().optional(),
+  email: z.string().email().optional(),
+  name: z.string().optional(),
+  googleId: z.string().optional(),
+  avatarUrl: z.string().optional(),
+});
+export type GoogleLogin = z.infer<typeof GoogleLoginSchema>;
+
 export const CustomerProfileSchema = z.object({
   id: z.string(),
-  phone: z.string(),
+  phone: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
+  avatarUrl: z.string().nullable().optional(),
   kycStatus: z.enum(['NOT_SUBMITTED', 'PENDING_REVIEW', 'APPROVED', 'REJECTED']),
   createdAt: z.string(),
 });

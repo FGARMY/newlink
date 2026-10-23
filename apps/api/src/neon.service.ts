@@ -176,14 +176,26 @@ export class NeonService implements OnModuleInit {
     await sql.query(`
       CREATE TABLE IF NOT EXISTS customers (
         id VARCHAR(64) PRIMARY KEY,
-        phone VARCHAR(32) UNIQUE NOT NULL,
+        phone VARCHAR(32),
         name VARCHAR(128),
         email VARCHAR(128),
+        password_hash TEXT,
+        google_id VARCHAR(128),
+        avatar_url TEXT,
         kyc_status VARCHAR(32) NOT NULL DEFAULT 'NOT_SUBMITTED',
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
+    try {
+      await sql.query(`ALTER TABLE customers ALTER COLUMN phone DROP NOT NULL;`);
+    } catch {
+      // Column might already be nullable
+    }
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS password_hash TEXT;`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS google_id VARCHAR(128);`);
+    await sql.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS avatar_url TEXT;`);
+    await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email ON customers(email) WHERE email IS NOT NULL;`);
 
     await sql.query(`
       CREATE TABLE IF NOT EXISTS coupons (
@@ -396,24 +408,72 @@ export class NeonService implements OnModuleInit {
     }
   }
 
+  async findCustomerByEmail(email: string) {
+    if (!this.getSql('pooled')) return null;
+    const rows = await this.query<{
+      id: string;
+      email: string;
+      name: string | null;
+      phone: string | null;
+      password_hash: string | null;
+      google_id: string | null;
+      avatar_url: string | null;
+      kyc_status: string;
+      created_at: string;
+    }>('SELECT * FROM customers WHERE email = $1 LIMIT 1', [email]);
+    return rows[0] || null;
+  }
+
+  async findCustomerByGoogleId(googleId: string) {
+    if (!this.getSql('pooled')) return null;
+    const rows = await this.query<{
+      id: string;
+      email: string;
+      name: string | null;
+      phone: string | null;
+      password_hash: string | null;
+      google_id: string | null;
+      avatar_url: string | null;
+      kyc_status: string;
+      created_at: string;
+    }>('SELECT * FROM customers WHERE google_id = $1 LIMIT 1', [googleId]);
+    return rows[0] || null;
+  }
+
   async insertCustomer(customer: {
     id: string;
-    phone: string;
+    phone?: string | null;
     name?: string | null;
     email?: string | null;
+    passwordHash?: string | null;
+    googleId?: string | null;
+    avatarUrl?: string | null;
     kycStatus: string;
   }) {
     if (!this.getSql('pooled')) return;
     try {
       await this.query(
-        `INSERT INTO customers (id, phone, name, email, kyc_status, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+        `INSERT INTO customers (id, phone, name, email, password_hash, google_id, avatar_url, kyc_status, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
          ON CONFLICT (id) DO UPDATE SET
            name = COALESCE(EXCLUDED.name, customers.name),
            email = COALESCE(EXCLUDED.email, customers.email),
+           phone = COALESCE(EXCLUDED.phone, customers.phone),
+           password_hash = COALESCE(EXCLUDED.password_hash, customers.password_hash),
+           google_id = COALESCE(EXCLUDED.google_id, customers.google_id),
+           avatar_url = COALESCE(EXCLUDED.avatar_url, customers.avatar_url),
            kyc_status = EXCLUDED.kyc_status,
            updated_at = NOW()`,
-        [customer.id, customer.phone, customer.name || null, customer.email || null, customer.kycStatus]
+        [
+          customer.id,
+          customer.phone || null,
+          customer.name || null,
+          customer.email || null,
+          customer.passwordHash || null,
+          customer.googleId || null,
+          customer.avatarUrl || null,
+          customer.kycStatus,
+        ]
       );
     } catch (err) {
       this.logger.warn(`Failed to persist customer in Neon: ${err}`);

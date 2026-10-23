@@ -14,6 +14,9 @@ import {
   VerifyOtpSchema,
   StaffLoginSchema,
   KycDocumentUploadSchema,
+  EmailRegisterSchema,
+  EmailLoginSchema,
+  GoogleLoginSchema,
   type CustomerProfile,
 } from '@newlink/contracts';
 import {
@@ -23,13 +26,253 @@ import {
   type StaffRole,
 } from '@newlink/domain';
 import { MemoryCustomerRepository } from './repositories/memory.repository.js';
+import { NeonService } from './neon.service.js';
+import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
+
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, combinedHash: string): boolean {
+  try {
+    const [salt, key] = combinedHash.split(':');
+    if (!salt || !key) return false;
+    const keyBuffer = Buffer.from(key, 'hex');
+    const derivedKey = scryptSync(password, salt, 64);
+    return timingSafeEqual(keyBuffer, derivedKey);
+  } catch {
+    return false;
+  }
+}
 
 // In-memory challenge store (in production, Redis)
 const otpChallenges: Map<string, ReturnType<typeof createOtpChallenge>> = new Map();
 
 @Controller('api/v1')
 export class AuthController {
-  constructor(@Inject(MemoryCustomerRepository) private customerRepo: MemoryCustomerRepository) {}
+  constructor(
+    @Inject(MemoryCustomerRepository) private customerRepo: MemoryCustomerRepository,
+    @Inject(NeonService) private neonService: NeonService,
+  ) {}
+
+  @Post('auth/register')
+  async registerWithEmail(@Body() body: unknown) {
+    const parse = EmailRegisterSchema.safeParse(body);
+    if (!parse.success) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: parse.error.issues[0]?.message || 'Invalid registration form',
+            details: parse.error.issues,
+          },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const { name, email, password, phone } = parse.data;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if customer already exists in Neon
+    const existing = await this.neonService.findCustomerByEmail(normalizedEmail);
+    if (existing) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'EMAIL_ALREADY_EXISTS',
+            message: 'An account with this email address already exists. Please sign in.',
+          },
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const customerId = `cust-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+    const passwordHash = hashPassword(password);
+
+    await this.neonService.insertCustomer({
+      id: customerId,
+      email: normalizedEmail,
+      name,
+      phone: phone || null,
+      passwordHash,
+      kycStatus: 'NOT_SUBMITTED',
+    });
+
+    const customer: CustomerProfile = {
+      id: customerId,
+      name,
+      email: normalizedEmail,
+      phone: phone || null,
+      kycStatus: 'NOT_SUBMITTED',
+      createdAt: new Date().toISOString(),
+    };
+
+    const token = `jwt-${customerId}-${Date.now()}`;
+
+    return {
+      data: {
+        token,
+        customer,
+        message: 'Account created successfully',
+      },
+    };
+  }
+
+  @Post('auth/login')
+  async loginWithEmail(@Body() body: unknown) {
+    const parse = EmailLoginSchema.safeParse(body);
+    if (!parse.success) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid email or password format',
+            details: parse.error.issues,
+          },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const { email, password } = parse.data;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await this.neonService.findCustomerByEmail(normalizedEmail);
+    if (!user || !user.password_hash) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'INVALID_CREDENTIALS',
+            message: 'Incorrect email or password. Please check your credentials.',
+          },
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isMatch = verifyPassword(password, user.password_hash);
+    if (!isMatch) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'INVALID_CREDENTIALS',
+            message: 'Incorrect email or password. Please check your credentials.',
+          },
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const customer: CustomerProfile = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      avatarUrl: user.avatar_url,
+      kycStatus: (user.kyc_status as CustomerProfile['kycStatus']) || 'NOT_SUBMITTED',
+      createdAt: user.created_at || new Date().toISOString(),
+    };
+
+    const token = `jwt-${user.id}-${Date.now()}`;
+
+    return {
+      data: {
+        token,
+        customer,
+        message: 'Logged in successfully',
+      },
+    };
+  }
+
+  @Post('auth/google')
+  async loginWithGoogle(@Body() body: unknown) {
+    const parse = GoogleLoginSchema.safeParse(body);
+    if (!parse.success) {
+      throw new HttpException(
+        {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'Invalid Google authentication payload',
+          },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let { email, name, googleId, avatarUrl } = parse.data;
+    const { credential } = parse.data;
+
+    // If Google JWT credential token was passed from Google Identity Services
+    if (credential) {
+      try {
+        const parts = credential.split('.');
+        if (parts[1]) {
+          const payloadJson = Buffer.from(parts[1], 'base64').toString('utf8');
+          const payload = JSON.parse(payloadJson);
+          if (payload.email) email = payload.email;
+          if (payload.name) name = payload.name;
+          if (payload.sub) googleId = payload.sub;
+          if (payload.picture) avatarUrl = payload.picture;
+        }
+      } catch {
+        // Fallback to direct fields
+      }
+    }
+
+    if (!email) {
+      throw new HttpException(
+        { error: { code: 'INVALID_PAYLOAD', message: 'Email could not be verified from Google Sign-In' } },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    let user = await this.neonService.findCustomerByEmail(normalizedEmail);
+
+    if (!user) {
+      const customerId = `cust-g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+      await this.neonService.insertCustomer({
+        id: customerId,
+        email: normalizedEmail,
+        name: name || 'Google User',
+        googleId: googleId || null,
+        avatarUrl: avatarUrl || null,
+        kycStatus: 'NOT_SUBMITTED',
+      });
+      user = await this.neonService.findCustomerByEmail(normalizedEmail);
+    } else if (googleId && !user.google_id) {
+      await this.neonService.insertCustomer({
+        id: user.id,
+        googleId,
+        avatarUrl: avatarUrl || user.avatar_url,
+        kycStatus: user.kyc_status,
+      });
+    }
+
+    const customer: CustomerProfile = {
+      id: user?.id || `cust-${Date.now().toString(36)}`,
+      name: user?.name || name || 'User',
+      email: normalizedEmail,
+      phone: user?.phone || null,
+      avatarUrl: user?.avatar_url || avatarUrl || null,
+      kycStatus: (user?.kyc_status as CustomerProfile['kycStatus']) || 'NOT_SUBMITTED',
+      createdAt: user?.created_at || new Date().toISOString(),
+    };
+
+    const token = `jwt-${customer.id}-${Date.now()}`;
+
+    return {
+      data: {
+        token,
+        customer,
+        message: 'Signed in with Google successfully',
+      },
+    };
+  }
 
   @Post('auth/otp/request')
   async requestOtp(@Body() body: unknown) {

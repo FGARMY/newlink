@@ -209,7 +209,7 @@ export default function AccountPage() {
               href="/login?next=/account"
               className="mt-6 inline-block w-full rounded-xl bg-blue-600 py-3 text-xs font-bold text-white hover:bg-blue-500 transition-colors"
             >
-              Sign In via Mobile OTP
+              Sign In to Your Account
             </Link>
           </div>
         </main>
@@ -310,16 +310,25 @@ export default function AccountPage() {
         <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-gradient text-lg font-bold text-white shadow-lg shadow-blue-600/25">
-                {customer.name ? customer.name[0]?.toUpperCase() : 'U'}
-              </div>
+              {customer.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={customer.avatarUrl}
+                  alt={customer.name || 'User avatar'}
+                  className="h-14 w-14 rounded-2xl object-cover ring-2 ring-blue-500/30 shadow-lg shadow-blue-600/25"
+                />
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-gradient text-lg font-bold text-white shadow-lg shadow-blue-600/25">
+                  {customer.name ? customer.name[0]?.toUpperCase() : (customer.email ? customer.email[0]?.toUpperCase() : 'U')}
+                </div>
+              )}
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-white">
                   {customer.name || 'Valued Customer'}
                 </h1>
                 <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
-                  <span>{customer.phone}</span>
-                  {customer.email && <span>• {customer.email}</span>}
+                  {customer.email && <span>{customer.email}</span>}
+                  {customer.phone && <span>{customer.email ? `• ${customer.phone}` : customer.phone}</span>}
                 </div>
               </div>
             </div>
