@@ -118,21 +118,21 @@ export function HubLocatorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-card border border-white/10 shadow-2xl overflow-hidden text-white">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-white dark:bg-card text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-surface/50">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 px-6 py-4 bg-slate-50 dark:bg-surface/50">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/20 text-emerald-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/20 text-emerald-600 dark:text-emerald-400">
               <MapPin className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 Official Speion Pickup Bays
-                <span className="rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold">
+                <span className="rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold">
                   Guaranteed Handover
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Direct terminal & highway parking bays with 3-minute quick checkout
               </p>
             </div>

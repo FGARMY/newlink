@@ -27,20 +27,23 @@ import {
 } from '@newlink/domain';
 import { MemoryCustomerRepository } from './repositories/memory.repository.js';
 import { NeonService } from './neon.service.js';
-import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
+import { scrypt, randomBytes, timingSafeEqual } from 'node:crypto';
+import { promisify } from 'node:util';
 
-function hashPassword(password: string): string {
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(password, salt, 64).toString('hex');
-  return `${salt}:${hash}`;
+  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${salt}:${derivedKey.toString('hex')}`;
 }
 
-function verifyPassword(password: string, combinedHash: string): boolean {
+async function verifyPassword(password: string, combinedHash: string): Promise<boolean> {
   try {
     const [salt, key] = combinedHash.split(':');
     if (!salt || !key) return false;
     const keyBuffer = Buffer.from(key, 'hex');
-    const derivedKey = scryptSync(password, salt, 64);
+    const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
     return timingSafeEqual(keyBuffer, derivedKey);
   } catch {
     return false;
@@ -146,7 +149,7 @@ export class AuthController {
     }
 
     const customerId = `cust-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
-    const passwordHash = hashPassword(password);
+    const passwordHash = await hashPassword(password);
 
     await this.neonService.insertCustomer({
       id: customerId,
@@ -157,17 +160,27 @@ export class AuthController {
       kycStatus: 'NOT_SUBMITTED',
     });
 
-    const neonUser = await this.neonService.findCustomerByEmail(normalizedEmail);
-    const customer: CustomerProfile = neonUser
-      ? mapCustomerProfile(neonUser)
-      : {
-          id: customerId,
-          name,
-          email: normalizedEmail,
-          phone: phone || null,
-          kycStatus: 'NOT_SUBMITTED',
-          createdAt: new Date().toISOString(),
-        };
+    const customer: CustomerProfile = {
+      id: customerId,
+      name,
+      email: normalizedEmail,
+      phone: phone || null,
+      avatarUrl: null,
+      kycStatus: 'NOT_SUBMITTED',
+      dob: null,
+      address: null,
+      city: null,
+      state: null,
+      pincode: null,
+      emergencyContactName: null,
+      emergencyContactPhone: null,
+      emergencyContactRelation: null,
+      dlNumber: null,
+      dlExpiry: null,
+      digilockerVerified: false,
+      paymentMethods: { upi: [], cards: [], bankAccount: null },
+      createdAt: new Date().toISOString(),
+    };
 
     const token = this.securityService.signJwt({
       sub: customerId,
@@ -232,7 +245,7 @@ export class AuthController {
       );
     }
 
-    const isMatch = verifyPassword(password, user.password_hash);
+    const isMatch = await verifyPassword(password, user.password_hash);
     if (!isMatch) {
       this.securityService.recordFailure(rateLimitKey);
       throw new HttpException(
@@ -321,7 +334,29 @@ export class AuthController {
         avatarUrl: avatarUrl || null,
         kycStatus: 'NOT_SUBMITTED',
       });
-      user = await this.neonService.findCustomerByEmail(normalizedEmail);
+      user = {
+        id: customerId,
+        email: normalizedEmail,
+        name: name || 'Google User',
+        phone: null,
+        password_hash: null,
+        google_id: googleId || null,
+        avatar_url: avatarUrl || null,
+        kyc_status: 'NOT_SUBMITTED',
+        dob: null,
+        address: null,
+        city: null,
+        state: null,
+        pincode: null,
+        emergency_contact_name: null,
+        emergency_contact_phone: null,
+        emergency_contact_relation: null,
+        dl_number: null,
+        dl_expiry: null,
+        digilocker_verified: false,
+        payment_methods: { upi: [], cards: [], bankAccount: null },
+        created_at: new Date().toISOString(),
+      };
     } else if (googleId && !user.google_id) {
       await this.neonService.insertCustomer({
         id: user.id,
@@ -329,6 +364,8 @@ export class AuthController {
         avatarUrl: avatarUrl || user.avatar_url,
         kycStatus: user.kyc_status,
       });
+      user.google_id = googleId;
+      if (avatarUrl) user.avatar_url = avatarUrl;
     }
 
     const customer: CustomerProfile = user

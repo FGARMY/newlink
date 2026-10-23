@@ -109,12 +109,9 @@ function LoginContent() {
       }
 
       const { customer, token } = json.data;
-      setSuccessMsg('Welcome back! Logging you in...');
+      setSuccessMsg('Welcome back! Taking you to your dashboard...');
       login(customer, token);
-
-      setTimeout(() => {
-        window.location.href = nextUrl;
-      }, 400);
+      router.replace(nextUrl);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Login failed. Please try again.';
       if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch failed')) {
@@ -128,9 +125,7 @@ function LoginContent() {
         };
         setSuccessMsg('Signed in! Redirecting to account...');
         login(fallbackCustomer, `jwt-local-${Date.now()}`);
-        setTimeout(() => {
-          window.location.href = nextUrl;
-        }, 400);
+        router.replace(nextUrl);
         return;
       }
       setError(msg);
@@ -196,10 +191,7 @@ function LoginContent() {
       const { customer, token } = json.data;
       setSuccessMsg('Account created successfully! Taking you to your dashboard...');
       login(customer, token);
-
-      setTimeout(() => {
-        window.location.href = nextUrl;
-      }, 400);
+      router.replace(nextUrl);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
       if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch failed')) {
@@ -213,9 +205,7 @@ function LoginContent() {
         };
         setSuccessMsg('Account created! Taking you to your dashboard...');
         login(fallbackCustomer, `jwt-local-${Date.now()}`);
-        setTimeout(() => {
-          window.location.href = nextUrl;
-        }, 400);
+        router.replace(nextUrl);
         return;
       }
       setError(msg);
@@ -244,10 +234,7 @@ function LoginContent() {
       const { customer, token } = json.data;
       setSuccessMsg('Google verification successful! Redirecting...');
       login(customer, token);
-
-      setTimeout(() => {
-        window.location.href = nextUrl;
-      }, 400);
+      router.replace(nextUrl);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Google sign-in failed. Please try again or use your email.';
       setError(msg);

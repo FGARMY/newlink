@@ -332,7 +332,7 @@ function CarsSearchContent() {
   ]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-canvas text-slate-900 dark:text-white font-sans transition-colors duration-200">
       <Navbar selectedCity={city} />
 
       {/* Top Search Context Bar */}

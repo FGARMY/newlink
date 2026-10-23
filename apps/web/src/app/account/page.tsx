@@ -454,7 +454,7 @@ export default function AccountPage() {
   // If customer is not logged in, prompt or redirect
   if (!customer) {
     return (
-      <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-canvas text-slate-900 dark:text-white font-sans transition-colors duration-200">
         <Navbar />
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="max-w-md w-full rounded-3xl border border-white/10 bg-card p-8 text-center shadow-lg">
@@ -562,7 +562,7 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-canvas text-white font-sans">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-canvas text-slate-900 dark:text-white font-sans transition-colors duration-200">
       <Navbar />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">

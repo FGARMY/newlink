@@ -73,9 +73,9 @@ async function bootstrap() {
   });
 
   const port = process.env.API_PORT || 4000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   // eslint-disable-next-line no-console
-  console.log(`Speion Cars API server running on http://localhost:${port}/api/v1 (CORS & Security active)`);
+  console.log(`Speion Cars API server running on http://127.0.0.1:${port}/api/v1 (CORS & Security active)`);
 }
 
 bootstrap();

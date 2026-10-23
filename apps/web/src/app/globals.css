@@ -92,11 +92,11 @@
 :root,
 html.light {
   color-scheme: light;
-  --background: #ffffff;
+  --background: #f8fafc;
   --foreground: #0a0f1c;
-  --color-bg-canvas: #ffffff;
+  --color-bg-canvas: #f8fafc;
   --color-bg-card: #ffffff;
-  --color-bg-surface: #f8fafc;
+  --color-bg-surface: #f1f5f9;
   --card-border: #e2e8f0;
 }
 
@@ -135,10 +135,73 @@ html.dark .bg-canvas {
   background-color: #000000 !important;
 }
 
+/* Explicit rule for high-contrast legible theme when light */
 html.light,
-html.light body {
-  background-color: #ffffff !important;
+html.light body,
+html.light main,
+html.light #__next {
+  background-color: #f8fafc !important;
   color: #0a0f1c !important;
+}
+
+html.light .bg-canvas {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0a0f1c !important;
+}
+
+html.light .bg-surface {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0a0f1c !important;
+}
+
+html.light input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  color: #0a0f1c !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Ensure white text is converted to dark text on light backgrounds, but keep dark footers crisp */
+html.light .text-white:not(footer *):not(.bg-midnight *):not(.bg-onyx *):not(button):not(.bg-blue-600 *):not(.bg-primary *):not(.bg-emerald-600 *):not(.bg-emerald-700 *):not(.bg-emerald-800 *):not(.bg-red-500 *):not(.bg-red-600 *):not(.bg-slate-900 *):not(.bg-black *):not([class*="bg-blue-"]):not([class*="bg-emerald-"]):not([class*="bg-indigo-"]):not([class*="bg-red-"]):not(.badge) {
+  color: #0a0f1c !important;
+}
+
+html.light .text-slate-200:not(footer *):not(.bg-midnight *):not(.bg-onyx *):not(button):not([class*="bg-blue-"]):not([class*="bg-emerald-"]) {
+  color: #334155 !important;
+}
+
+html.light .text-slate-300:not(footer *):not(.bg-midnight *):not(.bg-onyx *):not(button):not([class*="bg-blue-"]):not([class*="bg-emerald-"]) {
+  color: #475569 !important;
+}
+
+html.light .text-slate-400:not(footer *):not(.bg-midnight *):not(.bg-onyx *):not(button):not([class*="bg-blue-"]):not([class*="bg-emerald-"]) {
+  color: #64748b !important;
+}
+
+/* Preserve crisp white & silver text for dark footer regardless of mode */
+html.light footer .text-white {
+  color: #ffffff !important;
+}
+html.light footer .text-slate-400 {
+  color: #94a3b8 !important;
+}
+html.light footer .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+html.light footer a:hover {
+  color: #ffffff !important;
 }
 
 h1,
