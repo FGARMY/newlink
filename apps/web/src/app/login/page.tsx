@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -74,11 +74,46 @@ function LoginContent() {
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
 
-  // Status & feedback
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Check for Google OAuth token redirect response in hash (e.g. #access_token=...)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token=')) {
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      const accessToken = params.get('access_token');
+      if (accessToken) {
+        setGoogleLoading(true);
+        // Clear hash from address bar without reloading
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+          .then((res) => res.json())
+          .then((info) => {
+            if (info?.email) {
+              sendGooglePayload({
+                email: info.email,
+                name: info.name,
+                googleId: info.sub,
+                avatarUrl: info.picture,
+              });
+            } else {
+              setGoogleLoading(false);
+              setError('Failed to retrieve email from Google. Please sign in with email.');
+            }
+          })
+          .catch(() => {
+            setGoogleLoading(false);
+            setError('Google verification failed. Please try again or use email sign in.');
+          });
+      }
+    }
+  }, []);
 
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -248,13 +283,75 @@ function LoginContent() {
     setGoogleLoading(true);
 
     try {
-      // Check if official Google Identity Services is available in window
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const google = (typeof window !== 'undefined' ? (window as any).google : null);
+      const google = typeof window !== 'undefined' ? (window as any).google : null;
 
+      // 1. Preferred Modern Google GIS: OAuth2 Token Client (Opens true Google account popup, immune to One Tap suppression)
+      if (google?.accounts?.oauth2) {
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'email profile openid',
+          prompt: 'select_account',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse?.error) {
+              setGoogleLoading(false);
+              if (tokenResponse.error !== 'access_denied') {
+                setError(tokenResponse.error_description || 'Google sign-in was cancelled or encountered an error.');
+              }
+              return;
+            }
+
+            if (tokenResponse?.access_token) {
+              try {
+                const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                });
+                const userInfo = await userRes.json();
+                if (userInfo?.email) {
+                  await sendGooglePayload({
+                    email: userInfo.email,
+                    name: userInfo.name,
+                    googleId: userInfo.sub,
+                    avatarUrl: userInfo.picture,
+                  });
+                } else {
+                  throw new Error('Google did not return an email address.');
+                }
+              } catch (err: unknown) {
+                setGoogleLoading(false);
+                const msg = err instanceof Error ? err.message : 'Failed to fetch Google profile.';
+                setError(msg);
+              }
+            } else {
+              setGoogleLoading(false);
+            }
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          error_callback: (err: any) => {
+            setGoogleLoading(false);
+            if (err?.type === 'popup_closed') {
+              // User deliberately closed the popup; no alarming error banner needed
+              return;
+            }
+            if (err?.type === 'popup_blocked') {
+              // Popups blocked by browser - fallback to direct redirect
+              triggerGoogleRedirect();
+            } else {
+              setError('Google Sign-In window could not open. Please allow popups or use email.');
+            }
+          },
+        });
+
+        client.requestAccessToken({ prompt: 'select_account' });
+        return;
+      }
+
+      // 2. Fallback to Google GIS One-Tap with explicit user consent handler
       if (google?.accounts?.id) {
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
+          ux_mode: 'popup',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           callback: async (response: any) => {
             if (response.credential) {
@@ -265,23 +362,30 @@ function LoginContent() {
           },
         });
 
-        // Trigger Google dialog
+        // Trigger prompt but if dismissed, fallback to direct OAuth redirect URL
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         google.accounts.id.prompt((notification: any) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            setGoogleLoading(false);
-            setError('Google sign-in popup was dismissed or blocked. You can also sign in with your email and password below.');
+            triggerGoogleRedirect();
           }
         });
-      } else {
-        setGoogleLoading(false);
-        setError('Google Services is initializing. Please try again in a few seconds or use email sign in.');
+        return;
       }
+
+      // 3. Direct Google OAuth 2.0 Web Authorization URL Fallback (Works even if GIS script is blocked by extensions)
+      triggerGoogleRedirect();
     } catch (err: unknown) {
       setGoogleLoading(false);
       const msg = err instanceof Error ? err.message : 'Unable to connect to Google Sign-In.';
       setError(msg);
     }
+  };
+
+  const triggerGoogleRedirect = () => {
+    if (typeof window === 'undefined') return;
+    const redirectUri = encodeURIComponent(window.location.origin + '/login');
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=email%20profile%20openid&prompt=select_account`;
+    window.location.href = authUrl;
   };
 
   return (
