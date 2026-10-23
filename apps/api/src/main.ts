@@ -1,4 +1,24 @@
 import 'reflect-metadata';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+// Automatically load environment files if present
+const candidatePaths = [
+  resolve(process.cwd(), '.env'),
+  resolve(process.cwd(), '.env.local'),
+  resolve(process.cwd(), '../../.env'),
+  resolve(process.cwd(), '../../.env.local'),
+];
+for (const p of candidatePaths) {
+  if (existsSync(p)) {
+    try {
+      process.loadEnvFile(p);
+    } catch {
+      // Ignore individual file parsing errors if already populated
+    }
+  }
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 

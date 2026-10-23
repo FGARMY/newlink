@@ -31,17 +31,25 @@ import {
   MemoryFleetRepository,
   MemoryBookingRepository,
 } from './repositories/memory.repository.js';
+import { NeonService } from './neon.service.js';
 
 @Controller('api/v1')
 export class ApiController {
   constructor(
     @Inject(MemoryFleetRepository) private fleetRepo: MemoryFleetRepository,
     @Inject(MemoryBookingRepository) private bookingRepo: MemoryBookingRepository,
+    @Inject(NeonService) private neonService: NeonService,
   ) {}
 
   @Get('health')
-  getHealth() {
-    return { status: 'ok', timestamp: new Date().toISOString() };
+  async getHealth() {
+    const db = await this.neonService.getHealth();
+    return { status: 'ok', timestamp: new Date().toISOString(), database: db };
+  }
+
+  @Get('health/neon')
+  async getNeonHealth() {
+    return this.neonService.getHealth();
   }
 
   @Get('cities')
